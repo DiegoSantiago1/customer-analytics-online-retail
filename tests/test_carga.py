@@ -1,5 +1,6 @@
 """Testes da carga do bruto: formato da planilha, COPY com valores hostis e carga real."""
 
+from decimal import Decimal
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +10,7 @@ from varejo.baixar_dados import CAMINHO_PLANILHA, SHA256_PLANILHA, planilha_vali
 from varejo.banco import Conexao, conectar
 from varejo.carga import COLUNAS, CargaError, carregar, copiar, ler_planilha
 from varejo.config import ConfigBanco
+from varejo.processar import falhas_dq, processar
 
 from .apoio import valor
 
@@ -98,3 +100,50 @@ def test_carga_real_bate_com_a_planilha(banco_teste: ConfigBanco) -> None:
             "FROM bruto.fatura_linha WHERE aba = 'Year 2009-2010' AND linha_origem = 2"
         ).fetchone()
         assert primeira == ("489434", "85048", "12", "2009-12-01 07:45:00", "6.95", "13085")
+
+
+@pytest.mark.integracao
+@pytest.mark.lento
+def test_pipeline_completo_reproduz_os_numeros_documentados(banco_teste: ConfigBanco) -> None:
+    """Planilha real -> bruto -> limpo -> analise -> dq, com os números de docs/DECISOES.md.
+
+    Se uma mudança alterar qualquer número publicado, este teste quebra e obriga a
+    atualizar o DECISOES e o README junto.
+    """
+    if not planilha_valida():
+        pytest.fail("Planilha ausente: rode python -m varejo.baixar_dados", pytrace=False)
+    carregar(banco_teste)
+    processar(banco_teste, saida=False)
+    with conectar(banco_teste) as con:
+        assert falhas_dq(con) == []
+        tipos: dict[str, int] = dict(
+            con.execute("SELECT tipo, count(*) FROM limpo.fatura_linha GROUP BY tipo").fetchall()
+        )
+        assert tipos == {
+            "venda": 1_019_653,
+            "cancelamento": 19_164,
+            "sem_valor": 6_024,
+            "ajuste_divida": 6,
+            "anomalia": 1,
+        }
+        clientes, liquida, atacado, churn = con.execute(
+            "SELECT count(*), sum(receita_liquida), count(*) FILTER (WHERE eh_atacado), "
+            "count(*) FILTER (WHERE em_churn) FROM analise.cliente"
+        ).fetchone()  # type: ignore[misc]
+        assert (clientes, liquida, atacado, churn) == (5_852, Decimal("16413300.877"), 607, 2_967)
+        assert (
+            valor(con, "SELECT count(*) FROM analise.cliente WHERE segmento = 'Campeões'") == 1_380
+        )
+        escolhido = con.execute(
+            "SELECT dias, precisao, recall, f1 FROM analise.churn_validacao "
+            "WHERE corte = '2011-06-10' AND escolhido"
+        ).fetchone()
+        assert escolhido == (90, Decimal("0.6409"), Decimal("0.8027"), Decimal("0.7127"))
+        clv = con.execute(
+            "SELECT erro_total_pct, captura_top20 FROM analise.clv_validacao "
+            "WHERE modelo = 'previsto'"
+        ).fetchone()
+        assert clv == (Decimal("0.48"), Decimal("0.8830"))
+        assert round(valor(con, "SELECT sum(clv_previsto_6m) FROM analise.cliente")) == (  # type: ignore[call-overload]
+            3_809_240
+        )

@@ -15,7 +15,7 @@ import time
 
 import psycopg
 
-from varejo.banco import conectar
+from varejo.banco import Conexao, conectar
 from varejo.config import ConfigBanco, ConfigError, carregar_config_banco
 
 # (descrição, comando). A ordem importa: cada etapa lê o resultado da anterior.
@@ -25,6 +25,7 @@ ETAPAS: list[tuple[str, str]] = [
     ("analise: validação e marcação de churn", "SELECT analise.recarregar_churn()"),
     ("analise: coortes de retenção", "SELECT analise.recarregar_coortes()"),
     ("analise: CLV (validação e previsão)", "SELECT analise.recarregar_clv()"),
+    ("dq: checagens de qualidade", "SELECT dq.verificar()"),
 ]
 
 
@@ -41,14 +42,33 @@ def processar(config: ConfigBanco, saida: bool = True) -> dict[str, float]:
     return tempos
 
 
+def falhas_dq(con: Conexao) -> list[tuple[str, str, str]]:
+    """Checagens de qualidade que falharam na última verificação: (nome, esperado, obtido)."""
+    return [
+        (nome, esperado, obtido)
+        for nome, esperado, obtido in con.execute(
+            "SELECT verificacao, esperado, obtido FROM dq.resultado WHERE NOT ok "
+            "ORDER BY verificacao"
+        )
+    ]
+
+
 def main() -> int:
     try:
         config = carregar_config_banco()
         processar(config)
+        with conectar(config) as con:
+            falhas = falhas_dq(con)
+            total = con.execute("SELECT count(*) FROM dq.resultado").fetchone()
     except (ConfigError, psycopg.Error) as erro:
         print(f"Erro: {erro}", file=sys.stderr)
         return 1
-    print("Pronto.")
+    if falhas:
+        print(f"{len(falhas)} checagem(ns) de qualidade falharam:", file=sys.stderr)
+        for nome, esperado, obtido in falhas:
+            print(f"  {nome}: esperado {esperado}, obtido {obtido}", file=sys.stderr)
+        return 1
+    print(f"Pronto. {total[0] if total else 0} checagens de qualidade, todas ok.")
     return 0
 
 

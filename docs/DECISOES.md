@@ -179,3 +179,13 @@ Sensibilidade ao b (escolhido na própria validação, então com algum risco de
 O plano previa um CLV de 12 meses. Com o mesmo método, o CLV de 12 meses no fim daria £9,35 mi, contra £7,98 mi de receita real nos 12 meses anteriores. **Esse horizonte não tem como ser validado com 2 anos de dados**: seriam necessários 12 meses depois de um corte, mais um ano antes dele para calibrar. Por isso o CLV publicado é o de **6 meses**, o mesmo horizonte validado: **£3,81 mi** para os 6 meses seguintes ao fim da base. Na mesma época do ano anterior, a receita real foi £3,01 mi, com uma base de clientes 37% menor. Os 20% de clientes com maior CLV concentram 74% do valor previsto.
 
 Bug achado pelos testes: se ninguém comprar na janela, o total real é zero e o erro percentual não existe. A coluna era `NOT NULL`, o que derrubava a recarga inteira. Agora o valor fica NULL.
+
+## Qualidade de dados (schema `dq`)
+
+### D26. O que o dq checa e por quê
+As restrições do banco (`CHECK`, `FOREIGN KEY`, `NOT NULL`) impedem linhas impossíveis. O `dq.verificar()` cobre o que uma restrição de linha não enxerga, e o `python -m varejo.processar` termina com erro se alguma checagem falhar. São 16 checagens:
+- **Totais que precisam bater entre camadas:** linhas do bruto = última carga; limpo = bruto − sobreposição; soma de quantidade × preço conservada; pedidos = linhas de venda e cancelamento; receita líquida dos clientes = compras − cancelamentos deles; soma das coortes = clientes.
+- **Premissas medidas que podem deixar de valer numa carga nova:** sobreposição das abas idêntica (`EXCEPT ALL` nos dois sentidos); nenhum código novo fora do padrão de produto sem classificação; nenhuma anomalia além da C496350; nenhuma linha na hora ambígua do horário de verão; cada fatura com um cliente só.
+- **Forma das distribuições:** os quintos de R e M com tamanhos parecidos (maior/menor ≤ 1,10; medido 1,03); CLV e churn preenchidos para todos; validação do churn nos dois cortes.
+
+O teste `test_pipeline_completo_reproduz_os_numeros_documentados` roda o pipeline inteiro sobre a planilha real e confere os principais números deste documento. Uma mudança que altere um número publicado quebra esse teste.
