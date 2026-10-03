@@ -1,0 +1,89 @@
+{
+  "name": "Customer Analytics",
+  "dataColors": [
+    "#2A78D6",
+    "#EB6834",
+    "#1BAF7A",
+    "#EDA100",
+    "#E87BA4",
+    "#008300",
+    "#4A3AA7",
+    "#E34948"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#0B0B0B",
+  "tableAccent": "#2A78D6",
+  "good": "#008300",
+  "neutral": "#EDA100",
+  "bad": "#E34948",
+  "maximum": "#184F95",
+  "center": "#86B6EF",
+  "minimum": "#F3F7FD",
+  "null": "#E4E3DF",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#0B0B0B"
+              }
+            },
+            "bold": true,
+            "fontSize": 12
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#52514E"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#52514E"
+              }
+            }
+          }
+        ],
+        "legend": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#52514E"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#0B0B0B"
+              }
+            }
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#52514E"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

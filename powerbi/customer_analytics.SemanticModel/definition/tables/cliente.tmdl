@@ -1,0 +1,202 @@
+/// Um cliente por linha no fim da base (10/12/2011): RFM, churn e CLV.
+table cliente
+	lineageTag: d6143b04-375d-5f0f-83a0-75d8f28151e0
+
+	column cliente_id
+		dataType: int64
+		formatString: 0
+		lineageTag: f6d8bc78-2aaf-56d1-a946-bb8d048d7c75
+		summarizeBy: none
+		sourceColumn: cliente_id
+
+	column pais
+		dataType: string
+		lineageTag: 904f1e5e-f0d9-5e41-975a-bb8be2a42115
+		summarizeBy: none
+		sourceColumn: pais
+
+	column primeira_compra
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 4d75592f-a1fb-5bc8-896f-5a19284633ae
+		summarizeBy: none
+		sourceColumn: primeira_compra
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ultima_compra
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: beda9a43-5194-5491-a8f7-f4cab6a78a43
+		summarizeBy: none
+		sourceColumn: ultima_compra
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column recencia_dias
+		dataType: int64
+		formatString: #,0
+		lineageTag: 48ff961a-5dde-5b01-b64d-f920d63fe402
+		summarizeBy: average
+		sourceColumn: recencia_dias
+
+	column frequencia
+		dataType: int64
+		formatString: #,0
+		lineageTag: da8c4341-c4fb-55dd-b959-76ca1d317c55
+		summarizeBy: average
+		sourceColumn: frequencia
+
+	column receita_bruta
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: a6c24939-4209-54be-bc4d-ccfb2dd16b5b
+		summarizeBy: sum
+		sourceColumn: receita_bruta
+
+	column valor_cancelado
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 2af36fd6-b436-5a75-80d3-0591966021b8
+		summarizeBy: sum
+		sourceColumn: valor_cancelado
+
+	column receita_liquida
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: e1dcfac9-cb9a-547f-ab80-6d7227a59c3d
+		summarizeBy: sum
+		sourceColumn: receita_liquida
+
+	column ticket_medio
+		dataType: decimal
+		formatString: \£#,0.00
+		lineageTag: 48950bce-fa87-5623-aea1-7a6518da02bb
+		summarizeBy: average
+		sourceColumn: ticket_medio
+
+	column taxa_cancelamento
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: a88470b7-d49b-5699-9c0b-6845e881f5ba
+		summarizeBy: average
+		sourceColumn: taxa_cancelamento
+
+	column unidades_por_pedido
+		dataType: decimal
+		formatString: #,0.0
+		lineageTag: e63041f2-a144-5628-898d-223d38d6308d
+		summarizeBy: average
+		sourceColumn: unidades_por_pedido
+
+	column r
+		dataType: int64
+		formatString: 0
+		lineageTag: 905b3502-6380-58a4-ba91-32f671c59d9b
+		summarizeBy: none
+		sourceColumn: r
+
+	column f
+		dataType: int64
+		formatString: 0
+		lineageTag: 22b85a2e-fb0a-506e-8edf-9a8104282447
+		summarizeBy: none
+		sourceColumn: f
+
+	column m
+		dataType: int64
+		formatString: 0
+		lineageTag: 0ca26c06-6bec-5f65-9b5d-1a32c1f607ef
+		summarizeBy: none
+		sourceColumn: m
+
+	column segmento
+		dataType: string
+		isHidden
+		lineageTag: c5c5cded-ea9b-56dd-b3ef-4a5a6debc8df
+		summarizeBy: none
+		sourceColumn: segmento
+
+	column eh_atacado
+		dataType: boolean
+		lineageTag: d90c7697-c677-59ac-873f-ceb9af5ddf72
+		summarizeBy: none
+		sourceColumn: eh_atacado
+
+	column liquido_nao_positivo
+		dataType: boolean
+		lineageTag: 47b3575b-be5e-5200-85be-e1c62ddfaa78
+		summarizeBy: none
+		sourceColumn: liquido_nao_positivo
+
+	column em_churn
+		dataType: boolean
+		lineageTag: a1456335-88a2-5a2a-b958-8426120020fc
+		summarizeBy: none
+		sourceColumn: em_churn
+
+	column receita_12m
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 2d0744ba-28cc-52bd-9cf2-6b5a671755aa
+		summarizeBy: sum
+		sourceColumn: receita_12m
+
+	column clv_previsto_6m
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 4aa9d1e6-33f2-5c14-a03b-21ceee963987
+		summarizeBy: sum
+		sourceColumn: clv_previsto_6m
+
+	column p_ativo_6m
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: f3926f95-1782-53fa-ae47-0d02b395a846
+		summarizeBy: average
+		sourceColumn: p_ativo_6m
+
+	column segmento_ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7c2ae584-e604-5d40-a63c-fc783cf42231
+		summarizeBy: none
+		sourceColumn: segmento_ordem
+
+	column segmento_acao
+		dataType: string
+		isHidden
+		lineageTag: c99ecdca-8286-5701-89e4-7354c45dd4f4
+		summarizeBy: none
+		sourceColumn: segmento_acao
+
+	column perfil
+		dataType: string
+		lineageTag: d67a8e3f-1a10-55ab-8059-7d357ffbe990
+		summarizeBy: none
+		sourceColumn: perfil
+
+	column faixa_recencia
+		dataType: string
+		lineageTag: 7d505f57-565a-5c60-9a82-abc130120a11
+		summarizeBy: none
+		sourceColumn: faixa_recencia
+		sortByColumn: faixa_recencia_ordem
+
+	column faixa_recencia_ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 563bf988-2b17-54f4-8ffb-63c950f5fc81
+		summarizeBy: none
+		sourceColumn: faixa_recencia_ordem
+
+	partition cliente = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "vw_cliente"]}[Data]
+				in
+				    Tabela

@@ -1,0 +1,34 @@
+/// Os 10 segmentos RFM, na ordem de exibição, com a ação sugerida.
+table segmento
+	lineageTag: 5f3d8d48-5532-5d0f-a18f-8d801bce6951
+
+	column segmento
+		dataType: string
+		lineageTag: 3f28b394-6fff-523a-8277-f4ec13d97916
+		summarizeBy: none
+		sourceColumn: segmento
+		sortByColumn: ordem
+
+	column ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 222cb850-0911-55bb-b6d5-05375d77b9a8
+		summarizeBy: none
+		sourceColumn: ordem
+
+	/// Ação sugerida para o CRM.
+	column acao
+		dataType: string
+		lineageTag: 0ff76cc7-cd49-582d-ac35-8f3710b9e555
+		summarizeBy: none
+		sourceColumn: acao
+
+	partition segmento = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "segmento"]}[Data]
+				in
+				    Tabela

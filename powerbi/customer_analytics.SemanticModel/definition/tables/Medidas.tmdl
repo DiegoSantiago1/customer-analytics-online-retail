@@ -1,0 +1,117 @@
+table Medidas
+	lineageTag: b05aaec7-db86-5c0d-8c0d-cbfdf9d52731
+
+	/// Receita de produto líquida de cancelamentos, com e sem cliente identificado.
+	measure 'Receita de produto' = SUM ( receita_mes[receita_produto_liquida] )
+		formatString: \£#,0
+		lineageTag: fe67920c-6955-56f3-bbd2-dca192ab773a
+
+	/// Venda de produto de clientes identificados (antes dos cancelamentos).
+	measure 'Venda com cliente' = SUM ( receita_mes[venda_produto_com_cliente] )
+		formatString: \£#,0
+		lineageTag: 72ed5b54-ef65-5b4b-be4d-fdafc377950b
+
+	/// Venda de produto sem Customer ID: receita real, não atribuível a cliente.
+	measure 'Venda sem cliente' = SUM ( receita_mes[venda_produto_sem_cliente] )
+		formatString: \£#,0
+		lineageTag: d34c8545-11f5-5320-b37e-da2dd5c3b6c4
+
+	/// Parte da venda de produto sem cliente identificado.
+	measure '% sem cliente' = DIVIDE ( [Venda sem cliente], [Venda com cliente] + [Venda sem cliente] )
+		formatString: 0.0%
+		lineageTag: 27d0b146-3e27-5594-8afb-50ab3afe71cc
+
+	/// Clientes com ao menos uma compra.
+	measure Clientes = COUNTROWS ( cliente )
+		formatString: #,0
+		lineageTag: fe2f949d-0f2c-5e24-9ce3-e7be0d2cd713
+
+	/// Compras menos cancelamentos dos clientes no filtro.
+	measure 'Receita líquida' = SUM ( cliente[receita_liquida] )
+		formatString: \£#,0
+		lineageTag: e52ab426-c21c-58e7-b60b-186711141efd
+
+	/// Parte dos clientes do filtro (o slicer de perfil continua valendo).
+	measure '% dos clientes' = DIVIDE ( [Clientes], CALCULATE ( [Clientes], ALLSELECTED ( segmento ) ) )
+		formatString: 0.0%
+		lineageTag: a7857bd0-a10d-536f-8d26-654eda08ae77
+
+	/// Parte da receita líquida do filtro.
+	measure '% da receita' = DIVIDE ( [Receita líquida], CALCULATE ( [Receita líquida], ALLSELECTED ( segmento ) ) )
+		formatString: 0.0%
+		lineageTag: 07365b6d-f798-56ab-85ab-173187c2b9ef
+
+	/// Receita líquida por compra.
+	measure 'Ticket médio' = DIVIDE ( [Receita líquida], SUM ( cliente[frequencia] ) )
+		formatString: \£#,0.00
+		lineageTag: b33bd3bc-6489-5b64-9fed-5337271bdfb9
+
+	/// Mais de 90 dias sem comprar no fim da base.
+	measure 'Clientes em churn' = CALCULATE ( [Clientes], cliente[em_churn] = TRUE () )
+		formatString: #,0
+		lineageTag: 7ce447fd-073d-5235-9fc5-a7ff949be50f
+
+	/// Parte dos clientes em churn.
+	measure '% em churn' = DIVIDE ( [Clientes em churn], [Clientes] )
+		formatString: 0.0%
+		lineageTag: 4c2ae61b-44ff-5f3b-a09a-ce63098a044a
+
+	/// Receita líquida dos últimos 12 meses dos clientes hoje em churn.
+	measure 'Receita em risco' = CALCULATE ( SUM ( cliente[receita_12m] ), cliente[em_churn] = TRUE () )
+		formatString: \£#,0
+		lineageTag: 9651727d-9111-5278-bc7c-1d5fe81b6b8f
+
+	/// Receita líquida esperada nos 6 meses seguintes ao fim da base.
+	measure 'CLV previsto (6 meses)' = SUM ( cliente[clv_previsto_6m] )
+		formatString: \£#,0
+		lineageTag: 41727594-a4e9-5fbe-8d50-8c604a2cc854
+
+	/// Precisão do X escolhido (90 dias) no corte principal, 10/06/2011.
+	measure 'Precisão da regra' = CALCULATE ( [Precisão], churn_validacao[escolhido] = TRUE (), churn_validacao[corte] = DATE ( 2011, 6, 10 ) )
+		formatString: 0.0%
+		lineageTag: 93472059-5d24-5324-8f99-ba0fc067a56b
+
+	/// Dos clientes marcados como churn no corte, quantos de fato não voltaram em 6 meses.
+	measure 'Precisão' = AVERAGE ( churn_validacao[precisao] )
+		formatString: 0.0%
+		lineageTag: c16ff238-eac3-5799-adbf-b69465d4c879
+
+	/// Dos clientes que não voltaram em 6 meses, quantos a regra marcou no corte.
+	measure Recall = AVERAGE ( churn_validacao[recall] )
+		formatString: 0.0%
+		lineageTag: 9bc486cd-57d7-5221-834c-797b87be5c8f
+
+	/// Clientes da coorte que compraram no mês, sobre o tamanho da coorte.
+	measure 'Retenção' = DIVIDE ( SUM ( coorte[ativos] ), SUM ( coorte[tamanho] ) )
+		formatString: 0.0%
+		lineageTag: 48095c6a-726c-5225-80bd-5f468499c876
+
+	/// Previsão feita em 10/06/2011 para os 6 meses seguintes.
+	measure 'CLV previsto (validação)' = SUM ( clv_validacao_cliente[previsto] )
+		formatString: \£#,0
+		lineageTag: 3d9e842c-5650-5670-ae67-cfc99acc70b0
+
+	/// Modelo ingênuo: repete os 6 meses anteriores ao corte.
+	measure 'CLV ingênuo (validação)' = SUM ( clv_validacao_cliente[ingenuo] )
+		formatString: \£#,0
+		lineageTag: cac47e86-84fc-5206-a335-7114c7f4c333
+
+	/// Receita líquida real de 10/06 a 10/12/2011.
+	measure 'Receita real (validação)' = SUM ( clv_validacao_cliente[real] )
+		formatString: \£#,0
+		lineageTag: 02e87333-1fdb-5f87-95aa-046af349faa8
+
+	/// Checagens de qualidade aprovadas na última execução.
+	measure 'Checagens ok' = COUNTROWS ( FILTER ( qualidade, qualidade[ok] ) ) & " de " & COUNTROWS ( qualidade )
+		lineageTag: 704db9fb-e2df-5cd0-8995-3beaa1aa8954
+
+	column Coluna
+		dataType: string
+		isHidden
+		lineageTag: 0ee89061-351c-5e27-b3ed-1d580d3774d3
+		summarizeBy: none
+		sourceColumn: Coluna
+
+	partition Medidas = m
+		mode: import
+		source = #table(type table [Coluna = text], {})

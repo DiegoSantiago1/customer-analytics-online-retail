@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "tab_segmento",
+  "position": {
+    "x": 632,
+    "y": 192,
+    "z": 6000,
+    "width": 632,
+    "height": 516,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "segmento"
+                    }
+                  },
+                  "Property": "segmento"
+                }
+              },
+              "queryRef": "segmento.segmento",
+              "nativeQueryRef": "segmento",
+              "displayName": "Segmento"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Clientes"
+                }
+              },
+              "queryRef": "Medidas.Clientes",
+              "nativeQueryRef": "Clientes",
+              "displayName": "Clientes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Receita líquida"
+                }
+              },
+              "queryRef": "Medidas.Receita líquida",
+              "nativeQueryRef": "Receita líquida",
+              "displayName": "Receita líquida"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Clientes em churn"
+                }
+              },
+              "queryRef": "Medidas.Clientes em churn",
+              "nativeQueryRef": "Clientes em churn",
+              "displayName": "Em churn"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "CLV previsto (6 meses)"
+                }
+              },
+              "queryRef": "Medidas.CLV previsto (6 meses)",
+              "nativeQueryRef": "CLV previsto (6 meses)",
+              "displayName": "CLV 6 meses"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "segmento"
+                    }
+                  },
+                  "Property": "acao"
+                }
+              },
+              "queryRef": "segmento.acao",
+              "nativeQueryRef": "acao",
+              "displayName": "Ação sugerida"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "segmento"
+                  }
+                },
+                "Property": "segmento"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Resumo e ação por segmento'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

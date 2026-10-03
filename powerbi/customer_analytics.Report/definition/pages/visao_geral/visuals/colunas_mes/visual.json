@@ -1,0 +1,139 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "colunas_mes",
+  "position": {
+    "x": 16,
+    "y": 192,
+    "z": 5000,
+    "width": 820,
+    "height": 516,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "columnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "receita_mes"
+                    }
+                  },
+                  "Property": "mes"
+                }
+              },
+              "queryRef": "receita_mes.mes",
+              "nativeQueryRef": "mes",
+              "displayName": "Mês"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Venda com cliente"
+                }
+              },
+              "queryRef": "Medidas.Venda com cliente",
+              "nativeQueryRef": "Venda com cliente",
+              "displayName": "Com cliente"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Venda sem cliente"
+                }
+              },
+              "queryRef": "Medidas.Venda sem cliente",
+              "nativeQueryRef": "Venda sem cliente",
+              "displayName": "Sem cliente"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "receita_mes"
+                  }
+                },
+                "Property": "mes"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Venda de produto por mês (dez/2011 vai só até o dia 9)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

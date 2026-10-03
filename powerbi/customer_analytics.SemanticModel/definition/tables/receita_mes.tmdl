@@ -1,0 +1,90 @@
+/// Receita mensal por origem, pedidos e clientes (analise.vw_receita_mes).
+table receita_mes
+	lineageTag: 9c665135-349f-54e6-9453-5888de280f1f
+
+	column mes
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: 514e5dac-b01e-5d0a-897e-1d242994101d
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mes_parcial
+		dataType: boolean
+		lineageTag: 9dfd2238-9fa3-51d8-97d3-dd781ab9aa22
+		summarizeBy: none
+		sourceColumn: mes_parcial
+
+	column venda_produto_com_cliente
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 476609c5-a9c1-5c02-8280-e5f399214c02
+		summarizeBy: sum
+		sourceColumn: venda_produto_com_cliente
+
+	column venda_produto_sem_cliente
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: b73595f0-0c75-5f1a-8b60-a84ab90674aa
+		summarizeBy: sum
+		sourceColumn: venda_produto_sem_cliente
+
+	column cancelamento_produto
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 7067c838-7e64-5d82-8a7b-0e75dbdf9ee6
+		summarizeBy: sum
+		sourceColumn: cancelamento_produto
+
+	column receita_produto_liquida
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 995200fe-b146-54a6-8fbf-82f1aaa1ca9f
+		summarizeBy: sum
+		sourceColumn: receita_produto_liquida
+
+	column frete_taxas_e_ajustes
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 7b60fbbb-7c34-52b2-b949-5013f947e48f
+		summarizeBy: sum
+		sourceColumn: frete_taxas_e_ajustes
+
+	column pedidos
+		dataType: int64
+		formatString: #,0
+		lineageTag: ede5273f-391a-5bbf-ae5f-d0928b275321
+		summarizeBy: sum
+		sourceColumn: pedidos
+
+	column pedidos_com_cliente
+		dataType: int64
+		formatString: #,0
+		lineageTag: 80fe0ce6-2c53-5ab4-96c0-2b18954d3761
+		summarizeBy: sum
+		sourceColumn: pedidos_com_cliente
+
+	column clientes_ativos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 23415b17-6ca8-5018-a317-6e1f537fce45
+		summarizeBy: sum
+		sourceColumn: clientes_ativos
+
+	column clientes_novos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 68db3151-896c-572f-aef0-93d926a64c1e
+		summarizeBy: sum
+		sourceColumn: clientes_novos
+
+	partition receita_mes = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "vw_receita_mes"]}[Data]
+				in
+				    Tabela

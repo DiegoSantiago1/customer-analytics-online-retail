@@ -1,0 +1,47 @@
+/// Previsão do CLV feita em 10/06/2011, ingênuo e real, por cliente.
+table clv_validacao_cliente
+	lineageTag: 2ba7e05d-5f64-51ad-abb4-aa20e9ede582
+
+	column cliente_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 9ba5f749-79d0-5205-af34-06e732a9b359
+		summarizeBy: none
+		sourceColumn: cliente_id
+
+	column segmento
+		dataType: string
+		isHidden
+		lineageTag: 0a049441-3419-5c2e-b64a-3e023e6ed235
+		summarizeBy: none
+		sourceColumn: segmento
+
+	column previsto
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 648fcb25-4a93-5aee-903c-8ca9dac7e9bc
+		summarizeBy: sum
+		sourceColumn: previsto
+
+	column ingenuo
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 3e9b63e4-a07f-5323-abd4-d28e96efb9eb
+		summarizeBy: sum
+		sourceColumn: ingenuo
+
+	column real
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 5fe6b607-1591-51a1-b544-e4af8e4a8c50
+		summarizeBy: sum
+		sourceColumn: real
+
+	partition clv_validacao_cliente = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "clv_validacao_cliente"]}[Data]
+				in
+				    Tabela

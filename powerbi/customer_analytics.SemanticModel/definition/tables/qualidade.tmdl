@@ -1,0 +1,57 @@
+/// Resultado das 16 checagens de qualidade (dq.verificar).
+table qualidade
+	lineageTag: 8733f865-81ec-536f-b6e8-b8563693c1ac
+
+	column verificacao
+		dataType: string
+		lineageTag: d77b1572-e48f-541d-b2b2-c4039cf7b77f
+		summarizeBy: none
+		sourceColumn: verificacao
+
+	column camada
+		dataType: string
+		lineageTag: 2a0ffd52-4e78-5a08-b3ef-3ab00b466a2c
+		summarizeBy: none
+		sourceColumn: camada
+
+	column descricao
+		dataType: string
+		lineageTag: 50790fe6-fca8-53de-ba75-219c23fc0787
+		summarizeBy: none
+		sourceColumn: descricao
+
+	column esperado
+		dataType: string
+		lineageTag: ac86073d-2ff9-5f78-a87c-05ad4659bf5f
+		summarizeBy: none
+		sourceColumn: esperado
+
+	column obtido
+		dataType: string
+		lineageTag: 357e88c7-2367-57a1-acb8-e93c01cc96dc
+		summarizeBy: none
+		sourceColumn: obtido
+
+	column ok
+		dataType: boolean
+		lineageTag: 0ce8a3bf-b6ec-5c45-bddd-dc1a1d5446a1
+		summarizeBy: none
+		sourceColumn: ok
+
+	column verificado_em
+		dataType: dateTime
+		formatString: dd/mm/yyyy hh:nn
+		lineageTag: 5448948c-0410-5681-af4e-f38bb4fa04a6
+		summarizeBy: none
+		sourceColumn: verificado_em
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition qualidade = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "dq", Item = "resultado"]}[Data]
+				in
+				    Tabela

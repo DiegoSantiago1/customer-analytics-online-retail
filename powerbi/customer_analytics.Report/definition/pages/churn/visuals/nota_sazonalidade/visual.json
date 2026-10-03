@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "nota_sazonalidade",
+  "position": {
+    "x": 16,
+    "y": 604,
+    "z": 8000,
+    "width": 1248,
+    "height": 104,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Limitação medida: no corte de 10/06/2011, X = 90 tem precisão de 64% e recall de 80%. Logo depois do pico de set a nov (corte de 10/12/2010), a mesma regra pega só 45% de quem some, porque muitos clientes só voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto, conservadora. Detalhes em docs/DECISOES.md (D17 e D18).",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#52514E"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

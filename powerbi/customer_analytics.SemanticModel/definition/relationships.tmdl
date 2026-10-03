@@ -1,0 +1,7 @@
+relationship 2bbaebfe-58da-5f7d-ae30-19c762cd4e7d
+	fromColumn: cliente.segmento
+	toColumn: segmento.segmento
+
+relationship e6ef0f1a-64e1-5d92-b849-05cbd6c04762
+	fromColumn: clv_validacao_cliente.segmento
+	toColumn: segmento.segmento

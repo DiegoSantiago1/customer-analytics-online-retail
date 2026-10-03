@@ -1,0 +1,77 @@
+/// Retenção mensal por coorte (mês da primeira compra).
+table coorte
+	lineageTag: 90e8f989-0089-52cb-a200-5a51b02ff9b0
+
+	column coorte
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: e9022bcf-6090-5869-aed4-5240790fa369
+		summarizeBy: none
+		sourceColumn: coorte
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column pre_existente
+		dataType: boolean
+		lineageTag: 9d36b079-e144-5fb7-bb05-7ead0f40c710
+		summarizeBy: none
+		sourceColumn: pre_existente
+
+	column tamanho
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9b9474d9-3883-5927-b319-cd350f739c27
+		summarizeBy: sum
+		sourceColumn: tamanho
+
+	column meses_desde
+		dataType: int64
+		formatString: 0
+		lineageTag: c18a87fd-80e4-5928-8e41-f96e8974f33f
+		summarizeBy: none
+		sourceColumn: meses_desde
+
+	column mes
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: f9b9c7ec-eef3-52ed-8eed-7b63529d06c2
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mes_parcial
+		dataType: boolean
+		lineageTag: 168e4c89-ff70-52a8-a72b-9884ed8828db
+		summarizeBy: none
+		sourceColumn: mes_parcial
+
+	column ativos
+		dataType: int64
+		formatString: #,0
+		lineageTag: a05bb1c4-e1ab-5b3b-b58d-4552789f47ac
+		summarizeBy: sum
+		sourceColumn: ativos
+
+	column retencao
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: 68c3d2bc-03d2-5ea0-abe5-4fcae28dfbb5
+		summarizeBy: average
+		sourceColumn: retencao
+
+	column receita_liquida
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 032da623-ef9b-58a9-a5b5-016950327482
+		summarizeBy: sum
+		sourceColumn: receita_liquida
+
+	partition coorte = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "coorte_retencao"]}[Data]
+				in
+				    Tabela

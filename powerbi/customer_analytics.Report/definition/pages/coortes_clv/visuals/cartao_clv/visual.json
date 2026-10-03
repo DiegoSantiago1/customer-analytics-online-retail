@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "cartao_clv",
+  "position": {
+    "x": 792,
+    "y": 80,
+    "z": 2000,
+    "width": 472,
+    "height": 104,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "CLV previsto (6 meses)"
+                }
+              },
+              "queryRef": "Medidas.CLV previsto (6 meses)",
+              "nativeQueryRef": "CLV previsto (6 meses)",
+              "displayName": "CLV previsto, próximos 6 meses"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

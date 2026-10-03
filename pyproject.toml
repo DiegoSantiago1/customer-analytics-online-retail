@@ -46,7 +46,13 @@ known-first-party = ["varejo"]
 [tool.mypy]
 python_version = "3.14"
 strict = true
-files = ["src", "tests", "db/migracoes"]
+files = ["src", "tests", "db/migracoes", "powerbi", "notebooks"]
+
+# nbformat não tem anotações de tipo: o gerador do notebook chama funções sem tipo.
+[[tool.mypy.overrides]]
+module = ["montar_notebook"]
+disallow_untyped_calls = false
+warn_return_any = false
 
 # ---------------------------------------------------------------- pytest
 [tool.pytest.ini_options]

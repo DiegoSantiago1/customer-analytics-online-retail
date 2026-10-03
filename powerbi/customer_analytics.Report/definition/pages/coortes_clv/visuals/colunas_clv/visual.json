@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "colunas_clv",
+  "position": {
+    "x": 792,
+    "y": 192,
+    "z": 3000,
+    "width": 472,
+    "height": 330,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "segmento"
+                    }
+                  },
+                  "Property": "segmento"
+                }
+              },
+              "queryRef": "segmento.segmento",
+              "nativeQueryRef": "segmento",
+              "displayName": "Segmento"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "CLV previsto (validação)"
+                }
+              },
+              "queryRef": "Medidas.CLV previsto (validação)",
+              "nativeQueryRef": "CLV previsto (validação)",
+              "displayName": "Previsto"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "CLV ingênuo (validação)"
+                }
+              },
+              "queryRef": "Medidas.CLV ingênuo (validação)",
+              "nativeQueryRef": "CLV ingênuo (validação)",
+              "displayName": "Ingênuo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Receita real (validação)"
+                }
+              },
+              "queryRef": "Medidas.Receita real (validação)",
+              "nativeQueryRef": "Receita real (validação)",
+              "displayName": "Real"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "segmento"
+                  }
+                },
+                "Property": "segmento"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Validação: previsão de 10/06/2011 x real'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

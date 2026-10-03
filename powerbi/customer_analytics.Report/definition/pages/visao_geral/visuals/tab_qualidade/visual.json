@@ -1,0 +1,90 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "tab_qualidade",
+  "position": {
+    "x": 852,
+    "y": 192,
+    "z": 6000,
+    "width": 412,
+    "height": 516,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "qualidade"
+                    }
+                  },
+                  "Property": "camada"
+                }
+              },
+              "queryRef": "qualidade.camada",
+              "nativeQueryRef": "camada",
+              "displayName": "Camada"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "qualidade"
+                    }
+                  },
+                  "Property": "verificacao"
+                }
+              },
+              "queryRef": "qualidade.verificacao",
+              "nativeQueryRef": "verificacao",
+              "displayName": "Checagem"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "qualidade"
+                    }
+                  },
+                  "Property": "ok"
+                }
+              },
+              "queryRef": "qualidade.ok",
+              "nativeQueryRef": "ok",
+              "displayName": "Ok"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Checagens de qualidade (schema dq)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

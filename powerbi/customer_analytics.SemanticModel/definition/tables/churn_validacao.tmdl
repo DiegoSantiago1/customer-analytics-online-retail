@@ -1,0 +1,118 @@
+/// Validação temporal da regra de churn: vários X em dois cortes.
+table churn_validacao
+	lineageTag: f75e6bcf-fabb-5188-b4bc-bf42482e58f9
+
+	column corte
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 22b0e40a-1dfa-5b78-bbf9-088902315f70
+		summarizeBy: none
+		sourceColumn: corte
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column janela_meses
+		dataType: int64
+		formatString: 0
+		lineageTag: 27eb3802-cd7a-5836-8709-34c5d8b03c0d
+		summarizeBy: none
+		sourceColumn: janela_meses
+
+	column dias
+		dataType: int64
+		formatString: 0
+		lineageTag: a9a012ca-f91c-5a89-b6ec-014b9278e2d3
+		summarizeBy: none
+		sourceColumn: dias
+
+	column clientes
+		dataType: int64
+		formatString: #,0
+		lineageTag: e35b23df-7d76-5dd3-99f2-7dd2ba652d5a
+		summarizeBy: sum
+		sourceColumn: clientes
+
+	column nao_voltaram
+		dataType: int64
+		formatString: #,0
+		lineageTag: 499a58ad-202b-5dfa-bfa3-51186eea351f
+		summarizeBy: sum
+		sourceColumn: nao_voltaram
+
+	column marcados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9771ca18-b5e9-509b-9fdb-0f02580b3942
+		summarizeBy: sum
+		sourceColumn: marcados
+
+	column vp
+		dataType: int64
+		formatString: #,0
+		lineageTag: 7e9f7a91-14f2-5764-ac2e-ed361e8a19b9
+		summarizeBy: sum
+		sourceColumn: vp
+
+	column fp
+		dataType: int64
+		formatString: #,0
+		lineageTag: 510eb8f1-3f1b-5c20-9c59-878a9dc4dc04
+		summarizeBy: sum
+		sourceColumn: fp
+
+	column fn
+		dataType: int64
+		formatString: #,0
+		lineageTag: 1f5b711b-a6c7-53da-b2ca-1448f1cd3261
+		summarizeBy: sum
+		sourceColumn: fn
+
+	column vn
+		dataType: int64
+		formatString: #,0
+		lineageTag: ee96c28b-3939-5050-bd09-f5f33066b181
+		summarizeBy: sum
+		sourceColumn: vn
+
+	column precisao
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: 487a5591-4a76-5d5c-902e-d36cd0fae151
+		summarizeBy: average
+		sourceColumn: precisao
+
+	column recall
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: 6e96c915-2950-5626-8a51-0256fecc7b2e
+		summarizeBy: average
+		sourceColumn: recall
+
+	column f1
+		dataType: decimal
+		formatString: 0.000
+		lineageTag: 5fa44aae-a591-5d26-97cd-30fdb5b82230
+		summarizeBy: average
+		sourceColumn: f1
+
+	column acuracia
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: bc07b3d1-6798-52eb-ae47-cda84648f472
+		summarizeBy: average
+		sourceColumn: acuracia
+
+	column escolhido
+		dataType: boolean
+		lineageTag: 22d04f6f-7411-5294-bd78-b4de3de2cb72
+		summarizeBy: none
+		sourceColumn: escolhido
+
+	partition churn_validacao = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "churn_validacao"]}[Data]
+				in
+				    Tabela

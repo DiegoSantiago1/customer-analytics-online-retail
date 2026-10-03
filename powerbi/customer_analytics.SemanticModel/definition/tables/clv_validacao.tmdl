@@ -1,0 +1,61 @@
+/// Resumo da validação do CLV: modelo contra o ingênuo.
+table clv_validacao
+	lineageTag: e18e06f6-87da-5957-bf5f-78cbadd0c658
+
+	column modelo
+		dataType: string
+		lineageTag: 9e7b9987-097b-553a-a5b7-48106eaa7a6f
+		summarizeBy: none
+		sourceColumn: modelo
+
+	column clientes
+		dataType: int64
+		formatString: #,0
+		lineageTag: 124dcfea-6ad5-5a59-814a-4ebf6440c9f7
+		summarizeBy: sum
+		sourceColumn: clientes
+
+	column total_previsto
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: af7f3e67-3efd-540f-a9e4-7066cede47c8
+		summarizeBy: sum
+		sourceColumn: total_previsto
+
+	column total_real
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 49dabed1-f6c5-5c92-80ef-3f435d501b8d
+		summarizeBy: sum
+		sourceColumn: total_real
+
+	/// Erro no total, em pontos percentuais.
+	column erro_total_pct
+		dataType: decimal
+		formatString: 0.0
+		lineageTag: bb7b2f4c-3a15-5113-8632-3550db6e79ec
+		summarizeBy: none
+		sourceColumn: erro_total_pct
+
+	column erro_medio_abs
+		dataType: decimal
+		formatString: \£#,0.00
+		lineageTag: 171d52fe-f09f-5713-8168-92254df95125
+		summarizeBy: none
+		sourceColumn: erro_medio_abs
+
+	column captura_top20
+		dataType: decimal
+		formatString: 0.000
+		lineageTag: 9b41b737-b3de-5eef-949e-920322e68fab
+		summarizeBy: none
+		sourceColumn: captura_top20
+
+	partition clv_validacao = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "clv_validacao"]}[Data]
+				in
+				    Tabela

@@ -1,0 +1,25 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["receita_mes", "segmento", "cliente", "churn_validacao", "coorte", "clv_validacao", "clv_validacao_cliente", "qualidade", "Medidas"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table receita_mes
+ref table segmento
+ref table cliente
+ref table churn_validacao
+ref table coorte
+ref table clv_validacao
+ref table clv_validacao_cliente
+ref table qualidade
+ref table Medidas
+
+ref cultureInfo pt-BR

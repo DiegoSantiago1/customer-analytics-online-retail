@@ -1,0 +1,105 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "tab_clv",
+  "position": {
+    "x": 792,
+    "y": 534,
+    "z": 4000,
+    "width": 472,
+    "height": 174,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "clv_validacao"
+                    }
+                  },
+                  "Property": "modelo"
+                }
+              },
+              "queryRef": "clv_validacao.modelo",
+              "nativeQueryRef": "modelo",
+              "displayName": "Modelo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "clv_validacao"
+                    }
+                  },
+                  "Property": "erro_total_pct"
+                }
+              },
+              "queryRef": "clv_validacao.erro_total_pct",
+              "nativeQueryRef": "erro_total_pct",
+              "displayName": "Erro no total (%)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "clv_validacao"
+                    }
+                  },
+                  "Property": "erro_medio_abs"
+                }
+              },
+              "queryRef": "clv_validacao.erro_medio_abs",
+              "nativeQueryRef": "erro_medio_abs",
+              "displayName": "Erro médio"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "clv_validacao"
+                    }
+                  },
+                  "Property": "captura_top20"
+                }
+              },
+              "queryRef": "clv_validacao.captura_top20",
+              "nativeQueryRef": "captura_top20",
+              "displayName": "Captura top 20%"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Modelo x ingênuo'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
