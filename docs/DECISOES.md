@@ -125,3 +125,16 @@ Logo depois do pico, quase todo mundo comprou há pouco tempo, então a regra ma
 
 ### D19. Receita em risco
 `analise.cliente.receita_12m` é a receita líquida de cada cliente nos 12 meses antes do fim da base. Dos £7,98 mi de receita líquida nos últimos 12 meses, **£835 mil** vêm dos 2.967 clientes hoje marcados como churn (50,7% dos clientes).
+
+## Coortes
+
+### D20. Coorte = mês da primeira compra, com grade completa
+`analise.coorte_retencao` tem uma linha por coorte × mês desde a primeira compra, até o último mês da base. Os meses sem compra aparecem com 0 ativos, para o heatmap não ter buracos. A coorte vem de `min(mes) OVER (PARTITION BY cliente_id)`. A receita do mês é líquida (compras − cancelamentos daquele mês). A soma dos tamanhos das coortes é igual ao número de clientes (5.852).
+
+### D21. Dez/2009 = pré-existentes; começo de 2010 inflado
+- Dez/2009 é o primeiro mês da base: os 951 clientes dessa coorte não são necessariamente novos, são só o primeiro registro. A coorte é marcada como `pre_existente` e fica fora das médias. Ela retém bem mais (35 a 50% ao mês) justamente por ser formada pela base antiga e fiel.
+- O mesmo efeito, menor, contamina as coortes do começo de 2010: um cliente antigo que não comprou em dez/2009 aparece como "novo" em jan, fev ou mar/2010. Por isso a comparação de aquisição entre anos é feita nos mesmos meses do fim do ano, menos afetados.
+- Dez/2011 vai só até o dia 9 e é marcado como `mes_parcial`.
+
+### D22. A retenção melhora ou piora?
+Retenção média ponderada (sem pré-existentes e sem o mês parcial): **21,0% no mês 1, 21,1% no mês 3, 18,4% no mês 6 e 18,4% no mês 12**. Entre os anos, ela fica **estável**: no mês 1, 19,9% para as coortes de 2010 e 23,6% para as de 2011; no mês 6, 18,3% e 19,6%. O que caiu foi a **entrada de clientes novos**: de setembro a novembro foram 940 em 2010 (239 + 375 + 326) e 600 em 2011 (188 + 221 + 191), **36% a menos**. As coortes de 2010 também mostram de novo a sazonalidade da D18: a retenção sobe nos meses de setembro a novembro do ano seguinte.
