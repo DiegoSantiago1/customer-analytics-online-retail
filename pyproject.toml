@@ -36,6 +36,8 @@ select = [
 "tests/**" = ["S101", "S105", "S106"]
 # Migrations: SQL longo dentro de strings.
 "db/migracoes/versions/**" = ["E501"]
+# Notebook: consultas SQL em uma linha e assert como checagem de pré-condição.
+"notebooks/**" = ["E501", "S101"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["varejo"]
