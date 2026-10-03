@@ -6,6 +6,16 @@
 
 ![Power BI: RFM segments](docs/img/powerbi_segmentos.png)
 
+## The business
+
+An online-only shop based in the UK (the source keeps its name anonymous) that sells gifts and homewares: 4,895 products at a typical £2.10 a unit, such as a three-tier cake stand, a hanging heart T-light holder, jumbo shopping bags and party bunting.
+
+- **Who buys:** many customers are shops that resell. The typical order has 15 different products and costs £303 (medians). The 607 wholesale customers (10%) bring 38% of net revenue.
+- **Where:** 91% of the customers are in the UK. The rest are spread across 40 other countries, mostly in Europe.
+- **When:** sales peak from September to November, when shops stock up for Christmas. November was the best month in both years, at about £1.4m.
+
+A CRM team at a business like this needs to know whom to reward, whom to win back and what each customer is worth. Those are the questions below.
+
 ## The answers
 
 | Question | Answer | How it was checked |
@@ -14,6 +24,19 @@
 | **Who is leaving?** | **1,376 customers are at risk** (91–365 days without buying). Their last-12-month revenue was **£838k**. Another 1,591 have not bought for over a year: they already left. | The rule was applied at a past cut-off using only data available then, and compared with who actually came back |
 | **Is retention getting better or worse?** | **About one in five customers buys again the next month** (21% in month 1, 18% in month 6). Whether it is improving **cannot be said** from two years of data: early cohorts are mixed with returning customers, and seasonality moves month 1. | Monthly cohorts with window functions, checked for left censoring |
 | **What is each customer worth?** | **£3.82m expected in the next 6 months.** The top 20% of customers by predicted value hold 74% of it. | A forecast made in June 2011 beat a seasonal naive forecast on total error, per-customer error and ranking |
+
+## What to do first
+
+The £838k at risk is not spread evenly. **Almost half of it (£401k) sits with 402 Loyal customers** who have gone more than 90 days without buying. They are the cheapest to win back, because they bought often until recently.
+
+| Priority | Who | Revenue at risk (last 12 months) | Suggested action |
+|---|---|---:|---|
+| 1 | Loyal customers gone quiet (402) and "Can't lose" (40) | £401k + £44k | Personal contact before they drift further |
+| 2 | At risk (311), Hibernating (403), Need attention (220) | £393k | Reactivation campaign, cheapest channel first |
+| Keep | Champions (1,380) | none at risk today | Rewards, early access to new ranges, referrals |
+| Do not chase | Lost (959): more than a year without buying | — | Mass communication only |
+
+A caveat from the validation: about half of the customers 91–180 days quiet come back on their own. A campaign should be measured against a control group, not against zero.
 
 ## What makes it more than a tutorial
 

@@ -6,6 +6,16 @@
 
 ![Power BI: segmentos RFM](docs/img/powerbi_segmentos.png)
 
+## O negócio
+
+Uma loja só online, com sede no Reino Unido (a fonte não revela o nome), que vende presentes e utilidades para a casa: 4.895 produtos, a £2,10 a unidade num preço típico. Por exemplo, suporte de bolo de três andares, porta-vela de coração para pendurar, sacolas grandes e bandeirinhas de festa.
+
+- **Quem compra:** muitos clientes são lojas que revendem. O pedido típico tem 15 produtos diferentes e custa £303 (medianas). Os 607 clientes atacadistas (10%) trazem 38% da receita líquida.
+- **Onde:** 91% dos clientes estão no Reino Unido. O resto se espalha por outros 40 países, quase todos na Europa.
+- **Quando:** as vendas sobem de setembro a novembro, quando as lojas se abastecem para o Natal. Novembro foi o melhor mês nos dois anos, com cerca de £1,4 mi.
+
+O time de CRM de um negócio assim precisa saber quem recompensar, quem reconquistar e quanto vale cada cliente. São as perguntas abaixo.
+
 ## As respostas
 
 | Pergunta | Resposta | Como foi conferido |
@@ -14,6 +24,19 @@
 | **Quem está indo embora?** | **1.376 clientes em risco** (91 a 365 dias sem comprar). A receita deles nos últimos 12 meses foi de **£838 mil**. Outros 1.591 não compram há mais de um ano: já foram embora. | A regra foi aplicada numa data de corte passada, só com o que se sabia naquele dia, e comparada com quem de fato voltou |
 | **A retenção melhora ou piora?** | **Cerca de 1 em cada 5 clientes volta a comprar no mês seguinte** (21% no mês 1, 18% no mês 6). Se está melhorando **não dá para afirmar** com dois anos de dados: as primeiras coortes misturam clientes antigos que voltaram, e a sazonalidade mexe no mês 1. | Coortes mensais com window functions, conferidas quanto à censura à esquerda |
 | **Quanto vale cada cliente?** | **£3,82 mi esperados nos próximos 6 meses.** Os 20% de clientes com maior valor previsto concentram 74% disso. | Uma previsão feita em junho de 2011 ganhou de um modelo ingênuo sazonal no erro do total, no erro por cliente e na ordenação |
+
+## O que fazer primeiro
+
+Os £838 mil em risco não estão espalhados por igual. **Quase metade (£401 mil) está em 402 clientes Leais** que passaram de 90 dias sem comprar. São os mais baratos de reconquistar, porque compravam com frequência até pouco tempo atrás.
+
+| Prioridade | Quem | Receita em risco (últimos 12 meses) | Ação sugerida |
+|---|---|---:|---|
+| 1 | Leais que pararam (402) e "Não pode perder" (40) | £401 mil + £44 mil | Contato pessoal antes que se afastem mais |
+| 2 | Em risco (311), Hibernando (403), Precisam de atenção (220) | £393 mil | Campanha de reativação, começando pelo canal mais barato |
+| Manter | Campeões (1.380) | nenhum em risco hoje | Recompensas, lançamentos em primeira mão, indicação |
+| Não insistir | Perdidos (959): mais de um ano sem comprar | — | Só comunicação de massa |
+
+Uma ressalva da validação: cerca de metade dos clientes parados há 91 a 180 dias volta sozinha. Uma campanha deve ser medida contra um grupo de controle, e não contra zero.
 
 ## O que faz disto mais que um tutorial
 
