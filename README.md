@@ -10,41 +10,57 @@
 
 | Question | Answer | How it was checked |
 |---|---|---|
-| **Who are the best customers?** | **Champions are 24% of the 5,852 customers and bring 69% of net revenue.** The top 10% of customers bring 63%. 72% bought at least twice. | RFM scores computed in SQL; ties always get the same score |
-| **Who is leaving?** | **2,967 customers (51%)** have gone more than 90 days without buying. They spent **£835k** in the last 12 months. | The rule was applied at a past cut-off using only data available then, and compared with who actually came back |
-| **Is retention getting better or worse?** | **Stable**: about 21% of each cohort buys again in month 1 and 18% in month 6, in both years. What fell was **new-customer acquisition** (Sep–Nov: 940 in 2010, 600 in 2011, −36%). | Monthly cohorts with window functions |
-| **What is each customer worth?** | **£3.81m expected in the next 6 months.** The top 20% of customers by predicted value hold 74% of it. | The same forecast made in June 2011 missed the real total by **+0.5%**. A naive "repeat the last 6 months" forecast missed it by −29% |
+| **Who are the best customers?** | **Champions are 24% of the 5,852 customers and bring 69% of attributable net revenue.** The top 10% of customers bring 63%. 72% bought at least twice. | RFM scores computed in SQL; ties always get the same score |
+| **Who is leaving?** | **1,376 customers are at risk** (91–365 days without buying). Their last-12-month revenue was **£838k**. Another 1,591 have not bought for over a year: they already left. | The rule was applied at a past cut-off using only data available then, and compared with who actually came back |
+| **Is retention getting better or worse?** | **About one in five customers buys again the next month** (21% in month 1, 18% in month 6). Whether it is improving **cannot be said** from two years of data: early cohorts are mixed with returning customers, and seasonality moves month 1. | Monthly cohorts with window functions, checked for left censoring |
+| **What is each customer worth?** | **£3.82m expected in the next 6 months.** The top 20% of customers by predicted value hold 74% of it. | A forecast made in June 2011 beat a seasonal naive forecast on total error, per-customer error and ranking |
 
 ## What makes it more than a tutorial
 
 **1. Measured before cleaning.** The dataset has 34,335 exactly duplicated lines. The usual move is `drop_duplicates()`. Measuring first showed two different things:
 - **22,523 lines are an export artefact.** The two sheets of the Excel file overlap from 1 to 9 Dec 2010, and that period is identical in both, down to the repeated lines. The overlap is removed.
-- **The other 11,812 are real purchases.** 86% of them are on non-adjacent lines of the same invoice. In 10,967 invoice/product pairs, the same product appears again with a different quantity. This is how the till records an item added twice to the same order. Deleting those lines would have removed £57k of real sales. ([D4, D5](docs/DECISOES.md))
+- **The other 11,812 look like real purchases and were kept.** 86% of them are on non-adjacent lines of the same invoice. In 10,967 invoice/product pairs, the same product appears again with a different quantity. This is consistent with the till recording an item added twice to the same order. They are worth £57k (0.3% of sales). ([D4, D5](docs/DECISOES.md))
 
-**2. Churn validated over time, including where it fails.** At the June 2011 cut-off, "more than 90 days without buying" had the best F1 (0.71) among 90, 120 and 180 days: 64% of the flagged customers really did not come back, and the rule caught 80% of those who left. Repeating the test right after the Sep–Nov peak (Dec 2010), the same rule catches only 45%, because many customers only return at the next peak. That limitation is measured and shown in the report, not hidden. ([D17, D18](docs/DECISOES.md))
+**2. Churn validated over time, including where it has no signal.** "More than 90 days without buying" was tested at a past cut-off (June 2011): 64% of the flagged customers really did not come back, and the rule caught 80% of those who left. The F1 is almost flat between 30 and 120 days, so 90 was kept because it is easy to act on. Looking by recency band shows where the signal is:
+- customers 91–180 days without buying did not come back 46% of the time, about the same as the average customer (48%);
+- the rule mostly separates the active (24% did not come back) from those already gone (85% over a year).
+
+That is why the report splits **at risk** from **inactive**. Right after the Sep–Nov peak the rule also catches only 45% of leavers, because many customers only return at the next peak. ([D17–D19](docs/DECISOES.md))
 
 ![Churn validation at two cut-offs](docs/img/validacao_churn.png)
 
-**3. CLV checked against what actually happened.** The forecast is simple enough to explain in one line:
+**3. CLV checked against what actually happened, against a fair baseline.** The forecast fits in one line:
 
 > active probability by segment × average order value × purchases per month × months
 
-The parts that make it work:
+Two choices make it work:
 - The active probability is measured in **the same season one year earlier**, because seasonality is strong.
 - New customers' purchase rate is smoothed toward the average (Gamma-Poisson). Without this, the forecast for "New" customers came out at 2.8× reality.
 
 | Model (forecast made on 10 Jun 2011, 6 months) | Error on total | Mean abs. error per customer | Top-20% capture |
 |---|---:|---:|---:|
-| **This model** | **+0.5%** | £604 | **0.883** |
+| **This model** | **+0.2%** | £603 | **0.882** |
+| Seasonal naive (same window one year earlier) | +11.8% | £650 | 0.845 |
 | Naive (repeat the previous 6 months) | −29.2% | **£547** | 0.869 |
 
-The naive model wins on per-customer error, and that is reported too. ([D23–D25](docs/DECISOES.md))
+The model beats the seasonal naive forecast on all three measures. The +0.2% on the total should not be read as precision:
+- errors partly offset each other: by segment, the bias goes from −17% (Champions) to +199% ("Can't lose");
+- the smoothing parameter was chosen on this same cut-off, and its sensitivity is published.
 
-**4. Every number is reproducible and tested.**
+([D23–D25](docs/DECISOES.md))
+
+**4. Reviewed before publishing.** Three independent reviews (engineering, QA, data methodology) re-queried every headline number. None was wrong, but the reviews found real problems, all fixed and listed in [D27](docs/DECISOES.md):
+- a time-zone bug: the result depended on the session's time zone;
+- a misleading claim that acquisition fell 36%, which was really left censoring;
+- a misleading churn headline;
+- a weak baseline;
+- gaps in tests.
+
+**5. Every number is reproducible and tested.**
 - The raw file is downloaded and verified by SHA-256.
 - Every rule is a versioned SQL migration.
-- **227 automated tests** cover the rules, with hostile inputs among them. One end-to-end test reruns the whole pipeline on the real file and checks the numbers published in [DECISOES.md](docs/DECISOES.md).
-- A data-quality schema runs **16 checks** (totals reconcile across layers; measured assumptions still hold) and the pipeline fails if any of them breaks.
+- **280 automated tests** cover the rules, including hostile inputs and 4 session time zones. One end-to-end test reruns the whole pipeline on the real file and checks the published numbers.
+- A data-quality schema runs **18 checks**. If any fails, the whole pipeline is rolled back and the site export refuses to run.
 - Every number in the Power BI report was checked against SQL ([table](docs/POWERBI.md#conferência-contra-o-sql)).
 
 ## Architecture
@@ -55,16 +71,16 @@ flowchart LR
     XLSX -->|Python: read + COPY| BRUTO[(bruto<br/>raw text)]
     BRUTO -->|SQL migrations| LIMPO[(limpo<br/>typed, CHECKs)]
     LIMPO --> ANALISE[(analise<br/>RFM, churn,<br/>cohorts, CLV)]
-    BRUTO & LIMPO & ANALISE --> DQ[(dq<br/>16 checks)]
+    BRUTO & LIMPO & ANALISE --> DQ[(dq<br/>18 checks)]
     ANALISE -->|read-only user| PBI[Power BI]
     ANALISE --> NB[Notebook]
     ANALISE -->|aggregates only| SITE[GitHub Pages]
 ```
 
-- **The SQL does the maths, Python orchestrates.** Python only downloads, loads and calls the SQL functions. Each step rebuilds its own schema from the previous one (`python -m varejo.processar`), in one transaction.
-- **Point-in-time functions.** `analise.metricas_cliente(date)` and `analise.rfm(date)` only see orders before the date. Validation therefore uses exactly the same code as the final analysis and cannot look into the future, and a test enforces that.
-- **Least privilege.** Power BI connects with a user that only reads the `analise` and `dq` schemas and cannot run any reload (tested).
-- **Time zone at the source.** Invoice times are UK local time, converted with `AT TIME ZONE 'Europe/London'` into `timestamptz`. A test covers the BST/GMT boundary.
+- **The SQL does the maths, Python orchestrates.** Each step rebuilds its own schema from the previous one, in one transaction (`python -m varejo.processar`).
+- **Point-in-time functions.** `analise.metricas_cliente(date)` and `analise.rfm(date)` only see orders before the date, so validation uses exactly the same code as the final analysis and cannot look into the future (tested).
+- **Time zone fixed at the source and in the functions.** Invoice times are UK local time, stored as `timestamptz`. Every pipeline function runs with `SET timezone = 'Europe/London'`, so the result does not depend on who runs it.
+- **Least privilege.** Power BI connects with a user that only reads the `analise` and `dq` schemas (tested).
 
 | Overview | Churn | Cohorts and CLV |
 |---|---|---|
@@ -83,32 +99,35 @@ The code, tables and columns are in **Portuguese** (the author's language). The 
 | Description | `descricao` | | `analise` | analysis (orders, customers, RFM, churn, cohorts, CLV) |
 | Quantity | `quantidade` | | `dq` | data-quality checks |
 | InvoiceDate | `data_fatura` | | `pedido` / `cliente` | order / customer |
-| Price | `preco_unitario` | | `receita_liquida` | net revenue (sales − cancellations) |
-| Customer ID | `cliente_id` | | `segmento` / `em_churn` | RFM segment / churned |
+| Price | `preco_unitario` | | `receita_liquida` | net revenue: product sales − product cancellations |
+| Customer ID | `cliente_id` | | `segmento` / `status_churn` | RFM segment / active, at risk, inactive |
 | Country | `pais` | | `coorte_retencao` | retention cohort |
 
 ## Run it
 
-Requirements: Python 3.14, Docker (PostgreSQL 16 container) and, for the report, Power BI Desktop.
+Requirements: Python 3.14, Docker and, for the report, Power BI Desktop. Clone it **outside** a synced folder such as OneDrive (it locks files in `.venv` and `data/`).
 
 ```bash
-python -m venv .venv && .venv/Scripts/pip install -r requirements-dev.txt
-cp .env.example .env                 # set the passwords
-python -m varejo.bootstrap           # user + databases (via docker exec, no superuser password stored)
-alembic upgrade head                 # schemas, rules and functions (9 migrations)
-python -m varejo.baixar_dados        # downloads the xlsx and checks SHA-256
-python -m varejo.carga               # 1,067,371 lines into bruto (~30 s)
-python -m varejo.processar           # limpo -> analise -> dq (~30 s); fails if a check fails
-python -m varejo.exportar_site       # site/dados.json
-pytest                               # 227 tests (use -m "not lento" to skip the 2 on the real file)
+python -m venv .venv
+source .venv/bin/activate              # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt     # run from the project folder (installs the package with -e .)
+cp .env.example .env                    # PowerShell: Copy-Item .env.example .env  -> then set the passwords
+docker compose up -d                    # PostgreSQL 16 on 127.0.0.1:5432 (docker-compose.yml)
+python -m varejo.bootstrap              # project user + databases, via docker exec (no superuser password stored)
+alembic upgrade head                    # schemas, rules and functions (10 migrations)
+python -m varejo.baixar_dados           # downloads the xlsx and checks SHA-256
+python -m varejo.carga                  # 1,067,371 lines into bruto (~30 s)
+python -m varejo.processar              # limpo -> analise -> dq (~30 s); rolls back if a check fails
+python -m varejo.exportar_site          # site/dados.json (refuses if dq failed)
+pytest                                  # 280 tests (-m "not lento" skips the 2 on the real file)
 ```
 
-Then open `powerbi/customer_analytics.pbip` ([connection steps](docs/POWERBI.md)) or run the notebook.
+Then open `powerbi/customer_analytics.pbip` ([connection steps](docs/POWERBI.md)) or run the notebook. The report reads the database `retail` on `127.0.0.1`. If you change `VAREJO_DB_NAME`, regenerate it with `python powerbi/gerar_pbip.py`. The page in `site/` is deployed to GitHub Pages by `.github/workflows/pages.yml` (Settings → Pages → Source: GitHub Actions).
 
 ```
 src/varejo/        download, load, pipeline runner, charts, site export
-db/migracoes/      9 Alembic migrations (hand-written SQL)
-tests/             227 pytest tests (cleaning, RFM, churn, cohorts, CLV, dq, views, BI)
+db/migracoes/      10 Alembic migrations (hand-written SQL)
+tests/             280 pytest tests (cleaning, RFM, churn, cohorts, CLV, dq, time zones, views, BI)
 notebooks/         analysis notebook (reads views only) and its generator
 powerbi/           PBIP report (TMDL + PBIR), generated by gerar_pbip.py
 site/              static page for GitHub Pages
@@ -117,11 +136,10 @@ docs/              PLAN, DECISOES (every decision with its measurement), POWERBI
 
 ## Limitations and next steps
 
-- **Seasonality.** A fixed-X churn rule loses recall right after the peak. Next step: a per-customer threshold based on each customer's own purchase interval, or a model that sees the season.
-- **CLV horizon.** It is 6 months, because 12 months cannot be validated with two years of data.
-- **The wholesale flag is a proxy.** It means ≥ 400 units per order on average (about the top 10%), because the data does not say who is a wholesaler.
-- **Not attributable.** 13% of product sales have no customer ID and stay out of the customer analyses.
-- **Possible extensions.** BG/NBD + Gamma-Gamma for CLV, a churn classifier compared against the rule, market-basket analysis.
+- **Churn.** A fixed-X rule says little just past the threshold and loses recall right after the peak. Next step: a per-customer threshold based on each customer's own purchase interval, or a model that sees the season.
+- **CLV.** The formula counts inactivity twice (active probability × an average rate that already includes inactive months), which the smoothing partly compensates. The bias by segment is large. BG/NBD + Gamma-Gamma would model this properly. The horizon is 6 months, because 12 cannot be validated with two years of data.
+- **Retention trend.** It cannot be assessed with two years and left-censored early cohorts.
+- **Definitions.** Frequency counts invoices, so same-day invoices count twice. Manual credits ("M") inside cancellation invoices are not netted. The wholesale flag (≥ 400 units per order on average, about the top 10%) is a proxy. 13% of product sales have no customer ID.
 
 ---
 

@@ -59,9 +59,9 @@ O horário da planilha é local do Reino Unido, sem fuso. Ele é convertido com 
 `analise.metricas_cliente(data_ref)` e `analise.rfm(data_ref)` só enxergam pedidos anteriores à data de referência. A mesma função responde "como estava a base em 10/06/2011?" (validação do churn e do CLV) e "como está no fim?" (10/12/2011, o dia seguinte à última fatura). Assim, a validação usa exatamente o mesmo código da análise final e não tem como olhar o futuro (há teste para isso).
 
 ### D12. O que é compra e o que é receita
-- **Compra** = fatura de venda com receita de produto > 0. Uma fatura só de frete não conta.
-- **Receita líquida** = receita de produto das compras − valor dos cancelamentos do cliente.
-- No fim da base são **5.852 clientes** com ao menos uma compra, **£16.413.301** de receita líquida, **72,4%** com 2 compras ou mais, e os **10% maiores fazem 63,2%** da receita líquida. 87 clientes só aparecem em cancelamentos e ficam fora do RFM.
+- **Compra** = fatura de venda com receita de produto > 0. Uma fatura só de frete não conta. F conta **faturas**, não ocasiões: 3.716 intervalos entre compras são de 0 dias (duas faturas no mesmo dia), o que infla um pouco F e a taxa de compras. É uma escolha consciente: a fatura é a unidade que o negócio registra.
+- **Receita líquida** = vendas de produto − cancelamentos de produto do cliente. Créditos que não são produto dentro de faturas de cancelamento (sobretudo o código "M", lançamento manual: −£337.492 em clientes identificados) **não** são abatidos, porque não dá para saber a que venda se referem. Por isso o README diz "vendas de produto − cancelamentos de produto".
+- No fim da base são **5.852 clientes** com ao menos uma compra, **£16.413.301** de receita líquida **atribuível** (clientes identificados), **72,4%** com 2 compras ou mais, e os **10% maiores fazem 63,2%** dessa receita. 87 clientes só aparecem em cancelamentos e ficam fora do RFM.
 - 20 clientes têm receita líquida ≤ 0, quase todos por terem cancelado a única compra inteira. Ficam com nota M = 1 e o flag `liquido_nao_positivo`.
 
 ### D13. Notas por `percent_rank`, não por `NTILE(5)` (desvio do plano)
@@ -76,13 +76,13 @@ O plano previa `NTILE(5)`. Medido: **1.618 clientes têm exatamente 1 compra**. 
 | 5 | 9 ou mais | 1.116 |
 
 ### D14. Segmentos
-O segmento vem do mapa R × F (`analise.segmento_rfm`, 25 combinações), no padrão de mercado. M fica fora do mapa para que ele continue legível, mas é mostrado ao lado. Resultado no fim da base:
+O segmento vem do mapa R × F (`analise.segmento_rfm`, 25 combinações), no padrão de mercado. M fica fora do mapa para que ele continue legível, mas é mostrado ao lado. O mapa é **monotônico**: comprar mais recentemente ou mais vezes nunca rebaixa o cliente (testado célula a célula; ver D27). Resultado no fim da base:
 
 | Segmento | Clientes | % clientes | % receita | Recência média (dias) |
 |---|---:|---:|---:|---:|
 | Campeões | 1.380 | 23,6 | 69,3 | 20 |
-| Leais | 1.025 | 17,5 | 13,9 | 87 |
-| Potenciais leais | 442 | 7,6 | 2,4 | 19 |
+| Leais | 1.196 | 20,4 | 15,2 | 76 |
+| Potenciais leais | 271 | 4,6 | 1,2 | 25 |
 | Novos | 72 | 1,2 | 0,1 | 11 |
 | Promissores | 163 | 2,8 | 0,3 | 38 |
 | Precisam de atenção | 425 | 7,3 | 1,4 | 107 |
@@ -90,6 +90,8 @@ O segmento vem do mapa R × F (`analise.segmento_rfm`, 25 combinações), no pad
 | Em risco | 647 | 11,1 | 5,6 | 362 |
 | Hibernando | 673 | 11,5 | 1,8 | 314 |
 | Perdidos | 959 | 16,4 | 2,4 | 552 |
+
+Os percentuais de receita são da receita líquida **atribuível** (clientes identificados).
 
 ### D15. Flag de atacado (aproximação)
 O dataset não diz quem é atacadista. A mediana já é de 156 unidades por compra, e o p90 dos clientes é ~408. O flag `eh_atacado` marca quem compra **em média 400 unidades ou mais por pedido** (parâmetro `atacado_unidades_por_pedido`): são **607 clientes (10,4%)**. Ele é um filtro no BI, e o RFM continua único para todos.
@@ -99,17 +101,29 @@ O dataset não diz quem é atacadista. A mediana já é de 156 unidades por comp
 ### D16. Intervalo entre compras
 Entre compras consecutivas do mesmo cliente (dias de Londres, `analise.vw_intervalo_compra`): p50 = 25 dias, p75 = 62, p80 = 78, p90 = 136, p95 = 207. Em 3.716 dos 30.742 intervalos, a compra seguinte foi no mesmo dia.
 
-### D17. Escolha do X: 90 dias, pelo F1 na data de corte
+### D17. Escolha do X: 90 dias (o F1 é praticamente plano)
 Regra: o cliente está em churn se passou **mais de X dias** sem comprar. Validação em 10/06/2011, só com o passado: 4.944 clientes, dos quais 2.372 (48%) não compraram nos 6 meses seguintes.
 
 | X | Marcados | Precisão | Recall | F1 | Acurácia |
 |---:|---:|---:|---:|---:|---:|
-| 60 | 3.375 | 0,609 | 0,866 | 0,715 | 0,669 |
-| **90** | 2.971 | **0,641** | **0,803** | **0,713** | 0,690 |
+| 30 | 3.907 | 0,564 | 0,928 | 0,701 | 0,621 |
+| 60 | 3.375 | 0,609 | 0,866 | **0,715** | 0,669 |
+| **90** | 2.971 | 0,641 | 0,803 | 0,713 | 0,690 |
 | 120 | 2.666 | 0,667 | 0,749 | 0,705 | 0,700 |
 | 180 | 2.306 | 0,693 | 0,673 | 0,683 | 0,700 |
 
-Entre os candidatos do plano (90, 120 e 180), **90 tem o melhor F1 e o maior recall**. Para o CRM, perceber cedo quem está saindo vale mais do que um alarme falso, porque o custo de uma campanha de reativação é baixo. Leitura: dos marcados, 64% de fato não voltaram; dos que não voltaram, a regra pegou 80%. Como referência, marcar todo mundo daria precisão de 48% (a taxa base).
+**Leitura honesta (revisão de dados):** o F1 é praticamente o mesmo entre 30 e 120 dias (0,70 a 0,715); o melhor absoluto é 60. Entre os candidatos do plano (90, 120 e 180), 90 tem o melhor F1 e o maior recall, e "um trimestre sem comprar" é uma regra fácil de explicar ao CRM; por isso 90. Como X é escolhido e avaliado no mesmo corte, a diferença de 0,002 entre 60 e 90 não significa nada.
+
+**Onde está o sinal.** A taxa de "não voltou" por faixa de recência (`analise.churn_faixa`) mostra que a precisão vem sobretudo de quem já sumiu há muito tempo:
+
+| Faixa (corte de 10/06/2011) | Clientes | Não voltaram |
+|---|---:|---:|
+| até 90 dias | 1.973 | 23,7% |
+| 91 a 180 dias | 665 | **46,2%** |
+| 181 a 365 dias | 1.685 | 63,3% |
+| mais de 365 dias | 621 | 85,3% |
+
+Quem acabou de passar dos 90 dias (91 a 180) não volta em 46% dos casos, praticamente a taxa base (48%): nessa faixa a regra **não** informa mais que o acaso. Ela separa bem os ativos (até 90 dias, 24%) dos que já foram embora. Por isso o fim da base separa **em risco** (91 a 365 dias) de **inativo** (mais de 365), em vez de um único "churn".
 
 ### D18. A regra depende da época do ano (limitação medida)
 Repeti a validação num segundo corte, 10/12/2010, logo depois do pico de vendas (set a nov):
@@ -124,21 +138,38 @@ Logo depois do pico, quase todo mundo comprou há pouco tempo, então a regra ma
 
 **Consequência para o fim da base (10/12/2011, também logo depois do pico):** a marcação de churn ali é conservadora. Pelo análogo de dez/2010, cerca de 73% dos marcados de fato não voltam em 6 meses, mas a regra deixa passar metade de quem some. Isso fica registrado no README e na página de Churn do BI. O próximo passo natural seria um limite por cliente (baseado no intervalo típico de cada um) ou um modelo que considere a sazonalidade.
 
-### D19. Receita em risco
-`analise.cliente.receita_12m` é a receita líquida de cada cliente nos 12 meses antes do fim da base. Dos £7,98 mi de receita líquida nos últimos 12 meses, **£835 mil** vêm dos 2.967 clientes hoje marcados como churn (50,7% dos clientes).
+### D19. Em risco, inativos e receita em risco
+`analise.cliente.status_churn` separa o que a regra única misturava. No fim da base (10/12/2011):
+
+| Status | Regra | Clientes | Receita líquida dos últimos 12 meses |
+|---|---|---:|---:|
+| ativo | até 90 dias sem comprar | 2.885 | £7.148.662 |
+| **em risco** | 91 a 365 dias | **1.376** | **£837.690** |
+| inativo | mais de 365 dias | 1.591 | −£2.569 |
+
+Os 2.967 com mais de 90 dias sem comprar (50,7%) são a soma de em risco e inativos, mas **mais da metade deles (1.591) já não compra há mais de um ano**: não estão "indo embora", já foram. A receita em risco está praticamente toda nos 1.376 em risco.
 
 ## Coortes
 
 ### D20. Coorte = mês da primeira compra, com grade completa
 `analise.coorte_retencao` tem uma linha por coorte × mês desde a primeira compra, até o último mês da base. Os meses sem compra aparecem com 0 ativos, para o heatmap não ter buracos. A coorte vem de `min(mes) OVER (PARTITION BY cliente_id)`. A receita do mês é líquida (compras − cancelamentos daquele mês). A soma dos tamanhos das coortes é igual ao número de clientes (5.852).
 
-### D21. Dez/2009 = pré-existentes; começo de 2010 inflado
-- Dez/2009 é o primeiro mês da base: os 951 clientes dessa coorte não são necessariamente novos, são só o primeiro registro. A coorte é marcada como `pre_existente` e fica fora das médias. Ela retém bem mais (35 a 50% ao mês) justamente por ser formada pela base antiga e fiel.
-- O mesmo efeito, menor, contamina as coortes do começo de 2010: um cliente antigo que não comprou em dez/2009 aparece como "novo" em jan, fev ou mar/2010. Por isso a comparação de aquisição entre anos é feita nos mesmos meses do fim do ano, menos afetados.
+### D21. Dez/2009 = pré-existentes; coortes do começo da base contaminadas
+- Dez/2009 é o primeiro mês da base: os 951 clientes dessa coorte não são necessariamente novos, são só o primeiro registro. A coorte é marcada como `pre_existente` e fica fora das médias.
+- O mesmo efeito (censura à esquerda) contamina **muito** as coortes seguintes, e não pouco como a primeira versão deste documento dizia. Medido com o análogo de 2011 (contando como "novo" só quem não comprou nos meses anteriores dentro da mesma janela de histórico): cerca de **70%** dos "novos" de jan a mar e **39%** dos "novos" de set a nov já eram clientes antes. Um cliente de 2010 que comprou pela primeira vez "na base" pode ser só um cliente antigo que não comprou em dez/2009.
 - Dez/2011 vai só até o dia 9 e é marcado como `mes_parcial`.
+- Cancelamento anterior à primeira compra (de uma venda de antes da base) entra no mês 0 da coorte; sem isso, as coortes somavam £3.325 a mais que os clientes (achado do QA; o dq agora confere).
 
-### D22. A retenção melhora ou piora?
-Retenção média ponderada (sem pré-existentes e sem o mês parcial): **21,0% no mês 1, 21,1% no mês 3, 18,4% no mês 6 e 18,4% no mês 12**. Entre os anos, ela fica **estável**: no mês 1, 19,9% para as coortes de 2010 e 23,6% para as de 2011; no mês 6, 18,3% e 19,6%. O que caiu foi a **entrada de clientes novos**: de setembro a novembro foram 940 em 2010 (239 + 375 + 326) e 600 em 2011 (188 + 221 + 191), **36% a menos**. As coortes de 2010 também mostram de novo a sazonalidade da D18: a retenção sobe nos meses de setembro a novembro do ano seguinte.
+### D22. A retenção melhora ou piora? Inconclusivo, e por quê
+Retenção média ponderada (sem pré-existentes e sem o mês parcial): **21,0% no mês 1, 21,1% no mês 3, 18,4% no mês 6 e 18,4% no mês 12**.
+
+**A comparação entre anos não é de igual para igual** (revisão de dados):
+- no mês 1: 19,9% nas coortes de 2010 contra 23,6% nas de 2011. Mas as coortes de 2010 estão misturadas com clientes antigos que voltaram (D21), e o mês 1 das coortes de 2011 sobe de 16,7% (jan) para 31,7% (out) só pela sazonalidade;
+- no mês 6: 18,3% contra 19,6%, e o mês 6 de 2011 só tem 5 coortes (jan a mai), cujo mês 6 cai perto do pico.
+
+Conclusão: com dois anos de dados e a censura à esquerda, **não dá para afirmar** que a retenção melhorou ou piorou. O que dá para afirmar é a forma da curva: cerca de 1 em cada 5 clientes volta no mês seguinte, e as coortes voltam a subir em set a nov do ano seguinte (a sazonalidade da D18).
+
+**Correção de uma afirmação anterior:** a primeira versão deste documento dizia que a aquisição de clientes novos caiu 36% (940 em set a nov de 2010 contra 600 em 2011). Era artefato da censura: com a mesma janela de histórico para trás nos dois anos, set a nov de 2011 tem **979** "novos", contra 940 em 2010. A afirmação foi retirada.
 
 ## CLV
 
@@ -147,46 +178,70 @@ Retenção média ponderada (sem pré-existentes e sem o mês parcial): **21,0% 
 - **CLV previsto** para os próximos H meses, numa data T:
   `p_ativo(segmento) × ticket médio líquido × compras por mês × H`
   - **p_ativo**: fração dos clientes do mesmo segmento RFM que compraram de novo numa janela de H meses na **mesma época do ano anterior** (de T − 12 meses a T − 12 meses + H). A sazonalidade é forte (D18), e calibrar numa janela de outra época distorceria a previsão.
-  - **compras por mês** = `(compras + b × taxa da base) / (meses de vida + b)`, com b = 3 meses: a média de uma Gamma-Poisson. Sem essa suavização, um cliente com uma compra há 10 dias teria "1 compra por mês". Na validação, o CLV previsto dos Novos saiu 2,8 vezes o real e o dos Promissores 2,6 vezes.
+  - **compras por mês** = `(compras + b × taxa da base) / (meses de vida + b)`, com b = 3 meses: a média de uma Gamma-Poisson. Sem essa suavização, um cliente com uma compra há 10 dias teria "1 compra por mês", e na primeira validação o CLV dos Novos saiu 2,8 vezes o real.
 
-Sem biblioteca nova, e cada termo pode ser explicado. BG/NBD e Gamma-Gamma ficam como próximos passos.
+Sem biblioteca nova, e cada termo pode ser explicado. **Limitação conhecida (revisão de dados):** p_ativo é a probabilidade de ao menos uma compra na janela, e "compras por mês × H" já é uma esperança que inclui os meses parados; o produto conta a inatividade duas vezes, e o b acaba compensando isso em parte. Além disso, a calibração usa segmentos de 10/06/2010, quando a base tinha só 6 meses: um "Perdido" daquela época tinha no máximo 6 meses sem comprar. BG/NBD e Gamma-Gamma (que modelam isso direito) ficam como próximos passos.
 
 ### D24. Validação no corte (previsão de 6 meses feita em 10/06/2011)
-A comparação é contra a receita líquida real de 10/06 a 10/12/2011 (£4,24 mi, 4.944 clientes) e contra um modelo **ingênuo**: "os próximos 6 meses repetem os 6 anteriores".
+A comparação é contra a receita líquida real de 10/06 a 10/12/2011 (£4,24 mi, 4.944 clientes), e contra dois modelos ingênuos: "os próximos 6 meses repetem os 6 anteriores" e o **ingênuo sazonal**, "repetem a mesma janela de um ano antes" (o adversário justo, porque também enxerga a sazonalidade; incluído depois da revisão de dados).
 
 | Modelo | Total previsto | Erro no total | Erro médio por cliente | Captura do top 20% |
 |---|---:|---:|---:|---:|
-| **Previsto** | £4,26 mi | **+0,5%** | £604 | **0,883** |
-| Ingênuo | £3,01 mi | −29,2% | **£547** | 0,869 |
+| **Previsto** | £4,25 mi | **+0,2%** | £603 | **0,882** |
+| Ingênuo sazonal | £4,74 mi | +11,8% | £650 | 0,845 |
+| Ingênuo (6 meses anteriores) | £3,01 mi | −29,2% | **£547** | 0,869 |
 
 *Captura do top 20%* = quanto da receita real está nos 20% de clientes com maior previsão, dividido pelo que um top 20% perfeito capturaria.
 
 Leitura honesta:
-- O modelo acerta o **total**, e é isso que importa para orçamento. O ingênuo erra em 29% porque não enxerga o pico de fim de ano.
-- Na **ordenação** os dois empatam (0,883 contra 0,869).
-- No **erro por cliente**, o ingênuo é melhor, porque prevê zero para quem parou e muitos de fato não voltam.
-
-Sensibilidade ao b (escolhido na própria validação, então com algum risco de sobreajuste). O resultado muda pouco entre 1 e 6:
+- O modelo **ganha do ingênuo sazonal nas três métricas**.
+- O **erro de +0,2% no total é em boa parte compensação de erros**. Por segmento, o viés vai de **−17% (Campeões, subestimados)** a **+199% (Não pode perder)**: Leais +31%, Em risco +55%, Perdidos +90%, Promissores +100%, Precisam de atenção +107%. O total fecha porque os Campeões, que são a maior parte da receita, são subestimados e os outros superestimados.
+- O b foi escolhido nesse mesmo corte (não há um segundo corte possível com dois anos de dados). A sensibilidade mostra quanto o total depende dele:
 
 | b (meses) | Erro no total | Erro médio | Captura do top 20% |
 |---:|---:|---:|---:|
-| 0 (sem suavização) | +7,9% | £604 | 0,876 |
-| 1 | +4,0% | £595 | 0,883 |
-| **3** | **+0,5%** | £604 | 0,883 |
-| 6 | −2,6% | £627 | 0,882 |
-| 12 | −6,3% | £669 | 0,875 |
+| 0 (sem suavização) | +7,6% | £603 | 0,877 |
+| 1 | +3,8% | £594 | 0,883 |
+| **3** | **+0,2%** | £603 | 0,882 |
+| 6 | −2,8% | £626 | 0,883 |
+| 12 | −6,5% | £668 | 0,876 |
+
+A **ordenação** (captura do top 20%) praticamente não depende do b, e é ela que importa para priorizar campanha. O erro no total depende, e por isso o +0,2% não deve ser lido como precisão do modelo.
 
 ### D25. Horizonte final de 6 meses, não 12 (desvio do plano)
-O plano previa um CLV de 12 meses. Com o mesmo método, o CLV de 12 meses no fim daria £9,35 mi, contra £7,98 mi de receita real nos 12 meses anteriores. **Esse horizonte não tem como ser validado com 2 anos de dados**: seriam necessários 12 meses depois de um corte, mais um ano antes dele para calibrar. Por isso o CLV publicado é o de **6 meses**, o mesmo horizonte validado: **£3,81 mi** para os 6 meses seguintes ao fim da base. Na mesma época do ano anterior, a receita real foi £3,01 mi, com uma base de clientes 37% menor. Os 20% de clientes com maior CLV concentram 74% do valor previsto.
+O plano previa um CLV de 12 meses. Com o mesmo método, o CLV de 12 meses no fim daria cerca de £9,35 mi, contra £7,98 mi de receita real nos 12 meses anteriores. **Esse horizonte não tem como ser validado com 2 anos de dados**: seriam necessários 12 meses depois de um corte, mais um ano antes dele para calibrar. Por isso o CLV publicado é o de **6 meses**, o mesmo horizonte validado: **£3,82 mi** para os 6 meses seguintes ao fim da base. Na mesma época do ano anterior, a receita real foi £3,01 mi, com uma base de clientes 37% menor. Os 20% de clientes com maior CLV concentram 74% do valor previsto. Os vieses por segmento da D24 valem aqui também.
 
 Bug achado pelos testes: se ninguém comprar na janela, o total real é zero e o erro percentual não existe. A coluna era `NOT NULL`, o que derrubava a recarga inteira. Agora o valor fica NULL.
 
 ## Qualidade de dados (schema `dq`)
 
 ### D26. O que o dq checa e por quê
-As restrições do banco (`CHECK`, `FOREIGN KEY`, `NOT NULL`) impedem linhas impossíveis. O `dq.verificar()` cobre o que uma restrição de linha não enxerga, e o `python -m varejo.processar` termina com erro se alguma checagem falhar. São 16 checagens:
-- **Totais que precisam bater entre camadas:** linhas do bruto = última carga; limpo = bruto − sobreposição; soma de quantidade × preço conservada; pedidos = linhas de venda e cancelamento; receita líquida dos clientes = compras − cancelamentos deles; soma das coortes = clientes.
-- **Premissas medidas que podem deixar de valer numa carga nova:** sobreposição das abas idêntica (`EXCEPT ALL` nos dois sentidos); nenhum código novo fora do padrão de produto sem classificação; nenhuma anomalia além da C496350; nenhuma linha na hora ambígua do horário de verão; cada fatura com um cliente só.
+As restrições do banco (`CHECK`, `FOREIGN KEY`, `NOT NULL`) impedem linhas impossíveis. O `dq.verificar()` cobre o que uma restrição de linha não enxerga. São **18 checagens**:
+- **Totais que precisam bater entre camadas:** linhas do bruto = última carga; limpo = bruto − sobreposição; soma de quantidade × preço conservada; pedidos = linhas de venda e cancelamento; receita líquida dos clientes = compras − cancelamentos deles; soma das coortes = clientes; **receita somada nas coortes = receita dos clientes**.
+- **Premissas medidas que podem deixar de valer numa carga nova:** sobreposição das abas idêntica (`EXCEPT ALL` nos dois sentidos); nenhum código novo fora do padrão de produto sem classificação; nenhuma anomalia além da C496350; nenhuma linha na hora ambígua do horário de verão; cada fatura com um cliente só; **nenhuma fatura misturando linhas com e sem cliente**.
 - **Forma das distribuições:** os quintos de R e M com tamanhos parecidos (maior/menor ≤ 1,10; medido 1,03); CLV e churn preenchidos para todos; validação do churn nos dois cortes.
 
+**Se alguma checagem falhar, o `python -m varejo.processar` desfaz a transação inteira** (o banco continua com o último resultado bom) e o `python -m varejo.exportar_site` se recusa a exportar: um número reprovado não chega ao Power BI nem ao site. Cada checagem tem um teste que corrompe o dado e confirma que ela falha.
+
 O teste `test_pipeline_completo_reproduz_os_numeros_documentados` roda o pipeline inteiro sobre a planilha real e confere os principais números deste documento. Uma mudança que altere um número publicado quebra esse teste.
+
+## Revisão independente (T12)
+
+### D27. O que as três revisões acharam e o que mudou
+Antes de publicar, três revisões independentes (engenharia, QA e dados), feitas por agentes separados que só podiam ler o projeto. Todos os números do README foram re-consultados no banco pela revisão de dados: **nenhum divergia**. Os problemas eram de método, de redação e de robustez:
+
+| Achado | Revisão | O que mudou |
+|---|---|---|
+| `timestamptz + interval '6 months'` dependia do fuso da **sessão**: o mesmo cenário dava resultados diferentes em Londres e em UTC | QA | Toda função do pipeline roda com `SET timezone = 'Europe/London'` (migration 0010); testes em 4 fusos |
+| A "queda de 36% na aquisição" era artefato da censura à esquerda | Dados | Afirmação retirada; D21 e D22 reescritas |
+| "Retenção estável nos dois anos" era uma comparação confundida | Dados | D22: inconclusivo, com os motivos |
+| A precisão do churn vinha de quem já tinha sumido; "2.967 indo embora" misturava em risco com inativos | Dados | `status_churn` (ativo, em risco, inativo) e `churn_faixa`; D17 e D19 |
+| O +0,5% do CLV era compensação de erros, com b escolhido no próprio teste; o ingênuo era fraco | Dados | Ingênuo sazonal incluído; vieses por segmento e sensibilidade publicados (D24) |
+| Mapa R × F não monotônico em (R5, F3) | Dados | Vira "Leais"; teste do mapa inteiro e da monotonicidade |
+| Coortes somavam £3.325 a mais que os clientes | QA | Cancelamento anterior à primeira compra entra no mês 0; checagem nova no dq |
+| dq dava falso alarme sem a aba nova; fatura mista passava sem aviso | QA | `coalesce(..., 'infinity')` no dq; checagem nova |
+| 10 checagens do dq sem teste negativo | QA | Um teste de corrupção por checagem |
+| Dados reprovados no dq eram gravados e podiam ser exportados | Engenharia | Rollback no `processar`; o exportador recusa |
+| O "Como rodar" do README não funcionava para quem clona | Engenharia | Ativação da venv por shell, `docker-compose.yml`, `.env.example` genérico |
+| O bootstrap podia alterar um usuário de outro projeto no container compartilhado | Engenharia | Recusa usuário igual ao superusuário e role que já seja superusuário ou dona de outros bancos |
+| Download sem timeout; site quebrava com valor nulo | Engenharia/QA | Timeout e limpeza do arquivo parcial; site robusto a nulos e a cortes vindos do JSON |
