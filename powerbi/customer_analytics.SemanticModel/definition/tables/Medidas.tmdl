@@ -56,10 +56,30 @@ table Medidas
 		formatString: 0.0%
 		lineageTag: 4c2ae61b-44ff-5f3b-a09a-ce63098a044a
 
-	/// Receita líquida dos últimos 12 meses dos clientes hoje em churn.
-	measure 'Receita em risco' = CALCULATE ( SUM ( cliente[receita_12m] ), cliente[em_churn] = TRUE () )
+	/// De 91 a 365 dias sem comprar no fim da base.
+	measure 'Em risco' = CALCULATE ( [Clientes], cliente[status_churn] = "em_risco" )
+		formatString: #,0
+		lineageTag: 4c5dd529-fdb2-5f27-8f9f-de60b6731d79
+
+	/// Mais de 365 dias sem comprar: já foram embora.
+	measure Inativos = CALCULATE ( [Clientes], cliente[status_churn] = "inativo" )
+		formatString: #,0
+		lineageTag: e87721df-7b79-5302-b3aa-e150c98ede9c
+
+	/// Receita líquida dos últimos 12 meses dos clientes em risco (91 a 365 dias).
+	measure 'Receita em risco' = CALCULATE ( SUM ( cliente[receita_12m] ), cliente[status_churn] = "em_risco" )
 		formatString: \£#,0
 		lineageTag: 9651727d-9111-5278-bc7c-1d5fe81b6b8f
+
+	/// Parte dos clientes da faixa que não comprou nos 6 meses depois do corte.
+	measure 'Não voltou' = AVERAGE ( churn_faixa[taxa_nao_voltou] )
+		formatString: 0.0%
+		lineageTag: 022fc926-8354-582b-a93d-fa0e87515dee
+
+	/// Modelo ingênuo sazonal: repete a mesma janela de um ano antes.
+	measure 'CLV ingênuo sazonal (validação)' = SUM ( clv_validacao_cliente[ingenuo_sazonal] )
+		formatString: \£#,0
+		lineageTag: 81ee2ede-5f06-5d55-b4ef-b7d107dd49c0
 
 	/// Receita líquida esperada nos 6 meses seguintes ao fim da base.
 	measure 'CLV previsto (6 meses)' = SUM ( cliente[clv_previsto_6m] )

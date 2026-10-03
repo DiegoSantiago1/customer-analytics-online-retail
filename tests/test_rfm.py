@@ -88,7 +88,7 @@ def test_metricas_nao_olham_o_futuro(bd: Conexao) -> None:
 
 
 def test_recencia_conta_dias_de_londres(bd: Conexao) -> None:
-    # 09/12/2011 23:30 em Londres ainda é dia 9: recência 1 no fim (10/12).
+    # 09/12/2011 21:30 em Londres: dia 9, recência 1 no fim (10/12) em qualquer fuso de sessão.
     cenario(bd, [compra(12345, "536001", "2011-12-09 21:30:00")])
     bd.execute("SET LOCAL timezone = 'America/Sao_Paulo'")  # não pode depender da sessão
     assert metricas(bd, 12345)["recencia_dias"] == 1
@@ -214,3 +214,36 @@ def test_recarregar_e_idempotente(bd: Conexao) -> None:
     bd.execute("SELECT analise.recarregar()")
     assert valor(bd, "SELECT count(*) FROM analise.pedido") == 2
     assert valor(bd, "SELECT count(*) FROM analise.cliente") == 2
+
+
+MAPA_RFM = {
+    # r: segmentos para f = 1..5 (o mapa inteiro: trocar uma célula quebra o teste)
+    5: ["Novos", "Potenciais leais", "Leais", "Campeões", "Campeões"],
+    4: ["Promissores", "Potenciais leais", "Leais", "Campeões", "Campeões"],
+    3: ["Precisam de atenção", "Precisam de atenção", "Leais", "Leais", "Leais"],
+    2: ["Hibernando", "Hibernando", "Em risco", "Em risco", "Não pode perder"],
+    1: ["Perdidos", "Perdidos", "Em risco", "Em risco", "Não pode perder"],
+}
+
+
+def test_mapa_rfm_inteiro(bd: Conexao) -> None:
+    mapa = {(r, f): s for r, f, s in bd.execute("SELECT r, f, segmento FROM analise.segmento_rfm")}
+    assert mapa == {(r, f + 1): s for r, linha in MAPA_RFM.items() for f, s in enumerate(linha)}
+
+
+def test_mapa_rfm_e_monotonico(bd: Conexao) -> None:
+    # Comprar mais recentemente (R maior) ou mais vezes (F maior) nunca rebaixa o cliente
+    # para um segmento de ordem pior (ordem menor = melhor). Revisão de dados: (5, 3) era
+    # "Potenciais leais" com (4, 3) "Leais".
+    ordem = {
+        (r, f): o
+        for r, f, o in bd.execute(
+            "SELECT r, f, ordem FROM analise.segmento_rfm JOIN analise.segmento USING (segmento)"
+        )
+    }
+    for r in range(1, 6):
+        for f in range(1, 6):
+            if r < 5:
+                assert ordem[(r + 1, f)] <= ordem[(r, f)], (r, f)
+            if f < 5:
+                assert ordem[(r, f + 1)] <= ordem[(r, f)], (r, f)

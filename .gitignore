@@ -22,3 +22,6 @@ data/raw/
 *.pbix
 **/.pbi/cache.abf
 **/.pbi/localSettings.json
+
+# Seção de aprendizado: preparação pessoal para entrevista (não vai para o GitHub)
+docs/APRENDIZADO.md

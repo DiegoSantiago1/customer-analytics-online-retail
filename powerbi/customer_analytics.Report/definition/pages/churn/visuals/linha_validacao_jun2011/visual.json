@@ -3,10 +3,10 @@
   "name": "linha_validacao_jun2011",
   "position": {
     "x": 16,
-    "y": 200,
+    "y": 196,
     "z": 5000,
     "width": 404,
-    "height": 392,
+    "height": 268,
     "tabOrder": 5000
   },
   "visual": {

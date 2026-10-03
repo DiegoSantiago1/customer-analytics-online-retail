@@ -90,7 +90,7 @@ def test_clv_previsto_vs_real_respeita_a_ordem() -> None:
         {
             "segmento": ["Perdidos", "Campeões"],
             "previsto": [1.0, 9.0],
-            "ingenuo": [0.0, 8.0],
+            "ingenuo_sazonal": [0.0, 8.0],
             "real": [2.0, 10.0],
         }
     )

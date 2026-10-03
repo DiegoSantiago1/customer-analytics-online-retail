@@ -1,0 +1,57 @@
+/// Taxa de 'não voltou' por faixa de recência em cada corte (onde a regra tem sinal).
+table churn_faixa
+	lineageTag: ff232ebc-b4b9-5a3d-afaf-4b25c8f4d80c
+
+	column corte
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 86d51d96-38c3-5277-b2c7-001440587000
+		summarizeBy: none
+		sourceColumn: corte
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1b83be40-ad4c-5873-96fa-bef308116372
+		summarizeBy: none
+		sourceColumn: ordem
+
+	column faixa
+		dataType: string
+		lineageTag: 752ce1e8-73aa-5827-8390-1d5a98207b66
+		summarizeBy: none
+		sourceColumn: faixa
+		sortByColumn: ordem
+
+	column clientes
+		dataType: int64
+		formatString: #,0
+		lineageTag: ec7b51bf-31d5-59e4-83c3-5785fc5b51fb
+		summarizeBy: sum
+		sourceColumn: clientes
+
+	column nao_voltaram
+		dataType: int64
+		formatString: #,0
+		lineageTag: 63c9d176-ca06-5769-8ba5-4e82cc00ba04
+		summarizeBy: sum
+		sourceColumn: nao_voltaram
+
+	column taxa_nao_voltou
+		dataType: decimal
+		formatString: 0.0%
+		lineageTag: 3ed1ddce-7a16-5bf5-b7dc-b13a1e009e6c
+		summarizeBy: average
+		sourceColumn: taxa_nao_voltou
+
+	partition churn_faixa = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("127.0.0.1", "retail"),
+				    Tabela = Fonte{[Schema = "analise", Item = "churn_faixa"]}[Data]
+				in
+				    Tabela

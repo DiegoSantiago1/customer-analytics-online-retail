@@ -22,6 +22,22 @@
 -- =====================================================================
 \set ON_ERROR_STOP on
 
+-- 0. Trava (container compartilhado com outros projetos): se um usuário com o nome
+--    do .env já existe e é superusuário, ou é dono de bancos que não são deste
+--    projeto, para tudo antes de alterar qualquer coisa. Sem isso, um nome repetido
+--    trocaria a senha e os privilégios de um usuário de outro projeto.
+SELECT format('DO $trava$ BEGIN RAISE EXCEPTION %L; END $trava$',
+              'O usuário ' || r.rolname || ' já existe e é superusuário ou dono de outros '
+              || 'bancos (' || coalesce(string_agg(d.datname, ', '), '') || '): '
+              || 'escolha outro nome no .env.')
+FROM pg_roles r
+LEFT JOIN pg_database d
+       ON d.datdba = r.oid AND d.datname NOT IN (:'banco', :'banco_teste')
+WHERE r.rolname IN (:'usuario', :'bi_usuario')
+GROUP BY r.rolname, r.rolsuper
+HAVING r.rolsuper OR count(d.datname) > 0
+\gexec
+
 -- 1. Usuário do projeto: pode logar, mas não é superusuário, não cria
 --    bancos, não cria roles e não ignora regras de segurança de linha.
 SELECT format('CREATE ROLE %I LOGIN', :'usuario')

@@ -141,3 +141,33 @@ def test_intervalo_entre_compras(bd: Conexao) -> None:
         )
     ]
     assert dias == [None, 0, 30]
+
+
+@pytest.mark.parametrize(
+    ("ultima", "status"),
+    [
+        ("2011-09-11", "ativo"),  # 90 dias antes do fim: ainda ativo (> 90 é churn)
+        ("2011-09-10", "em_risco"),  # 91 dias
+        ("2010-12-10", "em_risco"),  # 365 dias
+        ("2010-12-09", "inativo"),  # 366 dias
+    ],
+)
+def test_status_do_churn_por_faixa(bd: Conexao, ultima: str, status: str) -> None:
+    cenario(bd, [compra(10001, "536001", ultima)])
+    bd.execute("SELECT analise.recarregar_churn()")
+    linha = bd.execute("SELECT status_churn, em_churn FROM analise.cliente").fetchone()
+    assert linha == (status, status != "ativo")
+
+
+@pytest.mark.usefixtures("quatro_clientes")
+def test_taxa_de_nao_voltou_por_faixa(bd: Conexao) -> None:
+    bd.execute("SELECT analise.recarregar_churn()")
+    faixas = bd.execute(
+        "SELECT faixa, clientes, nao_voltaram, taxa_nao_voltou FROM analise.churn_faixa "
+        "WHERE corte = '2011-06-10' ORDER BY ordem"
+    ).fetchall()
+    # C e D a 10 dias (C volta); A e B a 100 dias (B volta).
+    assert faixas == [
+        ("até 90 dias", 2, 1, Decimal("0.5000")),
+        ("91 a 180 dias", 2, 1, Decimal("0.5000")),
+    ]

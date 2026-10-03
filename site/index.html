@@ -119,7 +119,7 @@
 
   <section id="rfm">
     <div class="pergunta" data-i18n="q1">Question 1 · RFM segmentation</div>
-    <h2 data-i18n="h_rfm">A quarter of the customers bring 69% of the revenue</h2>
+    <h2 data-i18n="h_rfm">A quarter of the customers bring 69% of attributable revenue</h2>
     <p class="sub" data-i18n="p_rfm">Recency, frequency and monetary scores from 1 to 5 (ties always get the same score), mapped to ten segments on the R × F grid. Each segment comes with an action for the CRM team.</p>
     <div class="cartao"><div class="grafico alto"><canvas id="g_rfm" role="img" aria-label="Share of customers and of revenue by RFM segment"></canvas></div></div>
     <details><summary data-i18n="ver_tabela">Show the table</summary><div class="rolagem"><table id="t_rfm"></table></div></details>
@@ -127,26 +127,31 @@
 
   <section id="churn">
     <div class="pergunta" data-i18n="q2">Question 2 · Churn</div>
-    <h2 data-i18n="h_churn">A simple rule, validated back in time</h2>
+    <h2 data-i18n="h_churn">A simple rule, validated back in time, and where it has no signal</h2>
     <p class="sub" data-i18n="p_churn">A customer has churned after more than X days without buying. To choose X honestly, the rule was applied at a past cut-off using only data available then, and compared with who actually came back in the next six months.</p>
     <div class="grade-2">
       <div class="cartao"><h3 data-i18n="h_corte1">Cut-off 10 Jun 2011</h3><div class="grafico"><canvas id="g_churn1" role="img" aria-label="Precision and recall by X, June 2011 cut-off"></canvas></div></div>
       <div class="cartao"><h3 data-i18n="h_corte2">Cut-off 10 Dec 2010 (right after the peak)</h3><div class="grafico"><canvas id="g_churn2" role="img" aria-label="Precision and recall by X, December 2010 cut-off"></canvas></div></div>
     </div>
     <p class="destaque" style="margin-top:16px" id="churn_texto"></p>
+    <div class="cartao">
+      <h3 data-i18n="h_faixa">Who really did not come back, by days without buying at the cut-off</h3>
+      <div class="grafico"><canvas id="g_faixa" role="img" aria-label="Share that did not come back, by recency band and cut-off"></canvas></div>
+      <p class="muted" style="margin-top:8px" data-i18n="p_faixa">Customers 91–180 days without buying did not come back about as often as the average customer (46% against 48% in June 2011): just past the threshold, the rule says little. It separates the active from those already gone. That is why the end of the data splits "at risk" (91–365 days) from "inactive" (over a year).</p>
+    </div>
   </section>
 
   <section id="coortes">
     <div class="pergunta" data-i18n="q3">Question 3 · Retention cohorts</div>
-    <h2 data-i18n="h_coortes">Retention is stable; new-customer acquisition is what fell</h2>
-    <p class="sub" data-i18n="p_coortes">Share of each cohort (month of first purchase) that bought again N months later. The first month of the data (Dec 2009) is left out: those customers are not new, just the first record we have.</p>
+    <h2 data-i18n="h_coortes">About one in five customers buys again the next month</h2>
+    <p class="sub" data-i18n="p_coortes">Share of each cohort (month of first purchase) that bought again N months later. The first month of the data (Dec 2009) is left out: those customers are not new, just the first record we have. Early 2010 cohorts are still mixed with returning customers (left censoring), so comparing years is inconclusive.</p>
     <div class="cartao rolagem"><table class="calor" id="t_coortes" aria-label="Retention heatmap"></table></div>
   </section>
 
   <section id="clv">
     <div class="pergunta" data-i18n="q4">Question 4 · Customer lifetime value</div>
-    <h2 data-i18n="h_clv">The forecast gets the total right where the naive one misses the peak</h2>
-    <p class="sub" data-i18n="p_clv">Predicted 6-month value = probability of staying active (by segment, same season one year earlier) × average order value × purchases per month (Gamma-Poisson smoothed). Made on 10 Jun 2011 and checked against the real revenue to 10 Dec 2011.</p>
+    <h2 data-i18n="h_clv">The forecast beats a seasonal naive one on all three measures</h2>
+    <p class="sub" data-i18n="p_clv">Predicted 6-month value = probability of staying active (by segment, same season one year earlier) × average order value × purchases per month (Gamma-Poisson smoothed). Made on 10 Jun 2011 and checked against the real revenue to 10 Dec 2011. The total is close partly because errors offset: by segment the bias goes from −17% (Champions) to +199%.</p>
     <div class="grade-2">
       <div class="cartao"><div class="grafico"><canvas id="g_clv" role="img" aria-label="Predicted, naive and actual 6-month revenue by segment"></canvas></div></div>
       <div class="cartao"><div class="rolagem"><table id="t_clv"></table></div><p class="muted" style="margin-top:12px" data-i18n="clv_nota">Top-20% capture: revenue captured by the 20% of customers with the highest prediction, relative to a perfect top 20%.</p></div>
@@ -160,7 +165,7 @@
       <span class="etapa">PostgreSQL bruto</span><span class="seta">→</span>
       <span class="etapa">limpo (CHECKs)</span><span class="seta">→</span>
       <span class="etapa">analise (SQL)</span><span class="seta">→</span>
-      <span class="etapa">dq (16 checks)</span><span class="seta">→</span>
+      <span class="etapa">dq (18 checks)</span><span class="seta">→</span>
       <span class="etapa">Power BI · notebook · this page</span>
     </div>
     <p class="sub" style="margin-top:12px" data-i18n="p_como">Cleaning, RFM, churn, cohorts and CLV are SQL migrations (Alembic) tested with pytest, including hostile cases. A data-quality schema checks that totals reconcile across layers before any number is published.</p>
@@ -183,16 +188,18 @@ const TEXTOS = {
     kpi_nota: "Receita de produto líquida de cancelamentos, sem frete, taxas e descontos. Clientes = quem fez ao menos uma compra.",
     q0: "Visão geral", h_receita: "A receita tem pico todo ano de setembro a novembro",
     p_receita: "Venda de produto por mês. Cerca de 13% vem de faturas sem identificação do cliente: receita real, mas que não dá para atribuir a ninguém, por isso fica fora das análises de cliente.",
-    q1: "Pergunta 1 · Segmentação RFM", h_rfm: "Um quarto dos clientes traz 69% da receita",
+    q1: "Pergunta 1 · Segmentação RFM", h_rfm: "Um quarto dos clientes traz 69% da receita atribuível",
     p_rfm: "Notas de 1 a 5 em recência, frequência e valor (empates sempre com a mesma nota), mapeadas em dez segmentos pela grade R × F. Cada segmento tem uma ação para o time de CRM.",
     ver_tabela: "Ver a tabela",
-    q2: "Pergunta 2 · Churn", h_churn: "Uma regra simples, validada no passado",
+    q2: "Pergunta 2 · Churn", h_churn: "Uma regra simples, validada no passado, e onde ela não tem sinal",
+    h_faixa: "Quem de fato não voltou, pelos dias sem comprar no corte",
+    p_faixa: "Quem estava de 91 a 180 dias sem comprar não voltou mais ou menos na mesma proporção que o cliente médio (46% contra 48% em junho de 2011): logo depois do limite, a regra diz pouco. Ela separa os ativos de quem já foi embora. Por isso o fim da base separa \"em risco\" (91 a 365 dias) de \"inativo\" (mais de um ano).",
     p_churn: "O cliente está em churn depois de mais de X dias sem comprar. Para escolher o X com honestidade, a regra foi aplicada numa data de corte passada, só com o que se sabia naquele dia, e comparada com quem de fato voltou nos seis meses seguintes.",
     h_corte1: "Corte em 10/06/2011", h_corte2: "Corte em 10/12/2010 (logo depois do pico)",
-    q3: "Pergunta 3 · Coortes de retenção", h_coortes: "A retenção é estável; o que caiu foi a entrada de clientes novos",
-    p_coortes: "Parte de cada coorte (mês da primeira compra) que comprou de novo N meses depois. O primeiro mês da base (dez/2009) fica de fora: aqueles clientes não são novos, são só o primeiro registro que temos.",
-    q4: "Pergunta 4 · Valor do cliente (CLV)", h_clv: "A previsão acerta o total, que o modelo ingênuo erra por não ver o pico",
-    p_clv: "Valor previsto para 6 meses = probabilidade de continuar ativo (por segmento, na mesma época do ano anterior) × ticket médio × compras por mês (suavização Gamma-Poisson). Feita em 10/06/2011 e conferida contra a receita real até 10/12/2011.",
+    q3: "Pergunta 3 · Coortes de retenção", h_coortes: "Cerca de 1 em cada 5 clientes volta a comprar no mês seguinte",
+    p_coortes: "Parte de cada coorte (mês da primeira compra) que comprou de novo N meses depois. O primeiro mês da base (dez/2009) fica de fora: aqueles clientes não são novos, são só o primeiro registro que temos. As coortes do começo de 2010 ainda misturam clientes antigos que voltaram (censura à esquerda), então comparar anos é inconclusivo.",
+    q4: "Pergunta 4 · Valor do cliente (CLV)", h_clv: "A previsão ganha de um modelo ingênuo sazonal nas três medidas",
+    p_clv: "Valor previsto para 6 meses = probabilidade de continuar ativo (por segmento, na mesma época do ano anterior) × ticket médio × compras por mês (suavização Gamma-Poisson). Feita em 10/06/2011 e conferida contra a receita real até 10/12/2011. O total fica perto em parte porque os erros se compensam: por segmento, o viés vai de −17% (Campeões) a +199%.",
     clv_nota: "Captura do top 20%: receita capturada pelos 20% de clientes com maior previsão, em relação a um top 20% perfeito.",
     q5: "Como foi feito",
     p_como: "Limpeza, RFM, churn, coortes e CLV são migrations SQL (Alembic) testadas com pytest, inclusive com casos hostis. Um schema de qualidade de dados confere se os totais batem entre as camadas antes de qualquer número ser publicado.",
@@ -203,7 +210,10 @@ const TEXTOS = {
 const ROTULOS = {
   en: {
     receita: "Product revenue", clientes: "Customers", recompra: "Bought 2+ times", top10: "Revenue from top 10%",
-    risco: "12-month revenue at risk (churned)", clv: "Predicted value, next 6 months", dq: "Data-quality checks passed",
+    risco: "Customers at risk (91–365 days)", risco_rec: "Their last-12-month revenue", inativos: "Inactive for over a year",
+    clv: "Predicted value, next 6 months", dq: "Data-quality checks passed",
+    sazonal: "Seasonal naive (same window a year earlier)", mod_sazonal: "Seasonal naive",
+    col_risco: "At risk", col_inativo: "Inactive", base: "all customers", corte: "Cut-off",
     com: "With customer ID", sem: "Without customer ID", pct_cli: "% of customers", pct_rec: "% of revenue",
     precisao: "Precision", recall: "Recall", xdias: "X (days without buying)",
     previsto: "Predicted (model)", ingenuo: "Naive (repeat last 6 months)", real: "Actual",
@@ -211,11 +221,14 @@ const ROTULOS = {
     churn_col: "Churned", clv6: "Predicted 6m", acao: "Suggested action", coorte: "Cohort", meses: "Months since first purchase",
     modelo: "Model", erro_total: "Error on total", erro_medio: "Mean abs. error", captura: "Top-20% capture",
     mod_previsto: "Forecast", mod_ingenuo: "Naive", parcial: "(to 9 Dec)",
-    churn_texto: (j, d) => `At the June cut-off, X = 90 days had the best F1 among 90, 120 and 180: ${pc(j.precisao)} of flagged customers really did not come back, and the rule caught ${pc(j.recall)} of those who left. Right after the Sep–Nov peak (December cut-off) the same rule catches only ${pc(d.recall)}: many customers only return at the next peak. The end-of-data flag (also in December) is therefore conservative.`
+    churn_texto: (j, d) => `At the June cut-off the F1 is almost flat between 30 and 120 days; 90 days ("a quarter without buying") was kept because it is easy to act on: ${pc(j.precisao)} of flagged customers really did not come back, and the rule caught ${pc(j.recall)} of those who left. Right after the Sep–Nov peak (December cut-off) the same rule catches only ${pc(d.recall)}: many customers only return at the next peak. The end-of-data flag (also in December) is therefore conservative.`
   },
   pt: {
     receita: "Receita de produto", clientes: "Clientes", recompra: "Compraram 2+ vezes", top10: "Receita dos 10% maiores",
-    risco: "Receita de 12 meses em risco (churn)", clv: "Valor previsto, próximos 6 meses", dq: "Checagens de qualidade aprovadas",
+    risco: "Clientes em risco (91 a 365 dias)", risco_rec: "Receita deles nos últimos 12 meses", inativos: "Inativos há mais de um ano",
+    clv: "Valor previsto, próximos 6 meses", dq: "Checagens de qualidade aprovadas",
+    sazonal: "Ingênuo sazonal (mesma janela um ano antes)", mod_sazonal: "Ingênuo sazonal",
+    col_risco: "Em risco", col_inativo: "Inativos", base: "todos os clientes", corte: "Corte",
     com: "Com cliente identificado", sem: "Sem cliente", pct_cli: "% dos clientes", pct_rec: "% da receita",
     precisao: "Precisão", recall: "Recall", xdias: "X (dias sem comprar)",
     previsto: "Previsto (modelo)", ingenuo: "Ingênuo (repete 6 meses)", real: "Real",
@@ -223,7 +236,7 @@ const ROTULOS = {
     churn_col: "Em churn", clv6: "Previsto 6m", acao: "Ação sugerida", coorte: "Coorte", meses: "Meses desde a 1ª compra",
     modelo: "Modelo", erro_total: "Erro no total", erro_medio: "Erro médio absoluto", captura: "Captura do top 20%",
     mod_previsto: "Previsão", mod_ingenuo: "Ingênuo", parcial: "(até dia 9)",
-    churn_texto: (j, d) => `No corte de junho, X = 90 dias teve o melhor F1 entre 90, 120 e 180: ${pc(j.precisao)} dos marcados de fato não voltaram, e a regra pegou ${pc(j.recall)} de quem foi embora. Logo depois do pico de set a nov (corte de dezembro), a mesma regra pega só ${pc(d.recall)}: muitos clientes só voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto, conservadora.`
+    churn_texto: (j, d) => `No corte de junho o F1 é quase plano entre 30 e 120 dias; ficou 90 dias ("um trimestre sem comprar") por ser fácil de agir: ${pc(j.precisao)} dos marcados de fato não voltaram, e a regra pegou ${pc(j.recall)} de quem foi embora. Logo depois do pico de set a nov (corte de dezembro), a mesma regra pega só ${pc(d.recall)}: muitos clientes só voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto, conservadora.`
   }
 };
 const SEGMENTOS_EN = {
@@ -254,9 +267,10 @@ const graficos = [];
 const textoOriginal = {};
 document.querySelectorAll("[data-i18n]").forEach(el => { textoOriginal[el.dataset.i18n] = el.textContent; });
 
-function pc(v, casas = 0) { return (v * 100).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB", { minimumFractionDigits: casas, maximumFractionDigits: casas }) + "%"; }
-function num(v) { return Math.round(v).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB"); }
+function pc(v, casas = 0) { if (v === null || v === undefined) return "–"; return (v * 100).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB", { minimumFractionDigits: casas, maximumFractionDigits: casas }) + "%"; }
+function num(v) { if (v === null || v === undefined) return "–"; return Math.round(v).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB"); }
 function libras(v) {
+  if (v === null || v === undefined) return "–";
   const loc = idioma === "pt" ? "pt-BR" : "en-GB";
   if (Math.abs(v) >= 1e6) return "£" + (v / 1e6).toLocaleString(loc, { maximumFractionDigits: 2 }) + (idioma === "pt" ? " mi" : "m");
   if (Math.abs(v) >= 1e3) return "£" + Math.round(v / 1e3).toLocaleString(loc) + (idioma === "pt" ? " mil" : "k");
@@ -283,7 +297,8 @@ function kpis() {
   const itens = [
     [libras(r.receita_produto), R().receita], [num(r.clientes), R().clientes],
     [pc(r.pct_recompra), R().recompra], [pc(r.pct_receita_top10), R().top10],
-    [libras(r.receita_em_risco), R().risco], [libras(r.clv_6m), R().clv],
+    [num(r.em_risco), R().risco], [libras(r.receita_em_risco), R().risco_rec],
+    [num(r.inativos), R().inativos], [libras(r.clv_6m), R().clv],
     [`${r.dq_ok}/${r.dq_total}`, R().dq]
   ];
   document.getElementById("kpis").innerHTML = itens.map(([v, t]) =>
@@ -348,11 +363,13 @@ function desenhar() {
     options: op2
   }));
   document.getElementById("t_rfm").innerHTML =
-    `<thead><tr><th>${R().seg}</th><th>${R().n}</th><th>${R().pct_cli}</th><th>${R().receita_liq}</th><th>${R().pct_rec}</th><th>${R().rec_media}</th><th>${R().churn_col}</th><th>${R().clv6}</th><th>${R().acao}</th></tr></thead><tbody>` +
-    sg.map(s => `<tr><td>${seg(s.segmento)}</td><td>${num(s.clientes)}</td><td>${pc(s.pct_clientes, 1)}</td><td>${libras(s.receita_liquida)}</td><td>${pc(s.pct_receita, 1)}</td><td>${num(s.recencia_media)}</td><td>${num(s.em_churn)}</td><td>${libras(s.clv_previsto_6m)}</td><td class="acao">${idioma === "pt" ? s.acao : ACOES_EN[s.segmento]}</td></tr>`).join("") + "</tbody>";
+    `<thead><tr><th>${R().seg}</th><th>${R().n}</th><th>${R().pct_cli}</th><th>${R().receita_liq}</th><th>${R().pct_rec}</th><th>${R().rec_media}</th><th>${R().col_risco}</th><th>${R().col_inativo}</th><th>${R().clv6}</th><th>${R().acao}</th></tr></thead><tbody>` +
+    sg.map(s => `<tr><td>${seg(s.segmento)}</td><td>${num(s.clientes)}</td><td>${pc(s.pct_clientes, 1)}</td><td>${libras(s.receita_liquida)}</td><td>${pc(s.pct_receita, 1)}</td><td>${num(s.recencia_media)}</td><td>${num(s.em_risco)}</td><td>${num(s.inativos)}</td><td>${libras(s.clv_previsto_6m)}</td><td class="acao">${idioma === "pt" ? s.acao : ACOES_EN[s.segmento]}</td></tr>`).join("") + "</tbody>";
 
   // Churn: um gráfico por corte
-  const cortes = [["2011-06-10", "g_churn1"], ["2010-12-10", "g_churn2"]];
+  // Cortes vindos do JSON (o mais recente primeiro), não fixos no código.
+  const datasCorte = [...new Set(dados.churn.map(c => c.corte))].sort().reverse();
+  const cortes = datasCorte.slice(0, 2).map((c, i) => [c, i === 0 ? "g_churn1" : "g_churn2"]);
   const escolhido = {};
   cortes.forEach(([corte, id]) => {
     const linhas = dados.churn.filter(c => c.corte === corte);
@@ -373,7 +390,28 @@ function desenhar() {
       options: op
     }));
   });
-  document.getElementById("churn_texto").textContent = R().churn_texto(escolhido["2011-06-10"], escolhido["2010-12-10"]);
+  const [jun, dez] = datasCorte.map(c => escolhido[c]);
+  document.getElementById("churn_texto").textContent = jun && dez ? R().churn_texto(jun, dez) : "";
+
+  // Taxa de "não voltou" por faixa de recência, um conjunto de barras por corte.
+  const faixas = dados.churn_faixa || [];
+  const nomesFaixa = [...new Map(faixas.map(f => [f.ordem, f.faixa])).entries()].sort((a, b) => a[0] - b[0]);
+  const rotFaixa = { "até 90 dias": "up to 90 days", "91 a 180 dias": "91–180 days", "181 a 365 dias": "181–365 days", "mais de 365 dias": "over 365 days" };
+  const opF = baseOpcoes();
+  opF.scales.y.min = 0; opF.scales.y.max = 1; opF.scales.y.ticks.callback = v => pc(v);
+  opF.plugins.tooltip.callbacks = { label: c => `${c.dataset.label}: ${pc(c.parsed.y, 1)}` };
+  graficos.push(new Chart(document.getElementById("g_faixa"), {
+    type: "bar",
+    data: {
+      labels: nomesFaixa.map(([, f]) => idioma === "pt" ? f : (rotFaixa[f] || f)),
+      datasets: datasCorte.slice(0, 2).map((c, i) => ({
+        label: `${R().corte} ${c.split("-").reverse().join("/")}`,
+        data: nomesFaixa.map(([o]) => (faixas.find(f => f.corte === c && f.ordem === o) || {}).taxa_nao_voltou ?? null),
+        backgroundColor: cor(i === 0 ? "--s1" : "--s2"), borderRadius: 3
+      }))
+    },
+    options: opF
+  }));
 
   // Coortes: heatmap em tabela
   const porCoorte = {};
@@ -393,7 +431,7 @@ function desenhar() {
   const cs = dados.clv_segmento;
   const op3 = baseOpcoes();
   // O ingênuo tem negativos minúsculos (cancelamentos); sem isto o eixo descia a -£500k.
-  const minimo = Math.min(0, ...cs.flatMap(s => [s.previsto, s.ingenuo, s.real]));
+  const minimo = Math.min(0, ...cs.flatMap(s => [s.previsto, s.ingenuo_sazonal, s.real]));
   op3.scales.y.min = minimo;
   op3.scales.y.ticks.callback = v => (v === minimo && v !== 0 ? "" : libras(v));
   op3.plugins.tooltip.callbacks = { label: c => `${c.dataset.label}: ${libras(c.parsed.y)}` };
@@ -403,16 +441,19 @@ function desenhar() {
       labels: cs.map(s => seg(s.segmento)),
       datasets: [
         { label: R().previsto, data: cs.map(s => s.previsto), backgroundColor: cor("--s1"), borderRadius: 3 },
-        { label: R().ingenuo, data: cs.map(s => s.ingenuo), backgroundColor: cor("--s2"), borderRadius: 3 },
+        { label: R().sazonal, data: cs.map(s => s.ingenuo_sazonal), backgroundColor: cor("--s2"), borderRadius: 3 },
         { label: R().real, data: cs.map(s => s.real), backgroundColor: cor("--s3"), borderRadius: 3 }
       ]
     },
     options: op3
   }));
-  const nomeModelo = m => m === "previsto" ? R().mod_previsto : R().mod_ingenuo;
+  const nomeModelo = m => m === "previsto" ? R().mod_previsto : m === "ingenuo_sazonal" ? R().mod_sazonal : R().mod_ingenuo;
+  const loc = idioma === "pt" ? "pt-BR" : "en-GB";
+  const erroPct = v => v === null || v === undefined ? "–" : `${v > 0 ? "+" : ""}${v.toLocaleString(loc)}%`;
+  const captura = v => v === null || v === undefined ? "–" : v.toLocaleString(loc, { minimumFractionDigits: 3 });
   document.getElementById("t_clv").innerHTML =
     `<thead><tr><th>${R().modelo}</th><th>${R().erro_total}</th><th>${R().erro_medio}</th><th>${R().captura}</th></tr></thead><tbody>` +
-    dados.clv_validacao.map(v => `<tr><td>${nomeModelo(v.modelo)}</td><td>${v.erro_total_pct > 0 ? "+" : ""}${v.erro_total_pct.toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB")}%</td><td>£${num(v.erro_medio_abs)}</td><td>${v.captura_top20.toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB", { minimumFractionDigits: 3 })}</td></tr>`).join("") +
+    dados.clv_validacao.map(v => `<tr><td>${nomeModelo(v.modelo)}</td><td>${erroPct(v.erro_total_pct)}</td><td>£${num(v.erro_medio_abs)}</td><td>${captura(v.captura_top20)}</td></tr>`).join("") +
     `</tbody><tfoot><tr><td>${R().real}</td><td colspan="3">${libras(dados.clv_validacao[0].total_real)}</td></tr></tfoot>`;
 }
 
@@ -431,8 +472,17 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if
 
 try { const salvo = localStorage.getItem("idioma"); if (salvo === "pt" || salvo === "en") idioma = salvo; } catch (e) { /* idem */ }
 textos();
-fetch("dados.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => { dados = d; desenhar(); })
-  .catch(() => { document.getElementById("kpis").innerHTML = '<p class="muted">Could not load dados.json.</p>'; });
+fetch("dados.json")
+  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then(d => {
+    dados = d;
+    try { desenhar(); }
+    catch (e) {
+      console.error(e);
+      document.getElementById("kpis").innerHTML = '<p class="muted">Could not draw the page: ' + String(e.message).replace(/[<>&]/g, "") + '</p>';
+    }
+  })
+  .catch(e => { document.getElementById("kpis").innerHTML = '<p class="muted">Could not load dados.json (' + String(e.message).replace(/[<>&]/g, "") + ').</p>'; });
 </script>
 </body>
 </html>

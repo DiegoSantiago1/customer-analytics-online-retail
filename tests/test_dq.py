@@ -45,7 +45,7 @@ def falhas(resultado: dict[str, bool]) -> set[str]:
 
 def test_cenario_limpo_passa_em_tudo(bd: Conexao) -> None:
     resultado = rodar(bd, base())
-    assert len(resultado) == 16
+    assert len(resultado) == 18
     # O cenário pequeno não tem 2 cortes de churn válidos nem quintos equilibrados.
     assert falhas(resultado) <= {"analise_churn_validado_nos_dois_cortes", "analise_quintis_r_e_m"}
 
@@ -90,3 +90,63 @@ def test_carga_incompleta_e_pega(bd: Conexao) -> None:
 def test_resultado_e_lido_pelo_bi(bd: Conexao, bd_bi: Conexao) -> None:
     # dq.resultado precisa estar visível para o usuário do Power BI.
     bd_bi.execute("SELECT count(*) FROM dq.resultado").fetchone()
+
+
+def test_so_com_a_aba_antiga_nao_ha_falso_alarme(bd: Conexao) -> None:
+    # Sem a aba nova o corte seria NULL; o dq usa o mesmo coalesce(..., 'infinity') do limpo.
+    linhas = [compra(12000 + i, f"55{i:02d}01", f"2010-0{1 + i % 5}-10") for i in range(10)]
+    linhas = [(*linha_[:-1], ANTIGA) for linha_ in linhas]
+    resultado = rodar(bd, linhas)
+    assert falhas(resultado) <= {"analise_churn_validado_nos_dois_cortes", "analise_quintis_r_e_m"}
+
+
+def test_fatura_com_e_sem_cliente_e_pega(bd: Conexao) -> None:
+    linhas = [*base(), compra(12001, "556001", "2011-03-01"), compra(None, "556001", "2011-03-01")]
+    assert "limpo_fatura_mista" in falhas(rodar(bd, linhas))
+
+
+@pytest.mark.parametrize(
+    ("corrupcao", "checagem"),
+    [
+        (
+            "DELETE FROM limpo.fatura_linha "
+            "WHERE ctid = (SELECT min(ctid) FROM limpo.fatura_linha)",
+            "limpo_linhas",
+        ),
+        ("DELETE FROM analise.cliente WHERE cliente_id = 12001", "analise_clientes_com_compra"),
+        (
+            "UPDATE analise.pedido SET receita_outros = receita_outros + 1 WHERE fatura = '550101'",
+            "analise_pedidos_somam_o_limpo",
+        ),
+        (
+            "UPDATE analise.pedido SET receita_produto = receita_produto + 1 "
+            "WHERE fatura = '550101'",
+            "analise_receita_liquida_bate",
+        ),
+        (
+            "UPDATE analise.coorte_retencao SET tamanho = tamanho + 1, ativos = ativos + 1 "
+            "WHERE meses_desde = 0 AND coorte = (SELECT min(coorte) FROM analise.coorte_retencao)",
+            "analise_coortes_somam_clientes",
+        ),
+        (
+            "UPDATE analise.coorte_retencao SET receita_liquida = receita_liquida + 1 "
+            "WHERE meses_desde = 0 AND coorte = (SELECT min(coorte) FROM analise.coorte_retencao)",
+            "analise_coortes_receita_bate",
+        ),
+        (
+            "UPDATE analise.cliente SET em_churn = NULL WHERE cliente_id = 12001",
+            "analise_clv_preenchido",
+        ),
+        (
+            "UPDATE bruto.fatura_linha SET data_fatura = replace(data_fatura, ' ', 'T') "
+            "WHERE linha_origem = 2",
+            "bruto_formatos",
+        ),
+    ],
+)
+def test_cada_checagem_pega_a_sua_corrupcao(bd: Conexao, corrupcao: str, checagem: str) -> None:
+    rodar(bd, base())
+    bd.execute(corrupcao)
+    bd.execute("SELECT dq.verificar()")
+    ok = bd.execute("SELECT ok FROM dq.resultado WHERE verificacao = %s", (checagem,)).fetchone()
+    assert ok == (False,), checagem

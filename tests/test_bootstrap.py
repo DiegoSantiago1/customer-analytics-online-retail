@@ -2,7 +2,13 @@
 
 import pytest
 
-from varejo.bootstrap import citar_valor_psql, comando_psql, config_docker, montar_entrada_psql
+from varejo.bootstrap import (
+    citar_valor_psql,
+    comando_psql,
+    conferir_usuarios,
+    config_docker,
+    montar_entrada_psql,
+)
 from varejo.config import ConfigError, carregar_config_banco
 
 from .test_config import ENV_VALIDO
@@ -53,3 +59,14 @@ def test_superusuario_invalido() -> None:
     env = {"VAREJO_DOCKER_CONTAINER": "honda-vendas-db", "VAREJO_DOCKER_SUPERUSER": "Honda;"}
     with pytest.raises(ConfigError, match="VAREJO_DOCKER_SUPERUSER"):
         config_docker(env)
+
+
+@pytest.mark.parametrize("variavel", ["VAREJO_DB_USER", "VAREJO_BI_USER"])
+def test_usuario_do_projeto_nao_pode_ser_o_superusuario(variavel: str) -> None:
+    config = carregar_config_banco({**ENV_VALIDO, variavel: "honda"})
+    with pytest.raises(ConfigError, match="superusuário"):
+        conferir_usuarios(config, "honda")
+
+
+def test_usuarios_proprios_passam() -> None:
+    conferir_usuarios(carregar_config_banco(ENV_VALIDO), "honda")

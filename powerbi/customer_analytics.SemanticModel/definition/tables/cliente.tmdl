@@ -149,6 +149,13 @@ table cliente
 		summarizeBy: sum
 		sourceColumn: clv_previsto_6m
 
+	/// ativo (até 90 dias), em_risco (91 a 365) ou inativo (mais de 365).
+	column status_churn
+		dataType: string
+		lineageTag: cc0cfaf0-bb34-5cfa-8eb6-50374fe68351
+		summarizeBy: none
+		sourceColumn: status_churn
+
 	column p_ativo_6m
 		dataType: decimal
 		formatString: 0.0%

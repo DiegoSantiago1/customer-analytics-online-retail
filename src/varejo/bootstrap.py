@@ -88,6 +88,19 @@ def config_docker(env: Mapping[str, str]) -> tuple[str, str]:
     return container, superusuario
 
 
+def conferir_usuarios(config: ConfigBanco, superusuario: str) -> None:
+    """O bootstrap rebaixa os usuários do projeto (NOSUPERUSER...): nunca o superusuário."""
+    for variavel, usuario in (
+        ("VAREJO_DB_USER", config.usuario),
+        ("VAREJO_BI_USER", config.usuario_bi),
+    ):
+        if usuario == superusuario:
+            raise ConfigError(
+                f"{variavel}={usuario!r} é o superusuário do container: o bootstrap tiraria "
+                "os privilégios dele. Use um usuário próprio do projeto."
+            )
+
+
 def _docker() -> str:
     caminho = shutil.which("docker")
     if caminho is None:
@@ -110,6 +123,7 @@ def main() -> int:
     try:
         banco = carregar_config_banco()
         container, superusuario = config_docker(os.environ)
+        conferir_usuarios(banco, superusuario)
         docker = _docker()
         entrada = montar_entrada_psql(banco, ARQUIVO_SQL.read_text(encoding="utf-8"))
     except ConfigError as erro:

@@ -1,0 +1,24 @@
+# PostgreSQL 16 só para este projeto (para quem clona o repositório).
+# Uso: docker compose up -d   (depois: python -m varejo.bootstrap)
+# A porta é publicada só em 127.0.0.1: o banco não fica acessível pela rede.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: varejo-db
+    environment:
+      POSTGRES_USER: postgres
+      # Senha só do superusuário local do container; o projeto não a usa (o bootstrap
+      # entra via docker exec, pelo socket local, sem senha).
+      POSTGRES_PASSWORD: ${VAREJO_POSTGRES_SUPERUSER_PASSWORD:-troque_esta_senha_local}
+      TZ: Europe/London
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - varejo-dados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  varejo-dados:

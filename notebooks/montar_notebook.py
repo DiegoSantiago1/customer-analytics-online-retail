@@ -51,7 +51,7 @@ pd.set_option("display.float_format", lambda v: f"{v:,.2f}")""",
         "md",
         """## 0. Qualidade dos dados
 
-Antes de qualquer número, as 16 checagens do schema `dq`. Todas precisam estar ok.""",
+Antes de qualquer número, as 18 checagens do schema `dq`. Todas precisam estar ok.""",
     ),
     (
         "code",
@@ -98,7 +98,8 @@ resumo[["segmento", "clientes", "pct_clientes", "pct_receita", "recencia_media",
     ),
     (
         "md",
-        """**Leitura:** os Campeões são 24% dos clientes e fazem 69% da receita líquida.
+        """**Leitura:** os Campeões são 24% dos clientes e fazem 69% da receita líquida
+atribuível (clientes identificados).
 "Não pode perder" é pequeno (66 clientes), mas tem frequência média de 17 compras: é
 a lista de contato pessoal do CRM.""",
     ),
@@ -125,17 +126,21 @@ validacao[["corte", "dias", "marcados", "precisao", "recall", "f1", "acuracia", 
     ),
     (
         "md",
-        """**Leitura:** no corte de junho, X = 90 tem o melhor F1 entre 90, 120 e 180 (0,71):
-dos marcados, 64% de fato não voltaram, e a regra pegou 80% dos que não voltaram. Em
-dezembro, logo depois do pico, a mesma regra perde recall (45%): muitos clientes só
-voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto,
-conservadora.""",
+        """**Leitura:** no corte de junho o F1 é quase plano entre 30 e 120 dias (0,70 a
+0,715); ficou X = 90 por ser fácil de agir. Dos marcados, 64% de fato não voltaram, e a
+regra pegou 80% dos que não voltaram. Em dezembro, logo depois do pico, a mesma regra
+perde recall (45%): muitos clientes só voltam no pico seguinte.
+
+Onde está o sinal: a taxa de "não voltou" por faixa de recência (tabela abaixo) mostra
+que quem está de 91 a 180 dias sem comprar não volta em 46% dos casos, praticamente a
+taxa base (48%). A regra separa os ativos de quem já foi embora; por isso o fim da base
+separa **em risco** (91 a 365 dias) de **inativo** (mais de um ano).""",
     ),
     (
         "code",
-        """ler(\"\"\"SELECT segmento, count(*) FILTER (WHERE em_churn) AS em_churn,
-           round(sum(receita_12m) FILTER (WHERE em_churn)) AS receita_12m_em_risco
-    FROM analise.vw_cliente GROUP BY segmento, segmento_ordem ORDER BY segmento_ordem\"\"\")""",
+        """display(ler("SELECT corte, faixa, clientes, nao_voltaram, taxa_nao_voltou FROM analise.churn_faixa ORDER BY corte DESC, ordem"))
+ler(\"\"\"SELECT status_churn, count(*) AS clientes, round(sum(receita_12m)) AS receita_12m
+    FROM analise.cliente GROUP BY status_churn ORDER BY status_churn\"\"\")""",
     ),
     ("md", """## 4. A retenção melhora ou piora? (coortes)"""),
     (
@@ -151,10 +156,11 @@ media""",
     ),
     (
         "md",
-        """**Leitura:** a retenção é estável, em torno de 21% no mês 1 e 18% no mês 6, sem
-piora entre 2010 e 2011. O que caiu foi a entrada de clientes novos (set-nov: 940 em
-2010, 600 em 2011). A diagonal mais escura nas coortes de 2010 é o pico de set-nov do
-ano seguinte.""",
+        """**Leitura:** cerca de 1 em cada 5 clientes volta a comprar no mês seguinte (21%
+no mês 1, 18% no mês 6). Comparar 2010 com 2011 é **inconclusivo**: as coortes do
+começo de 2010 misturam clientes antigos que voltaram (censura à esquerda: ~70% dos
+"novos" de jan a mar, medido com o análogo de 2011) e a sazonalidade mexe no mês 1. A
+diagonal mais escura nas coortes de 2010 é o pico de set a nov do ano seguinte.""",
     ),
     (
         "md",
@@ -171,14 +177,16 @@ validacao_clv = ler("SELECT * FROM analise.clv_validacao_cliente")
 ordem = resumo.sort_values("ordem")["segmento"].tolist()
 fig = graficos.clv_previsto_vs_real(validacao_clv, ordem)
 salvar(fig, "clv_validacao")
-validacao_clv.groupby("segmento")[["previsto", "ingenuo", "real"]].sum().reindex(ordem)""",
+validacao_clv.groupby("segmento")[["previsto", "ingenuo_sazonal", "ingenuo", "real"]].sum().reindex(ordem)""",
     ),
     (
         "md",
-        """**Leitura:** o modelo erra o total em +0,5%, e o ingênuo ("repete os 6 meses
-anteriores") erra em -29%, porque não enxerga o pico de fim de ano. Na ordenação os
-dois empatam (os 20% maiores previstos capturam 88% do que um top 20% perfeito
-capturaria). O ingênuo ganha no erro médio por cliente. Detalhes em DECISOES D24.""",
+        """**Leitura:** o modelo ganha do ingênuo sazonal ("repete a mesma janela de um ano
+antes") nas três medidas: erro no total +0,2% contra +11,8%, erro médio £603 contra
+£650, captura do top 20% 0,882 contra 0,845. Mas o total fecha em parte porque os erros
+se compensam: por segmento, o viés vai de -17% (Campeões, subestimados) a +199% (Não
+pode perder). O b da suavização foi escolhido nesse mesmo corte. Detalhes em DECISOES
+D23 e D24.""",
     ),
     (
         "code",

@@ -8,7 +8,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["receita_mes", "segmento", "cliente", "churn_validacao", "coorte", "clv_validacao", "clv_validacao_cliente", "qualidade", "Medidas"]
+annotation PBI_QueryOrder = ["receita_mes", "segmento", "cliente", "churn_validacao", "coorte", "clv_validacao", "clv_validacao_cliente", "churn_faixa", "qualidade", "Medidas"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
@@ -19,6 +19,7 @@ ref table churn_validacao
 ref table coorte
 ref table clv_validacao
 ref table clv_validacao_cliente
+ref table churn_faixa
 ref table qualidade
 ref table Medidas
 

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "nota_sazonalidade",
   "position": {
-    "x": 16,
-    "y": 604,
-    "z": 8000,
-    "width": 1248,
-    "height": 104,
-    "tabOrder": 8000
+    "x": 632,
+    "y": 476,
+    "z": 9000,
+    "width": 632,
+    "height": 232,
+    "tabOrder": 9000
   },
   "visual": {
     "visualType": "textbox",
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Limitação medida: no corte de 10/06/2011, X = 90 tem precisão de 64% e recall de 80%. Logo depois do pico de set a nov (corte de 10/12/2010), a mesma regra pega só 45% de quem some, porque muitos clientes só voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto, conservadora. Detalhes em docs/DECISOES.md (D17 e D18).",
+                    "value": "Como ler: no corte de 10/06/2011, X = 90 tem precisão de 64% e recall de 80%, mas o F1 é quase igual entre 30 e 120 dias. A faixa de 91 a 180 dias não voltou em 46% dos casos, perto da média (48%): logo depois do limite a regra diz pouco; ela separa os ativos de quem já foi embora. Por isso o fim da base separa em risco (91 a 365 dias) de inativos (mais de 1 ano). Logo depois do pico de set a nov (corte de 10/12/2010), a regra pega só 45% de quem some. Detalhes em docs/DECISOES.md (D17 a D19).",
                     "textStyle": {
                       "fontSize": "10pt",
                       "color": "#52514E"

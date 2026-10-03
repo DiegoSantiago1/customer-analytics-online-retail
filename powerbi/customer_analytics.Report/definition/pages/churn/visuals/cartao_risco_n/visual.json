@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "cartao_pct_churn",
+  "name": "cartao_risco_n",
   "position": {
-    "x": 332,
+    "x": 16,
     "y": 80,
-    "z": 2000,
+    "z": 1000,
     "width": 300,
     "height": 104,
-    "tabOrder": 2000
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "card",
@@ -23,12 +23,12 @@
                       "Entity": "Medidas"
                     }
                   },
-                  "Property": "% em churn"
+                  "Property": "Em risco"
                 }
               },
-              "queryRef": "Medidas.% em churn",
-              "nativeQueryRef": "% em churn",
-              "displayName": "% em churn"
+              "queryRef": "Medidas.Em risco",
+              "nativeQueryRef": "Em risco",
+              "displayName": "Em risco (91 a 365 dias)"
             }
           ]
         }

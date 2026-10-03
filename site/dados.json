@@ -6,10 +6,12 @@
   "receita_liquida": 16413300.877,
   "pct_recompra": 0.7235,
   "em_churn": 2967,
-  "receita_em_risco": 835120.931,
-  "clv_6m": 3809239.74,
-  "dq_ok": 16,
-  "dq_total": 16,
+  "em_risco": 1376,
+  "inativos": 1591,
+  "receita_em_risco": 837690.391,
+  "clv_6m": 3822971.83,
+  "dq_ok": 18,
+  "dq_total": 18,
   "pct_receita_top10": 0.6315
  },
  "receita_mes": [
@@ -259,31 +261,31 @@
    "ordem": 2,
    "segmento": "Leais",
    "acao": "Programa de fidelidade; oferecer itens de maior valor.",
-   "clientes": 1025,
-   "pct_clientes": 0.1752,
-   "receita_liquida": 2286176.535,
-   "pct_receita": 0.1393,
-   "recencia_media": 87.0,
-   "frequencia_media": 6.0,
+   "clientes": 1196,
+   "pct_clientes": 0.2044,
+   "receita_liquida": 2489322.865,
+   "pct_receita": 0.1517,
+   "recencia_media": 76.0,
+   "frequencia_media": 5.6,
    "em_churn": 402,
    "receita_12m_em_risco": 401070.25,
-   "clv_previsto_6m": 532761.02,
-   "atacado": 108
+   "clv_previsto_6m": 642375.78,
+   "atacado": 124
   },
   {
    "ordem": 3,
    "segmento": "Potenciais leais",
    "acao": "Incentivar a próxima compra; sugerir categorias novas.",
-   "clientes": 442,
-   "pct_clientes": 0.0755,
-   "receita_liquida": 394421.61,
-   "pct_receita": 0.024,
-   "recencia_media": 19.0,
-   "frequencia_media": 2.6,
+   "clientes": 271,
+   "pct_clientes": 0.0463,
+   "receita_liquida": 191275.28,
+   "pct_receita": 0.0117,
+   "recencia_media": 25.0,
+   "frequencia_media": 2.0,
    "em_churn": 0,
    "receita_12m_em_risco": 0.0,
-   "clv_previsto_6m": 197680.5,
-   "atacado": 45
+   "clv_previsto_6m": 101797.83,
+   "atacado": 29
   },
   {
    "ordem": 4,
@@ -583,6 +585,72 @@
    "f1": 0.0466,
    "acuracia": 0.4751,
    "escolhido": false
+  }
+ ],
+ "churn_faixa": [
+  {
+   "corte": "2011-06-10",
+   "ordem": 1,
+   "faixa": "até 90 dias",
+   "clientes": 1973,
+   "nao_voltaram": 468,
+   "taxa_nao_voltou": 0.2372
+  },
+  {
+   "corte": "2011-06-10",
+   "ordem": 2,
+   "faixa": "91 a 180 dias",
+   "clientes": 665,
+   "nao_voltaram": 307,
+   "taxa_nao_voltou": 0.4617
+  },
+  {
+   "corte": "2011-06-10",
+   "ordem": 3,
+   "faixa": "181 a 365 dias",
+   "clientes": 1685,
+   "nao_voltaram": 1067,
+   "taxa_nao_voltou": 0.6332
+  },
+  {
+   "corte": "2011-06-10",
+   "ordem": 4,
+   "faixa": "mais de 365 dias",
+   "clientes": 621,
+   "nao_voltaram": 530,
+   "taxa_nao_voltou": 0.8535
+  },
+  {
+   "corte": "2010-12-10",
+   "ordem": 1,
+   "faixa": "até 90 dias",
+   "clientes": 2867,
+   "nao_voltaram": 1256,
+   "taxa_nao_voltou": 0.4381
+  },
+  {
+   "corte": "2010-12-10",
+   "ordem": 2,
+   "faixa": "91 a 180 dias",
+   "clientes": 607,
+   "nao_voltaram": 408,
+   "taxa_nao_voltou": 0.6722
+  },
+  {
+   "corte": "2010-12-10",
+   "ordem": 3,
+   "faixa": "181 a 365 dias",
+   "clientes": 749,
+   "nao_voltaram": 578,
+   "taxa_nao_voltou": 0.7717
+  },
+  {
+   "corte": "2010-12-10",
+   "ordem": 4,
+   "faixa": "mais de 365 dias",
+   "clientes": 62,
+   "nao_voltaram": 55,
+   "taxa_nao_voltou": 0.8871
   }
  ],
  "coortes": [
@@ -1779,11 +1847,20 @@
   {
    "modelo": "previsto",
    "clientes": 4944,
-   "total_previsto": 4263961.12,
+   "total_previsto": 4253046.66,
    "total_real": 4243517.7,
-   "erro_total_pct": 0.48,
-   "erro_medio_abs": 604.36,
-   "captura_top20": 0.883
+   "erro_total_pct": 0.22,
+   "erro_medio_abs": 603.18,
+   "captura_top20": 0.8818
+  },
+  {
+   "modelo": "ingenuo_sazonal",
+   "clientes": 4944,
+   "total_previsto": 4743631.74,
+   "total_real": 4243517.7,
+   "erro_total_pct": 11.79,
+   "erro_medio_abs": 649.91,
+   "captura_top20": 0.8446
   },
   {
    "modelo": "ingenuo",
@@ -1801,27 +1878,31 @@
    "segmento": "Campeões",
    "previsto": 2582372.83,
    "ingenuo": 2293333.02,
+   "ingenuo_sazonal": 3121278.97,
    "real": 3117946.63
   },
   {
    "ordem": 2,
    "segmento": "Leais",
-   "previsto": 570310.42,
-   "ingenuo": 324395.37,
-   "real": 428285.55
+   "previsto": 680583.13,
+   "ingenuo": 427752.78,
+   "ingenuo_sazonal": 762986.28,
+   "real": 521410.12
   },
   {
    "ordem": 3,
    "segmento": "Potenciais leais",
-   "previsto": 247920.23,
-   "ingenuo": 208322.74,
-   "real": 187207.08
+   "previsto": 126733.06,
+   "ingenuo": 104965.33,
+   "ingenuo_sazonal": 28372.58,
+   "real": 94082.51
   },
   {
    "ordem": 4,
    "segmento": "Novos",
    "previsto": 57119.96,
    "ingenuo": 26838.0,
+   "ingenuo_sazonal": 0.0,
    "real": 34976.24
   },
   {
@@ -1829,6 +1910,7 @@
    "segmento": "Promissores",
    "previsto": 124907.37,
    "ingenuo": 72712.92,
+   "ingenuo_sazonal": -31.85,
    "real": 62488.43
   },
   {
@@ -1836,6 +1918,7 @@
    "segmento": "Precisam de atenção",
    "previsto": 124847.03,
    "ingenuo": 81395.14,
+   "ingenuo_sazonal": 68649.85,
    "real": 60247.93
   },
   {
@@ -1843,6 +1926,7 @@
    "segmento": "Não pode perder",
    "previsto": 37926.88,
    "ingenuo": 0.0,
+   "ingenuo_sazonal": 67911.49,
    "real": 12704.36
   },
   {
@@ -1850,6 +1934,7 @@
    "segmento": "Em risco",
    "previsto": 211513.67,
    "ingenuo": -102.75,
+   "ingenuo_sazonal": 302127.77,
    "real": 136733.17
   },
   {
@@ -1857,6 +1942,7 @@
    "segmento": "Hibernando",
    "previsto": 187951.7,
    "ingenuo": -463.59,
+   "ingenuo_sazonal": 307421.39,
    "real": 140322.45
   },
   {
@@ -1864,6 +1950,7 @@
    "segmento": "Perdidos",
    "previsto": 119091.03,
    "ingenuo": -815.61,
+   "ingenuo_sazonal": 84915.26,
    "real": 62605.86
   }
  ]

@@ -31,6 +31,7 @@ CAMINHO_PLANILHA = PASTA_DADOS / NOME_PLANILHA
 # A planilha descompactada tem 45,6 MB. Um limite folgado protege contra um zip
 # adulterado que se expande para gigabytes ("zip bomb").
 _TAMANHO_MAXIMO = 200 * 1024 * 1024
+TIMEOUT_SEGUNDOS = 60
 
 
 class DadosError(RuntimeError):
@@ -66,8 +67,12 @@ def extrair_planilha(zip_: Path, destino: Path, sha256: str = SHA256_PLANILHA) -
             raise DadosError(f"{NOME_PLANILHA} no zip tem {info.file_size} bytes: grande demais.")
         destino.parent.mkdir(parents=True, exist_ok=True)
         temporario = destino.with_suffix(".parcial")
-        with arquivo_zip.open(info) as origem, temporario.open("wb") as saida:
-            shutil.copyfileobj(origem, saida)
+        try:
+            with arquivo_zip.open(info) as origem, temporario.open("wb") as saida:
+                shutil.copyfileobj(origem, saida)
+        except BaseException:
+            temporario.unlink(missing_ok=True)  # cópia interrompida: não deixa lixo
+            raise
     obtido = sha256_arquivo(temporario)
     if obtido != sha256:
         temporario.unlink()
@@ -87,7 +92,12 @@ def baixar(url: str = URL_ZIP, destino: Path = CAMINHO_PLANILHA) -> bool:
         raise DadosError(f"URL recusada (só https): {url}")
     with tempfile.TemporaryDirectory() as pasta:
         zip_ = Path(pasta) / "online_retail_ii.zip"
-        urllib.request.urlretrieve(url, zip_)  # noqa: S310 (esquema validado acima)
+        # timeout: com a rede parada, falha em vez de esperar para sempre.
+        with (
+            urllib.request.urlopen(url, timeout=TIMEOUT_SEGUNDOS) as resposta,  # noqa: S310 (https validado acima)
+            zip_.open("wb") as saida,
+        ):
+            shutil.copyfileobj(resposta, saida)
         try:
             extrair_planilha(zip_, destino)
         except zipfile.BadZipFile:

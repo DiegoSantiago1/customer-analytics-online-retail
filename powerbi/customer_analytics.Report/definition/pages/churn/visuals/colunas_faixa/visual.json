@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "colunas_clv",
+  "name": "colunas_faixa",
   "position": {
-    "x": 792,
-    "y": 192,
-    "z": 3000,
-    "width": 472,
-    "height": 330,
-    "tabOrder": 3000
+    "x": 856,
+    "y": 196,
+    "z": 7000,
+    "width": 408,
+    "height": 268,
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "clusteredColumnChart",
@@ -20,15 +20,34 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "segmento"
+                      "Entity": "churn_faixa"
                     }
                   },
-                  "Property": "segmento"
+                  "Property": "faixa"
                 }
               },
-              "queryRef": "segmento.segmento",
-              "nativeQueryRef": "segmento",
-              "displayName": "Segmento"
+              "queryRef": "churn_faixa.faixa",
+              "nativeQueryRef": "faixa",
+              "displayName": "Dias sem comprar no corte"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "churn_faixa"
+                    }
+                  },
+                  "Property": "corte"
+                }
+              },
+              "queryRef": "churn_faixa.corte",
+              "nativeQueryRef": "corte",
+              "displayName": "Corte"
             }
           ]
         },
@@ -42,42 +61,12 @@
                       "Entity": "Medidas"
                     }
                   },
-                  "Property": "CLV previsto (validação)"
+                  "Property": "Não voltou"
                 }
               },
-              "queryRef": "Medidas.CLV previsto (validação)",
-              "nativeQueryRef": "CLV previsto (validação)",
-              "displayName": "Previsto"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Medidas"
-                    }
-                  },
-                  "Property": "CLV ingênuo sazonal (validação)"
-                }
-              },
-              "queryRef": "Medidas.CLV ingênuo sazonal (validação)",
-              "nativeQueryRef": "CLV ingênuo sazonal (validação)",
-              "displayName": "Ingênuo sazonal"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Medidas"
-                    }
-                  },
-                  "Property": "Receita real (validação)"
-                }
-              },
-              "queryRef": "Medidas.Receita real (validação)",
-              "nativeQueryRef": "Receita real (validação)",
-              "displayName": "Real"
+              "queryRef": "Medidas.Não voltou",
+              "nativeQueryRef": "Não voltou",
+              "displayName": "Não voltou"
             }
           ]
         }
@@ -89,10 +78,10 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "segmento"
+                    "Entity": "churn_faixa"
                   }
                 },
-                "Property": "segmento"
+                "Property": "faixa"
               }
             },
             "direction": "Ascending"
@@ -142,7 +131,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Validação: previsão de 10/06/2011 x ingênuo sazonal x real'"
+                  "Value": "'Não voltou, por dias sem comprar no corte'"
                 }
               }
             }

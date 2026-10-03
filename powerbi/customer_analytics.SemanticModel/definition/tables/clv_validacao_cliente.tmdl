@@ -30,6 +30,13 @@ table clv_validacao_cliente
 		summarizeBy: sum
 		sourceColumn: ingenuo
 
+	column ingenuo_sazonal
+		dataType: decimal
+		formatString: \£#,0
+		lineageTag: 4c4d6229-2f91-5101-9c2d-f30e94c7accf
+		summarizeBy: sum
+		sourceColumn: ingenuo_sazonal
+
 	column real
 		dataType: decimal
 		formatString: \£#,0

@@ -123,7 +123,14 @@ def test_validacao_compara_previsto_ingenuo_e_real(bd: Conexao) -> None:
         )
     )
     assert resumo["ingenuo"] == (Decimal("70.00"), Decimal("-42.86"))
-    assert set(resumo) == {"previsto", "ingenuo"}
+    assert set(resumo) == {"previsto", "ingenuo", "ingenuo_sazonal"}
+    # Ingênuo sazonal: a mesma janela um ano antes (10/06 a 10/12/2010) = a compra de
+    # 01/09/2010, 10 x 10 = 100.
+    sazonal = bd.execute(
+        "SELECT ingenuo_sazonal FROM analise.clv_validacao_cliente WHERE cliente_id = 10001"
+    ).fetchone()
+    assert sazonal == (Decimal("100.00"),)
+    assert resumo["ingenuo_sazonal"] == (Decimal("70.00"), Decimal("42.86"))
 
 
 def test_clv_no_fim_e_preenchido_para_todos(bd: Conexao) -> None:
@@ -148,3 +155,89 @@ def test_sem_receita_real_o_erro_percentual_fica_nulo(bd: Conexao) -> None:
         "WHERE modelo = 'previsto'"
     ).fetchone()
     assert linha == (Decimal("0.00"), None, None)
+
+
+def test_compras_por_mes_suavizadas_valor_exato(bd: Conexao) -> None:
+    cenario(
+        bd,
+        [
+            compra(10001, "536001", "2010-03-01"),
+            compra(10001, "536002", "2011-03-01"),
+            compra(10002, "536003", "2011-06-01"),
+        ],
+    )
+    m = {
+        c: (f, meses)
+        for c, f, meses in bd.execute(
+            "SELECT cliente_id, frequencia, meses_de_vida "
+            "FROM analise.metricas_cliente(analise.data_param('data_corte'))"
+        )
+    }
+    taxa = Decimal(sum(f for f, _ in m.values())) / sum(meses for _, meses in m.values())
+    esperadas = {c: round((f + 3 * taxa) / (meses + 3), 4) for c, (f, meses) in m.items()}
+    obtidas = {c: t for c, _, _, _, t, _ in bd.execute(CLV_NO_CORTE)}
+    assert obtidas == esperadas
+
+
+def test_segmento_sem_calibracao_usa_a_retencao_geral_da_calibracao(bd: Conexao) -> None:
+    # Em 10/06/2010 só existe 1 cliente (que volta na janela): p geral = 1/1. O cliente
+    # alvo cai num segmento ausente na calibração e recebe essa retenção geral, não 0.
+    cenario(
+        bd,
+        [
+            compra(10001, "536001", "2010-03-01"),
+            compra(10001, "536002", "2010-08-01"),
+            compra(10002, "536003", "2011-06-05"),
+        ],
+    )
+    calib = dict(
+        (s, p)
+        for s, p in bd.execute(
+            "SELECT segmento, p_ativo FROM analise.retencao_segmento("
+            "analise.data_param('data_corte') - interval '12 months', 6)"
+        )
+    )
+    alvo = bd.execute(
+        "SELECT segmento, p_ativo FROM analise.clv_previsto(analise.data_param('data_corte'), 6) "
+        "WHERE cliente_id = 10002"
+    ).fetchone()
+    assert alvo is not None and alvo[0] not in calib
+    assert alvo[1] == Decimal("1")
+
+
+def test_captura_top20_calculada_a_mao(bd: Conexao) -> None:
+    cenario(bd, [compra(10001, "536001", "2011-01-10")])
+    bd.execute("SELECT analise.recarregar_clv()")
+    bd.execute("TRUNCATE analise.clv_validacao_cliente, analise.clv_validacao")
+    # 5 clientes: o top 20% (1 cliente) previsto é o 10003, que teve real 30; o top 20%
+    # real seria o 10005, com 50. Captura = 30 / 50 = 0,6.
+    bd.execute(
+        "INSERT INTO analise.clv_validacao_cliente "
+        "(cliente_id, segmento, previsto, ingenuo, real, ingenuo_sazonal) VALUES "
+        "(10001, 'Leais', 10, 0, 10, 0), (10002, 'Leais', 20, 0, 20, 0), "
+        "(10003, 'Leais', 90, 0, 30, 0), (10004, 'Leais', 40, 0, 40, 0), "
+        "(10005, 'Leais', 50, 0, 50, 0)"
+    )
+    # Recalcula só o resumo (o mesmo SQL do recarregar_clv, sem refazer a previsão).
+    sql_resumo = bd.execute(
+        r"SELECT substring(prosrc FROM 'INSERT INTO analise.clv_validacao\s+WITH.*?"
+        r"GROUP BY modelo;') FROM pg_proc WHERE proname = 'recarregar_clv'"
+    ).fetchone()
+    assert sql_resumo is not None and sql_resumo[0]
+    bd.execute(sql_resumo[0])
+    linha = bd.execute(
+        "SELECT captura_top20, erro_medio_abs, erro_total_pct FROM analise.clv_validacao "
+        "WHERE modelo = 'previsto'"
+    ).fetchone()
+    # Erro médio absoluto = (0 + 0 + 60 + 0 + 0) / 5 = 12; total 210 contra 150 = +40%.
+    assert linha == (Decimal("0.6000"), Decimal("12.00"), Decimal("40.00"))
+
+
+def test_cliente_que_so_aparece_depois_do_corte_fica_fora_da_validacao(bd: Conexao) -> None:
+    cenario(
+        bd,
+        [compra(10001, "536001", "2011-01-10"), compra(10002, "536002", "2011-08-01")],
+    )
+    bd.execute("SELECT analise.recarregar_clv()")
+    clientes = [c for (c,) in bd.execute("SELECT cliente_id FROM analise.clv_validacao_cliente")]
+    assert clientes == [10001]

@@ -215,3 +215,47 @@ def test_recarregar_e_idempotente(bd: Conexao) -> None:
     bd.execute("SELECT limpo.recarregar()")
     assert valor(bd, "SELECT count(*) FROM limpo.fatura_linha") == 2
     assert valor(bd, "SELECT count(*) FROM limpo.cliente") == 1
+
+
+@pytest.mark.parametrize(
+    ("tipo", "fatura", "quantidade", "preco"),
+    [
+        ("cancelamento", "C536365", 6, 2.55),  # cancelamento com quantidade positiva
+        ("cancelamento", "536365", -6, 2.55),  # cancelamento sem prefixo C
+        ("sem_valor", "536365", 6, 2.55),  # "sem valor" com preço
+        ("ajuste_divida", "536365", 1, 100),  # ajuste de dívida sem prefixo A
+    ],
+)
+def test_checks_de_coerencia_dos_outros_tipos(
+    bd: Conexao, tipo: str, fatura: str, quantidade: int, preco: float
+) -> None:
+    valores = {
+        **LINHA_LIMPA_OK,
+        "tipo": tipo,
+        "fatura": fatura,
+        "quantidade": quantidade,
+        "preco_unitario": preco,
+    }
+    with espera_erro(bd, "23514"):
+        bd.execute(
+            "INSERT INTO limpo.fatura_linha (aba, linha_origem, fatura, tipo, codigo_produto, "
+            "quantidade, data_fatura, preco_unitario, cliente_id, pais, eh_produto) VALUES "
+            "('t', 1, %(fatura)s, %(tipo)s, %(codigo_produto)s, %(quantidade)s, now(), "
+            "%(preco_unitario)s, %(cliente_id)s, 'UK', true)",
+            valores,
+        )
+
+
+def test_corte_da_sobreposicao_e_o_dia_inteiro(bd: Conexao) -> None:
+    # A primeira linha da aba nova é 08:26; uma linha da aba antiga às 07:00 do mesmo
+    # dia também é cópia e precisa sair (o corte é date_trunc('day', ...)).
+    carregar_bruto(
+        bd,
+        [
+            linha(ANTIGA, fatura="536300", data="2010-12-01 07:00:00"),
+            linha(NOVA, fatura="536300", data="2010-12-01 07:00:00"),
+            linha(NOVA, fatura="536365", data="2010-12-01 08:26:00"),
+        ],
+    )
+    abas = [a for (a,) in bd.execute("SELECT aba FROM limpo.fatura_linha")]
+    assert abas == [NOVA, NOVA]

@@ -14,6 +14,7 @@ from collections.abc import Iterator
 
 import psycopg
 import pytest
+import sqlalchemy.exc
 from alembic import command
 from dotenv import load_dotenv
 
@@ -65,7 +66,8 @@ def banco_teste(config_banco: ConfigBanco) -> ConfigBanco:
             )
         assert sobrou == 0, "downgrade base deixou schemas para trás"
         command.upgrade(alembic, "head")
-    except psycopg.OperationalError as erro:
+    except (psycopg.OperationalError, sqlalchemy.exc.OperationalError) as erro:
+        # O Alembic passa pelo SQLAlchemy, que embrulha o erro do psycopg no dele.
         falhar_sem_banco(erro)
     return config
 

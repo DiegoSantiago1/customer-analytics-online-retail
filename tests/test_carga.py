@@ -1,5 +1,6 @@
 """Testes da carga do bruto: formato da planilha, COPY com valores hostis e carga real."""
 
+import json
 from decimal import Decimal
 from pathlib import Path
 
@@ -9,7 +10,8 @@ import pytest
 from varejo.baixar_dados import CAMINHO_PLANILHA, SHA256_PLANILHA, planilha_valida
 from varejo.banco import Conexao, conectar
 from varejo.carga import COLUNAS, CargaError, carregar, copiar, ler_planilha
-from varejo.config import ConfigBanco
+from varejo.config import RAIZ_PROJETO, ConfigBanco
+from varejo.exportar_site import _limpar, montar
 from varejo.processar import falhas_dq, processar
 
 from .apoio import valor
@@ -140,19 +142,100 @@ def test_pipeline_completo_reproduz_os_numeros_documentados(banco_teste: ConfigB
             "count(*) FILTER (WHERE em_churn) FROM analise.cliente"
         ).fetchone()  # type: ignore[misc]
         assert (clientes, liquida, atacado, churn) == (5_852, Decimal("16413300.877"), 607, 2_967)
-        assert (
-            valor(con, "SELECT count(*) FROM analise.cliente WHERE segmento = 'Campeões'") == 1_380
+        # D14: os 10 segmentos inteiros (o mapa R x F muda isto célula por célula).
+        segmentos: dict[str, int] = dict(
+            con.execute("SELECT segmento, count(*) FROM analise.cliente GROUP BY 1").fetchall()
         )
-        escolhido = con.execute(
-            "SELECT dias, precisao, recall, f1 FROM analise.churn_validacao "
-            "WHERE corte = '2011-06-10' AND escolhido"
+        assert segmentos == {
+            "Campeões": 1_380,
+            "Leais": 1_196,
+            "Potenciais leais": 271,
+            "Novos": 72,
+            "Promissores": 163,
+            "Precisam de atenção": 425,
+            "Não pode perder": 66,
+            "Em risco": 647,
+            "Hibernando": 673,
+            "Perdidos": 959,
+        }
+        # D13: distribuição da nota F.
+        notas_f = con.execute(
+            "SELECT f, min(frequencia), max(frequencia), count(*) FROM analise.cliente "
+            "GROUP BY f ORDER BY f"
+        ).fetchall()
+        assert notas_f == [
+            (1, 1, 1, 1_618),
+            (2, 2, 2, 945),
+            (3, 3, 4, 1_148),
+            (4, 5, 8, 1_025),
+            (5, 9, 373, 1_116),
+        ]
+        # D12: recompra e concentração.
+        recompra, top10 = con.execute(
+            "SELECT round(avg((frequencia >= 2)::int), 3), "
+            "round((SELECT sum(receita_liquida) FILTER (WHERE r <= 0.1) / sum(receita_liquida) "
+            "FROM (SELECT receita_liquida, cume_dist() OVER (ORDER BY receita_liquida DESC) r "
+            "FROM analise.cliente) x), 3) FROM analise.cliente"
+        ).fetchone()  # type: ignore[misc]
+        assert (recompra, top10) == (Decimal("0.724"), Decimal("0.632"))
+        # D17 e D18: churn nos dois cortes.
+        cortes = con.execute(
+            "SELECT corte::text, dias, precisao, recall, f1 FROM analise.churn_validacao "
+            "WHERE escolhido ORDER BY corte DESC"
+        ).fetchall()
+        assert cortes == [
+            ("2011-06-10", 90, Decimal("0.6409"), Decimal("0.8027"), Decimal("0.7127")),
+            ("2010-12-10", 90, Decimal("0.7341"), Decimal("0.4532"), Decimal("0.5604")),
+        ]
+        faixas = [
+            t
+            for (t,) in con.execute(
+                "SELECT taxa_nao_voltou FROM analise.churn_faixa WHERE corte = '2011-06-10' "
+                "ORDER BY ordem"
+            )
+        ]
+        assert faixas == [
+            Decimal("0.2372"),
+            Decimal("0.4617"),
+            Decimal("0.6332"),
+            Decimal("0.8535"),
+        ]
+        # D19: em risco e inativos.
+        status: dict[str, tuple[int, Decimal]] = {
+            st: (n, r)
+            for st, n, r in con.execute(
+                "SELECT status_churn, count(*), round(sum(receita_12m)) FROM analise.cliente "
+                "GROUP BY 1"
+            )
+        }
+        assert status["em_risco"] == (1_376, Decimal("837690"))
+        assert status["inativo"][0] == 1_591
+        # D22: retenção média nos meses 1 e 6 (sem pré-existentes e mês parcial).
+        retencao = con.execute(
+            "SELECT round(100.0 * sum(ativos) FILTER (WHERE meses_desde = 1) "
+            "/ sum(tamanho) FILTER (WHERE meses_desde = 1), 1), "
+            "round(100.0 * sum(ativos) FILTER (WHERE meses_desde = 6) "
+            "/ sum(tamanho) FILTER (WHERE meses_desde = 6), 1) "
+            "FROM analise.coorte_retencao WHERE NOT pre_existente AND NOT mes_parcial"
         ).fetchone()
-        assert escolhido == (90, Decimal("0.6409"), Decimal("0.8027"), Decimal("0.7127"))
-        clv = con.execute(
-            "SELECT erro_total_pct, captura_top20 FROM analise.clv_validacao "
-            "WHERE modelo = 'previsto'"
-        ).fetchone()
-        assert clv == (Decimal("0.48"), Decimal("0.8830"))
+        assert retencao == (Decimal("21.0"), Decimal("18.4"))
+        # D24: os três modelos do CLV.
+        modelos = {
+            m: (e, a, c)
+            for m, e, a, c in con.execute(
+                "SELECT modelo, erro_total_pct, erro_medio_abs, captura_top20 "
+                "FROM analise.clv_validacao"
+            )
+        }
+        assert modelos == {
+            "previsto": (Decimal("0.22"), Decimal("603.18"), Decimal("0.8818")),
+            "ingenuo_sazonal": (Decimal("11.79"), Decimal("649.91"), Decimal("0.8446")),
+            "ingenuo": (Decimal("-29.17"), Decimal("547.34"), Decimal("0.8686")),
+        }
         assert round(valor(con, "SELECT sum(clv_previsto_6m) FROM analise.cliente")) == (  # type: ignore[call-overload]
-            3_809_240
+            3_822_972
         )
+        assert valor(con, "SELECT count(*) FROM dq.resultado") == 18
+        # O site/dados.json versionado é exatamente o que o banco gera agora.
+        versionado = json.loads((RAIZ_PROJETO / "site" / "dados.json").read_text("utf-8"))
+        assert _limpar(montar(con)) == versionado

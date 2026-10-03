@@ -93,13 +93,24 @@ def test_resumo_de_segmentos_soma_100_e_mostra_segmentos_vazios(bd: Conexao) -> 
 
 
 @pytest.mark.parametrize(
-    ("dias", "faixa"),
-    [(0, "0-30 dias"), (30, "0-30 dias"), (31, "31-90 dias"), (366, "Mais de 1 ano")],
+    ("dias", "faixa", "ordem"),
+    [
+        (0, "0-30 dias", 1),
+        (30, "0-30 dias", 1),
+        (31, "31-90 dias", 2),
+        (90, "31-90 dias", 2),
+        (91, "91-180 dias", 3),
+        (180, "91-180 dias", 3),
+        (181, "181-365 dias", 4),
+        (365, "181-365 dias", 4),
+        (366, "Mais de 1 ano", 5),
+    ],
 )
-def test_faixa_de_recencia(bd: Conexao, dias: int, faixa: str) -> None:
+def test_faixa_de_recencia(bd: Conexao, dias: int, faixa: str, ordem: int) -> None:
     cenario(bd, [compra(10001, "536001", "2011-01-10")])
     bd.execute("UPDATE analise.cliente SET recencia_dias = %s", (dias,))
-    assert valor(bd, "SELECT faixa_recencia FROM analise.vw_cliente") == faixa
+    linha = bd.execute("SELECT faixa_recencia, faixa_recencia_ordem FROM analise.vw_cliente")
+    assert linha.fetchone() == (faixa, ordem)
 
 
 def test_resumo_de_segmentos_com_base_vazia(bd: Conexao) -> None:

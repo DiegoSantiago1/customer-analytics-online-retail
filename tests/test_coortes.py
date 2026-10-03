@@ -109,3 +109,19 @@ def test_checks(bd: Conexao) -> None:
     with espera_erro(bd, "23514"):
         bd.execute("UPDATE analise.coorte_retencao SET ativos = 0 WHERE meses_desde = 0")
     assert valor(bd, "SELECT count(*) FROM analise.coorte_retencao") == 2
+
+
+def test_cancelamento_antes_da_primeira_compra_entra_no_mes_zero(bd: Conexao) -> None:
+    # Cancelamento de uma venda de antes da base (jan) e primeira compra em fev: a receita
+    # somada nas coortes precisa bater com a receita líquida do cliente (revisão de QA).
+    cenario(
+        bd,
+        [
+            compra(10001, "C536001", "2011-01-10", quantidade=-2),
+            compra(10001, "536002", "2011-02-10", quantidade=5),
+        ],
+    )
+    c = coortes(bd)
+    assert c[("2011-02-01", 0)][3] == Decimal("30.000")  # 50 - 20
+    soma = valor(bd, "SELECT sum(receita_liquida) FROM analise.coorte_retencao")
+    assert soma == valor(bd, "SELECT receita_liquida FROM analise.cliente")

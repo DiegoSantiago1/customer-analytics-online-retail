@@ -68,12 +68,27 @@
                       "Entity": "Medidas"
                     }
                   },
-                  "Property": "Clientes em churn"
+                  "Property": "Em risco"
                 }
               },
-              "queryRef": "Medidas.Clientes em churn",
-              "nativeQueryRef": "Clientes em churn",
-              "displayName": "Em churn"
+              "queryRef": "Medidas.Em risco",
+              "nativeQueryRef": "Em risco",
+              "displayName": "Em risco"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Inativos"
+                }
+              },
+              "queryRef": "Medidas.Inativos",
+              "nativeQueryRef": "Inativos",
+              "displayName": "Inativos"
             },
             {
               "field": {

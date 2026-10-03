@@ -245,15 +245,15 @@ def heatmap_coortes(coortes: pd.DataFrame, meses: int = 12) -> Figure:
 
 
 def clv_previsto_vs_real(validacao_cliente: pd.DataFrame, ordem: list[str]) -> Figure:
-    """Barras agrupadas por segmento: previsto, ingênuo e real (6 meses após o corte)."""
-    soma = validacao_cliente.groupby("segmento")[["previsto", "ingenuo", "real"]].sum()
+    """Barras agrupadas por segmento: previsto, ingênuo sazonal e real (6 meses após o corte)."""
+    soma = validacao_cliente.groupby("segmento")[["previsto", "ingenuo_sazonal", "real"]].sum()
     soma = soma.reindex([s for s in ordem if s in soma.index])
     x = np.arange(len(soma))
     largura = 0.27
     fig, ax = plt.subplots(figsize=(11, 4.6))
     series = (
         ("previsto", "Previsto (modelo)"),
-        ("ingenuo", "Ingênuo (repete 6 meses)"),
+        ("ingenuo_sazonal", "Ingênuo sazonal (mesma janela, 1 ano antes)"),
         ("real", "Real"),
     )
     for k, (coluna, nome) in enumerate(series):

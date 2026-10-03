@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "cartao_churn",
+  "name": "cartao_inativos",
   "position": {
-    "x": 16,
+    "x": 648,
     "y": 80,
-    "z": 1000,
+    "z": 3000,
     "width": 300,
     "height": 104,
-    "tabOrder": 1000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "card",
@@ -23,12 +23,12 @@
                       "Entity": "Medidas"
                     }
                   },
-                  "Property": "Clientes em churn"
+                  "Property": "Inativos"
                 }
               },
-              "queryRef": "Medidas.Clientes em churn",
-              "nativeQueryRef": "Clientes em churn",
-              "displayName": "Clientes em churn"
+              "queryRef": "Medidas.Inativos",
+              "nativeQueryRef": "Inativos",
+              "displayName": "Inativos há mais de 1 ano"
             }
           ]
         }

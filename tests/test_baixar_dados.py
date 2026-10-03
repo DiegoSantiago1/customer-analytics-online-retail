@@ -1,6 +1,8 @@
 """Testes do download: hash, zip adulterado, zip slip e idempotência (sem rede)."""
 
 import hashlib
+import io
+import shutil
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -68,10 +70,10 @@ def test_nao_baixa_de_novo_se_o_arquivo_ja_confere(
     monkeypatch.setattr(baixar_dados, "SHA256_PLANILHA", HASH)
     monkeypatch.setattr(baixar_dados.planilha_valida, "__defaults__", (destino, HASH))
 
-    def nao_pode_baixar(*_: object) -> None:
+    def nao_pode_baixar(*_: object, **__: object) -> None:
         raise AssertionError("baixou de novo")
 
-    monkeypatch.setattr(urllib.request, "urlretrieve", nao_pode_baixar)
+    monkeypatch.setattr(urllib.request, "urlopen", nao_pode_baixar)
     assert baixar(destino=destino) is False
 
 
@@ -83,9 +85,24 @@ def test_url_sem_https_e_recusada(tmp_path: Path) -> None:
 def test_download_que_nao_e_zip_vira_erro_claro(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    def baixa_html(_url: str, caminho: Path) -> None:
-        Path(caminho).write_text("<html>erro 500</html>", encoding="utf-8")
+    def baixa_html(_url: str, timeout: float) -> io.BytesIO:
+        assert timeout > 0  # sem timeout, uma rede parada travaria para sempre
+        return io.BytesIO(b"<html>erro 500</html>")
 
-    monkeypatch.setattr(urllib.request, "urlretrieve", baixa_html)
+    monkeypatch.setattr(urllib.request, "urlopen", baixa_html)
     with pytest.raises(DadosError, match="zip válido"):
         baixar(destino=tmp_path / "online_retail_II.xlsx")
+
+
+def test_copia_interrompida_nao_deixa_arquivo_parcial(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    zip_ = criar_zip(tmp_path / "a.zip", {"online_retail_II.xlsx": CONTEUDO})
+
+    def falha(*_: object) -> None:
+        raise OSError("disco cheio")
+
+    monkeypatch.setattr(shutil, "copyfileobj", falha)
+    with pytest.raises(OSError, match="disco cheio"):
+        extrair_planilha(zip_, tmp_path / "online_retail_II.xlsx", sha256=HASH)
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["a.zip"]

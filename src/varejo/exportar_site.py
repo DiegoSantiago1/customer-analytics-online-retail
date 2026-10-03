@@ -48,19 +48,34 @@ def _limpar(objeto: object) -> object:
     return _json(objeto)
 
 
+class ExportarError(RuntimeError):
+    """O banco não está em condição de ser publicado."""
+
+
 def montar(con: Conexao) -> dict[str, Any]:
+    reprovadas = con.execute("SELECT count(*) FILTER (WHERE NOT ok), count(*) FROM dq.resultado")
+    falhas, total = reprovadas.fetchone() or (0, 0)
+    if total == 0 or falhas:
+        raise ExportarError(
+            f"dq.resultado tem {falhas} falha(s) em {total} checagens: rode "
+            "python -m varejo.processar até passar antes de exportar o site."
+        )
     resumo = _linhas(
         con,
         """
         SELECT (SELECT sum(receita_produto_liquida) FROM analise.vw_receita_mes) AS receita_produto,
-               (SELECT sum(venda_produto_sem_cliente) FROM analise.vw_receita_mes)
-                   / (SELECT sum(venda_produto_com_cliente + venda_produto_sem_cliente)
-                      FROM analise.vw_receita_mes) AS pct_sem_cliente,
+               (SELECT coalesce(sum(venda_produto_sem_cliente), 0)
+                       / nullif(coalesce(sum(venda_produto_com_cliente), 0)
+                                + coalesce(sum(venda_produto_sem_cliente), 0), 0)
+                FROM analise.vw_receita_mes) AS pct_sem_cliente,
                count(*) AS clientes,
                sum(receita_liquida) AS receita_liquida,
                avg((frequencia >= 2)::int) AS pct_recompra,
                count(*) FILTER (WHERE em_churn) AS em_churn,
-               sum(receita_12m) FILTER (WHERE em_churn) AS receita_em_risco,
+               count(*) FILTER (WHERE status_churn = 'em_risco') AS em_risco,
+               count(*) FILTER (WHERE status_churn = 'inativo') AS inativos,
+               coalesce(sum(receita_12m) FILTER (WHERE status_churn = 'em_risco'), 0)
+                   AS receita_em_risco,
                sum(clv_previsto_6m) AS clv_6m,
                (SELECT count(*) FILTER (WHERE ok) FROM dq.resultado) AS dq_ok,
                (SELECT count(*) FROM dq.resultado) AS dq_total
@@ -98,6 +113,11 @@ def montar(con: Conexao) -> dict[str, Any]:
                 "SELECT corte, dias, clientes, nao_voltaram, marcados, precisao, recall, f1, "
                 "acuracia, escolhido FROM analise.churn_validacao ORDER BY corte DESC, dias",
             ),
+            "churn_faixa": _linhas(
+                con,
+                "SELECT corte, ordem, faixa, clientes, nao_voltaram, taxa_nao_voltou "
+                "FROM analise.churn_faixa ORDER BY corte DESC, ordem",
+            ),
             "coortes": _linhas(
                 con,
                 "SELECT coorte, tamanho, meses_desde, retencao FROM analise.coorte_retencao "
@@ -107,12 +127,15 @@ def montar(con: Conexao) -> dict[str, Any]:
             "clv_validacao": _linhas(
                 con,
                 "SELECT modelo, clientes, total_previsto, total_real, erro_total_pct, "
-                "erro_medio_abs, captura_top20 FROM analise.clv_validacao ORDER BY modelo DESC",
+                "erro_medio_abs, captura_top20 FROM analise.clv_validacao "
+                "ORDER BY CASE modelo WHEN 'previsto' THEN 1 WHEN 'ingenuo_sazonal' THEN 2 "
+                "ELSE 3 END",
             ),
             "clv_segmento": _linhas(
                 con,
                 "SELECT s.ordem, v.segmento, sum(v.previsto) AS previsto, "
-                "sum(v.ingenuo) AS ingenuo, sum(v.real) AS real "
+                "sum(v.ingenuo) AS ingenuo, sum(v.ingenuo_sazonal) AS ingenuo_sazonal, "
+                "sum(v.real) AS real "
                 "FROM analise.clv_validacao_cliente v JOIN analise.segmento s USING (segmento) "
                 "GROUP BY s.ordem, v.segmento ORDER BY s.ordem",
             ),
@@ -133,7 +156,7 @@ def exportar(destino: Path = DESTINO) -> dict[str, Any]:
 def main() -> int:
     try:
         dados = exportar()
-    except (ConfigError, psycopg.Error) as erro:
+    except (ConfigError, ExportarError, psycopg.Error) as erro:
         print(f"Erro: {erro}", file=sys.stderr)
         return 1
     print(f"{DESTINO}: {len(dados['receita_mes'])} meses, {len(dados['segmentos'])} segmentos.")

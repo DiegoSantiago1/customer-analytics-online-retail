@@ -7,17 +7,36 @@ import pytest
 
 from varejo.banco import Conexao
 from varejo.config import RAIZ_PROJETO
-from varejo.exportar_site import _limpar, montar
+from varejo.exportar_site import ExportarError, _limpar, montar
 
 from .apoio import cenario, compra
 
 pytestmark = pytest.mark.integracao
 
 
-def processar_tudo(bd: Conexao) -> None:
+def processar_tudo(bd: Conexao, aprovar_dq: bool = True) -> None:
     for funcao in ("recarregar_churn", "recarregar_coortes", "recarregar_clv"):
         bd.execute(f"SELECT analise.{funcao}()")
     bd.execute("SELECT dq.verificar()")
+    if aprovar_dq:
+        # O cenário pequeno não tem quintos equilibrados nem os dois cortes de churn:
+        # aqui o teste é da exportação, então o dq é dado como aprovado.
+        bd.execute("UPDATE dq.resultado SET ok = true")
+
+
+def test_recusa_exportar_com_dq_reprovado(bd: Conexao) -> None:
+    cenario(bd, [compra(10001, "536001", "2011-01-10")])
+    processar_tudo(bd, aprovar_dq=False)
+    bd.execute("UPDATE dq.resultado SET ok = false WHERE verificacao = 'limpo_linhas'")
+    with pytest.raises(ExportarError, match="falha"):
+        montar(bd)
+
+
+def test_recusa_exportar_sem_dq_rodado(bd: Conexao) -> None:
+    cenario(bd, [compra(10001, "536001", "2011-01-10")])
+    bd.execute("TRUNCATE dq.resultado")
+    with pytest.raises(ExportarError):
+        montar(bd)
 
 
 def test_montar_tem_as_secoes_e_os_numeros_do_banco(bd: Conexao) -> None:
@@ -37,6 +56,7 @@ def test_montar_tem_as_secoes_e_os_numeros_do_banco(bd: Conexao) -> None:
         "receita_mes",
         "segmentos",
         "churn",
+        "churn_faixa",
         "coortes",
         "clv_validacao",
         "clv_segmento",
@@ -72,5 +92,6 @@ def test_json_versionado_bate_com_o_documentado() -> None:
     assert resumo["clientes"] == 5852
     assert round(resumo["receita_liquida"]) == 16_413_301
     assert resumo["em_churn"] == 2967
-    assert round(resumo["clv_6m"]) == 3_809_240
-    assert resumo["dq_ok"] == resumo["dq_total"] == 16
+    assert round(resumo["clv_6m"]) == 3_822_972
+    assert (resumo["em_risco"], resumo["inativos"]) == (1376, 1591)
+    assert resumo["dq_ok"] == resumo["dq_total"] == 18

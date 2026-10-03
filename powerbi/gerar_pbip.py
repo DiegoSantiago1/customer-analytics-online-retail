@@ -193,6 +193,11 @@ TABELAS = [
             Coluna("em_churn", "boolean"),
             Coluna("receita_12m", "decimal", LIBRAS, "sum"),
             Coluna("clv_previsto_6m", "decimal", LIBRAS, "sum"),
+            Coluna(
+                "status_churn",
+                "string",
+                descricao="ativo (até 90 dias), em_risco (91 a 365) ou inativo (mais de 365).",
+            ),
             Coluna("p_ativo_6m", "decimal", PCT, "average"),
             Coluna("segmento_ordem", "int64", "0", oculta=True),
             Coluna("segmento_acao", "string", oculta=True),
@@ -272,9 +277,24 @@ TABELAS = [
             Coluna("segmento", "string", oculta=True),
             Coluna("previsto", "decimal", LIBRAS, "sum"),
             Coluna("ingenuo", "decimal", LIBRAS, "sum"),
+            Coluna("ingenuo_sazonal", "decimal", LIBRAS, "sum"),
             Coluna("real", "decimal", LIBRAS, "sum"),
         ],
         "Previsão do CLV feita em 10/06/2011, ingênuo e real, por cliente.",
+    ),
+    Tabela(
+        "churn_faixa",
+        "analise",
+        "churn_faixa",
+        [
+            Coluna("corte", "dateTime", DATA),
+            Coluna("ordem", "int64", "0", oculta=True),
+            Coluna("faixa", "string", ordenar_por="ordem"),
+            Coluna("clientes", "int64", INT, "sum"),
+            Coluna("nao_voltaram", "int64", INT, "sum"),
+            Coluna("taxa_nao_voltou", "decimal", PCT, "average"),
+        ],
+        "Taxa de 'não voltou' por faixa de recência em cada corte (onde a regra tem sinal).",
     ),
     Tabela(
         "qualidade",
@@ -361,10 +381,34 @@ MEDIDAS = [
         "Parte dos clientes em churn.",
     ),
     Medida(
+        "Em risco",
+        'CALCULATE ( [Clientes], cliente[status_churn] = "em_risco" )',
+        INT,
+        "De 91 a 365 dias sem comprar no fim da base.",
+    ),
+    Medida(
+        "Inativos",
+        'CALCULATE ( [Clientes], cliente[status_churn] = "inativo" )',
+        INT,
+        "Mais de 365 dias sem comprar: já foram embora.",
+    ),
+    Medida(
         "Receita em risco",
-        "CALCULATE ( SUM ( cliente[receita_12m] ), cliente[em_churn] = TRUE () )",
+        'CALCULATE ( SUM ( cliente[receita_12m] ), cliente[status_churn] = "em_risco" )',
         LIBRAS,
-        "Receita líquida dos últimos 12 meses dos clientes hoje em churn.",
+        "Receita líquida dos últimos 12 meses dos clientes em risco (91 a 365 dias).",
+    ),
+    Medida(
+        "Não voltou",
+        "AVERAGE ( churn_faixa[taxa_nao_voltou] )",
+        PCT,
+        "Parte dos clientes da faixa que não comprou nos 6 meses depois do corte.",
+    ),
+    Medida(
+        "CLV ingênuo sazonal (validação)",
+        "SUM ( clv_validacao_cliente[ingenuo_sazonal] )",
+        LIBRAS,
+        "Modelo ingênuo sazonal: repete a mesma janela de um ano antes.",
     ),
     Medida(
         "CLV previsto (6 meses)",
@@ -799,7 +843,8 @@ PAGINAS: list[tuple[str, str, list[Visual]]] = [
                         campo("segmento.segmento", "Segmento"),
                         campo("Medidas.Clientes", "Clientes"),
                         campo("Medidas.Receita líquida", "Receita líquida"),
-                        campo("Medidas.Clientes em churn", "Em churn"),
+                        campo("Medidas.Em risco", "Em risco"),
+                        campo("Medidas.Inativos", "Inativos"),
                         campo("Medidas.CLV previsto (6 meses)", "CLV 6 meses"),
                         campo("segmento.acao", "Ação sugerida"),
                     ]
@@ -818,9 +863,14 @@ PAGINAS: list[tuple[str, str, list[Visual]]] = [
                 "Quem está indo embora? Regra: mais de 90 dias sem comprar, validada no "
                 "tempo em dois cortes.",
             ),
-            cartao("cartao_churn", 16, "Medidas.Clientes em churn", "Clientes em churn"),
-            cartao("cartao_pct_churn", 332, "Medidas.% em churn", "% em churn"),
-            cartao("cartao_risco", 648, "Medidas.Receita em risco", "Receita em risco (12 meses)"),
+            cartao("cartao_risco_n", 16, "Medidas.Em risco", "Em risco (91 a 365 dias)"),
+            cartao(
+                "cartao_risco",
+                332,
+                "Medidas.Receita em risco",
+                "Receita deles nos últimos 12 meses",
+            ),
+            cartao("cartao_inativos", 648, "Medidas.Inativos", "Inativos há mais de 1 ano"),
             cartao(
                 "cartao_precisao",
                 964,
@@ -832,9 +882,9 @@ PAGINAS: list[tuple[str, str, list[Visual]]] = [
                     f"linha_validacao_{sufixo}",
                     "lineChart",
                     x,
-                    200,
+                    196,
                     404,
-                    392,
+                    268,
                     {
                         "Category": [campo("churn_validacao.dias", "X (dias sem comprar)")],
                         "Y": [
@@ -858,30 +908,50 @@ PAGINAS: list[tuple[str, str, list[Visual]]] = [
                 )
             ],
             Visual(
+                "colunas_faixa",
+                "clusteredColumnChart",
+                856,
+                196,
+                408,
+                268,
+                {
+                    "Category": [campo("churn_faixa.faixa", "Dias sem comprar no corte")],
+                    "Series": [campo("churn_faixa.corte", "Corte")],
+                    "Y": [campo("Medidas.Não voltou", "Não voltou")],
+                },
+                titulo="Não voltou, por dias sem comprar no corte",
+                ordenar=ordenar_por("churn_faixa.faixa"),
+            ),
+            Visual(
                 "barras_churn_segmento",
                 "clusteredBarChart",
-                856,
-                200,
-                408,
-                392,
+                16,
+                476,
+                600,
+                232,
                 {
                     "Category": [campo("segmento.segmento", "Segmento")],
-                    "Y": [campo("Medidas.Clientes em churn", "Clientes em churn")],
+                    "Y": [
+                        campo("Medidas.Em risco", "Em risco"),
+                        campo("Medidas.Inativos", "Inativos"),
+                    ],
                 },
-                titulo="Clientes em churn por segmento",
+                titulo="Em risco e inativos por segmento",
                 ordenar=ordenar_por("segmento.segmento"),
             ),
             nota(
                 "nota_sazonalidade",
-                16,
-                604,
-                1248,
-                104,
-                "Limitação medida: no corte de 10/06/2011, X = 90 tem precisão de 64% e recall "
-                "de 80%. Logo depois do pico de set a nov (corte de 10/12/2010), a mesma regra "
-                "pega só 45% de quem some, porque muitos clientes só voltam no pico seguinte. "
-                "A marcação do fim da base (também em dezembro) é, portanto, conservadora. "
-                "Detalhes em docs/DECISOES.md (D17 e D18).",
+                632,
+                476,
+                632,
+                232,
+                "Como ler: no corte de 10/06/2011, X = 90 tem precisão de 64% e recall de 80%, "
+                "mas o F1 é quase igual entre 30 e 120 dias. A faixa de 91 a 180 dias não "
+                "voltou em 46% dos casos, perto da média (48%): logo depois do limite a regra "
+                "diz pouco; ela separa os ativos de quem já foi embora. Por isso o fim da base "
+                "separa em risco (91 a 365 dias) de inativos (mais de 1 ano). Logo depois do "
+                "pico de set a nov (corte de 10/12/2010), a regra pega só 45% de quem some. "
+                "Detalhes em docs/DECISOES.md (D17 a D19).",
             ),
         ],
     ),
@@ -932,11 +1002,11 @@ PAGINAS: list[tuple[str, str, list[Visual]]] = [
                     "Category": [campo("segmento.segmento", "Segmento")],
                     "Y": [
                         campo("Medidas.CLV previsto (validação)", "Previsto"),
-                        campo("Medidas.CLV ingênuo (validação)", "Ingênuo"),
+                        campo("Medidas.CLV ingênuo sazonal (validação)", "Ingênuo sazonal"),
                         campo("Medidas.Receita real (validação)", "Real"),
                     ],
                 },
-                titulo="Validação: previsão de 10/06/2011 x real",
+                titulo="Validação: previsão de 10/06/2011 x ingênuo sazonal x real",
                 ordenar=ordenar_por("segmento.segmento"),
             ),
             Visual(
