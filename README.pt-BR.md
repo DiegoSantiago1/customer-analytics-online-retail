@@ -2,7 +2,16 @@
 
 **Quem são os melhores clientes, quem está indo embora e quanto eles valem?** Segmentação RFM, churn validado no tempo, coortes de retenção e valor do cliente (CLV) para uma varejista online real do Reino Unido, com PostgreSQL, SQL, Python e Power BI.
 
-[English](README.md) · **[Página interativa](https://diegosantiago1.github.io/customer-analytics-online-retail/)** · [Decisões e medições](docs/DECISOES.md) · [Relatório Power BI](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
+## 🔗 Acessar o projeto
+
+[![Abrir o projeto](https://img.shields.io/badge/%E2%96%B6%20Abrir%20o%20projeto-EA580C?style=for-the-badge)](https://diegosantiago1.github.io/customer-analytics-online-retail/)
+[![Ver no portfólio](https://img.shields.io/badge/Ver%20no%20portf%C3%B3lio-1F2937?style=for-the-badge&logo=googlechrome&logoColor=white)](https://diegosantiago1.github.io/Portifolio/#projetos)
+
+**Link direto:** https://diegosantiago1.github.io/customer-analytics-online-retail/
+
+Uma página interativa em português e inglês que abre no navegador, sem instalar nada. As setas do teclado passam de capítulo.
+
+[English](README.md) · [Decisões e medições](docs/DECISOES.md) · [Relatório Power BI](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
 
 ![Power BI: segmentos RFM](docs/img/powerbi_segmentos.png)
 

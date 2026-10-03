@@ -2,7 +2,16 @@
 
 **Who are the best customers, who is leaving, and what are they worth?** RFM segmentation, churn validated back in time, retention cohorts and customer lifetime value for a real UK-based online retailer, built with PostgreSQL, SQL, Python and Power BI.
 
-[Português](README.pt-BR.md) · **[Interactive page](https://diegosantiago1.github.io/customer-analytics-online-retail/)** · [Decisions and measurements](docs/DECISOES.md) · [Power BI report](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
+## 🔗 Access the project
+
+[![Open the project](https://img.shields.io/badge/%E2%96%B6%20Open%20the%20project-EA580C?style=for-the-badge)](https://diegosantiago1.github.io/customer-analytics-online-retail/)
+[![See it in my portfolio](https://img.shields.io/badge/See%20it%20in%20my%20portfolio-1F2937?style=for-the-badge&logo=googlechrome&logoColor=white)](https://diegosantiago1.github.io/Portifolio/#projetos)
+
+**Direct link:** https://diegosantiago1.github.io/customer-analytics-online-retail/
+
+An interactive page in English and Portuguese that opens in the browser, with nothing to install. Arrow keys move chapter by chapter.
+
+[Português](README.pt-BR.md) · [Decisions and measurements](docs/DECISOES.md) · [Power BI report](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
 
 ![Power BI: RFM segments](docs/img/powerbi_segmentos.png)
 
