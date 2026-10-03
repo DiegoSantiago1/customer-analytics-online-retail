@@ -19,7 +19,7 @@ FIM = "analise.data_param('data_fim')"
 
 def metricas(bd: Conexao, cliente: int, data_ref: str = FIM) -> dict[str, object]:
     cur = bd.execute(
-        f"SELECT * FROM analise.metricas_cliente({data_ref}) WHERE cliente_id = %s",  # noqa: S608
+        f"SELECT * FROM analise.metricas_cliente({data_ref}) WHERE cliente_id = %s",  # noqa: S608 (data_ref: expressão fixa dos testes)
         (cliente,),
     )
     linha = cur.fetchone()

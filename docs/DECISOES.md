@@ -92,3 +92,36 @@ O segmento vem do mapa R × F (`analise.segmento_rfm`, 25 combinações), no pad
 
 ### D15. Flag de atacado (aproximação)
 O dataset não diz quem é atacadista. A mediana já é de 156 unidades por compra, e o p90 dos clientes é ~408. O flag `eh_atacado` marca quem compra **em média 400 unidades ou mais por pedido** (parâmetro `atacado_unidades_por_pedido`): são **607 clientes (10,4%)**. Ele é um filtro no BI, e o RFM continua único para todos.
+
+## Churn
+
+### D16. Intervalo entre compras
+Entre compras consecutivas do mesmo cliente (dias de Londres, `analise.vw_intervalo_compra`): p50 = 25 dias, p75 = 62, p80 = 78, p90 = 136, p95 = 207. Em 3.716 dos 30.742 intervalos, a compra seguinte foi no mesmo dia.
+
+### D17. Escolha do X: 90 dias, pelo F1 na data de corte
+Regra: o cliente está em churn se passou **mais de X dias** sem comprar. Validação em 10/06/2011, só com o passado: 4.944 clientes, dos quais 2.372 (48%) não compraram nos 6 meses seguintes.
+
+| X | Marcados | Precisão | Recall | F1 | Acurácia |
+|---:|---:|---:|---:|---:|---:|
+| 60 | 3.375 | 0,609 | 0,866 | 0,715 | 0,669 |
+| **90** | 2.971 | **0,641** | **0,803** | **0,713** | 0,690 |
+| 120 | 2.666 | 0,667 | 0,749 | 0,705 | 0,700 |
+| 180 | 2.306 | 0,693 | 0,673 | 0,683 | 0,700 |
+
+Entre os candidatos do plano (90, 120 e 180), **90 tem o melhor F1 e o maior recall**. Para o CRM, perceber cedo quem está saindo vale mais do que um alarme falso, porque o custo de uma campanha de reativação é baixo. Leitura: dos marcados, 64% de fato não voltaram; dos que não voltaram, a regra pegou 80%. Como referência, marcar todo mundo daria precisão de 48% (a taxa base).
+
+### D18. A regra depende da época do ano (limitação medida)
+Repeti a validação num segundo corte, 10/12/2010, logo depois do pico de vendas (set a nov):
+
+| X | Precisão | Recall | F1 |
+|---:|---:|---:|---:|
+| 30 | 0,642 | 0,760 | 0,696 |
+| 90 | 0,734 | 0,453 | 0,560 |
+| 180 | 0,781 | 0,276 | 0,407 |
+
+Logo depois do pico, quase todo mundo comprou há pouco tempo, então a regra marca poucos. Muitos clientes só voltam no pico seguinte: das primeiras voltas depois de 10/12/2010, as mensais caem até agosto (69 clientes) e sobem de novo em setembro, outubro e novembro (121, 148 e 157). Mesmo com uma janela de 12 meses, o F1 com X = 90 nesse corte fica em 0,565.
+
+**Consequência para o fim da base (10/12/2011, também logo depois do pico):** a marcação de churn ali é conservadora. Pelo análogo de dez/2010, cerca de 73% dos marcados de fato não voltam em 6 meses, mas a regra deixa passar metade de quem some. Isso fica registrado no README e na página de Churn do BI. O próximo passo natural seria um limite por cliente (baseado no intervalo típico de cada um) ou um modelo que considere a sazonalidade.
+
+### D19. Receita em risco
+`analise.cliente.receita_12m` é a receita líquida de cada cliente nos 12 meses antes do fim da base. Dos £7,98 mi de receita líquida nos últimos 12 meses, **£835 mil** vêm dos 2.967 clientes hoje marcados como churn (50,7% dos clientes).

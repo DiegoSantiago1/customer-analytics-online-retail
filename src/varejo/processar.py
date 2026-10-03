@@ -22,6 +22,7 @@ from varejo.config import ConfigBanco, ConfigError, carregar_config_banco
 ETAPAS: list[tuple[str, str]] = [
     ("limpo: classificar e tipar as linhas", "SELECT limpo.recarregar()"),
     ("analise: pedidos, métricas e RFM", "SELECT analise.recarregar()"),
+    ("analise: validação e marcação de churn", "SELECT analise.recarregar_churn()"),
 ]
 
 
