@@ -21,6 +21,7 @@ from varejo.config import ConfigBanco, ConfigError, carregar_config_banco
 # (descrição, comando). A ordem importa: cada etapa lê o resultado da anterior.
 ETAPAS: list[tuple[str, str]] = [
     ("limpo: classificar e tipar as linhas", "SELECT limpo.recarregar()"),
+    ("analise: pedidos, métricas e RFM", "SELECT analise.recarregar()"),
 ]
 
 

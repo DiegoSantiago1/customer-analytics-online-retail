@@ -51,3 +51,44 @@ O horário da planilha é local do Reino Unido, sem fuso. Ele é convertido com 
 
 ### D10. Clientes em mais de um país
 13 clientes aparecem com mais de um país. `limpo.cliente.pais` é o país mais frequente nas linhas de cada um, e `n_paises` registra quantos países apareceram.
+
+## Clientes e RFM (schema `analise`)
+
+### D11. Tudo numa data de referência
+`analise.metricas_cliente(data_ref)` e `analise.rfm(data_ref)` só enxergam pedidos anteriores à data de referência. A mesma função responde "como estava a base em 10/06/2011?" (validação do churn e do CLV) e "como está no fim?" (10/12/2011, o dia seguinte à última fatura). Assim, a validação usa exatamente o mesmo código da análise final e não tem como olhar o futuro (há teste para isso).
+
+### D12. O que é compra e o que é receita
+- **Compra** = fatura de venda com receita de produto > 0. Uma fatura só de frete não conta.
+- **Receita líquida** = receita de produto das compras − valor dos cancelamentos do cliente.
+- No fim da base são **5.852 clientes** com ao menos uma compra, **£16.413.301** de receita líquida, **72,4%** com 2 compras ou mais, e os **10% maiores fazem 63,2%** da receita líquida. 87 clientes só aparecem em cancelamentos e ficam fora do RFM.
+- 20 clientes têm receita líquida ≤ 0, quase todos por terem cancelado a única compra inteira. Ficam com nota M = 1 e o flag `liquido_nao_positivo`.
+
+### D13. Notas por `percent_rank`, não por `NTILE(5)` (desvio do plano)
+O plano previa `NTILE(5)`. Medido: **1.618 clientes têm exatamente 1 compra**. O `NTILE` divide em 5 grupos de mesmo tamanho e, para isso, espalharia esses clientes empatados entre as notas 1 e 2 em ordem arbitrária: dois clientes iguais com notas diferentes. A nota é `1 + floor(5 × percent_rank)`, em que empates recebem sempre a mesma nota. R e M (quase sem empates) ficam em quintos de ~1.170 clientes. F reflete os empates:
+
+| F | Compras | Clientes |
+|---|---|---:|
+| 1 | 1 | 1.618 |
+| 2 | 2 | 945 |
+| 3 | 3 a 4 | 1.148 |
+| 4 | 5 a 8 | 1.025 |
+| 5 | 9 ou mais | 1.116 |
+
+### D14. Segmentos
+O segmento vem do mapa R × F (`analise.segmento_rfm`, 25 combinações), no padrão de mercado. M fica fora do mapa para que ele continue legível, mas é mostrado ao lado. Resultado no fim da base:
+
+| Segmento | Clientes | % clientes | % receita | Recência média (dias) |
+|---|---:|---:|---:|---:|
+| Campeões | 1.380 | 23,6 | 69,3 | 20 |
+| Leais | 1.025 | 17,5 | 13,9 | 87 |
+| Potenciais leais | 442 | 7,6 | 2,4 | 19 |
+| Novos | 72 | 1,2 | 0,1 | 11 |
+| Promissores | 163 | 2,8 | 0,3 | 38 |
+| Precisam de atenção | 425 | 7,3 | 1,4 | 107 |
+| Não pode perder | 66 | 1,1 | 2,8 | 330 |
+| Em risco | 647 | 11,1 | 5,6 | 362 |
+| Hibernando | 673 | 11,5 | 1,8 | 314 |
+| Perdidos | 959 | 16,4 | 2,4 | 552 |
+
+### D15. Flag de atacado (aproximação)
+O dataset não diz quem é atacadista. A mediana já é de 156 unidades por compra, e o p90 dos clientes é ~408. O flag `eh_atacado` marca quem compra **em média 400 unidades ou mais por pedido** (parâmetro `atacado_unidades_por_pedido`): são **607 clientes (10,4%)**. Ele é um filtro no BI, e o RFM continua único para todos.

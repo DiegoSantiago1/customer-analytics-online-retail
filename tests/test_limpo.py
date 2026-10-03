@@ -4,7 +4,6 @@ Cada teste esvazia o bruto dentro da transação do `bd`, insere só as linhas d
 cenário e roda limpo.recarregar(). O ROLLBACK do fim do teste devolve tudo.
 """
 
-from collections.abc import Sequence
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -12,38 +11,9 @@ import pytest
 
 from varejo.banco import Conexao
 
-from .apoio import espera_erro, valor
+from .apoio import ANTIGA, NOVA, carregar_bruto, espera_erro, linha, valor
 
 pytestmark = pytest.mark.integracao
-
-ANTIGA = "Year 2009-2010"
-NOVA = "Year 2010-2011"
-
-
-def linha(
-    aba: str = NOVA,
-    fatura: str = "536365",
-    codigo: str = "85123A",
-    quantidade: str = "6",
-    data: str = "2011-01-10 10:00:00",
-    preco: str = "2.55",
-    cliente: str | None = "17850",
-    pais: str = "United Kingdom",
-    descricao: str | None = "WHITE HANGING HEART T-LIGHT HOLDER",
-) -> tuple[str, str, str | None, str, str, str, str | None, str, str]:
-    return (fatura, codigo, descricao, quantidade, data, preco, cliente, pais, aba)
-
-
-def carregar_bruto(bd: Conexao, linhas: Sequence[tuple[object, ...]]) -> None:
-    bd.execute("TRUNCATE bruto.fatura_linha")
-    with bd.cursor() as cur:
-        cur.executemany(
-            "INSERT INTO bruto.fatura_linha (linha_origem, fatura, codigo_produto, descricao, "
-            "quantidade, data_fatura, preco_unitario, cliente_id, pais, aba) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            [(i + 2, *dados) for i, dados in enumerate(linhas)],
-        )
-    bd.execute("SELECT limpo.recarregar()")
 
 
 def tipos(bd: Conexao) -> list[tuple[str, str]]:
