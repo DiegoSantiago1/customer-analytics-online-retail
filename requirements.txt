@@ -6,5 +6,8 @@ matplotlib==3.11.2
 SQLAlchemy==2.0.54
 psycopg[binary]==3.3.6
 python-dotenv==1.2.3
+# Leitor de xlsx em Rust usado pelo pandas (engine="calamine"): 5,6x mais rápido que o
+# openpyxl na planilha do projeto (13,7 s contra 77,4 s, medido em 03/10/2026).
+python-calamine==0.8.2
 # O próprio projeto (pacote varejo em src/), em modo editável.
 -e .
