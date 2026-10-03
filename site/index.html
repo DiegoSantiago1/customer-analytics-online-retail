@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Analytics: Online Retail II</title>
+<meta name="description" content="RFM segmentation, churn validated over time, retention cohorts and customer lifetime value for a real London online retailer (UCI Online Retail II). PostgreSQL, SQL, Python and Power BI.">
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb;
+    --surface-2: #f3f2ef;
+    --border: #e4e3df;
+    --text: #0b0b0b;
+    --text-2: #52514e;
+    --text-3: #77766f;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --s3: #1baf7a;
+    --seq-0: #f3f7fd; --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec;
+    --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95;
+    --good: #008300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #1a1a19; --surface-2: #232321; --border: #383835;
+      --text: #ffffff; --text-2: #c3c2b7; --text-3: #9a998f;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+      --seq-0: #1e2733; --seq-1: #1d3352; --seq-2: #184f95; --seq-3: #1c5cab;
+      --seq-4: #2a78d6; --seq-5: #5598e7; --seq-6: #9ec5f4;
+      --good: #3fb950;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #1a1a19; --surface-2: #232321; --border: #383835;
+    --text: #ffffff; --text-2: #c3c2b7; --text-3: #9a998f;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --seq-0: #1e2733; --seq-1: #1d3352; --seq-2: #184f95; --seq-3: #1c5cab;
+    --seq-4: #2a78d6; --seq-5: #5598e7; --seq-6: #9ec5f4;
+    --good: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--surface); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 64px; }
+  header.topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  header.topo > div:first-child { flex: 1 1 auto; min-width: 0; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.15; margin: 8px 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 1.35rem; margin: 0 0 4px; }
+  h3 { font-size: 1rem; margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  .sub { color: var(--text-2); max-width: 760px; }
+  .muted { color: var(--text-3); font-size: 0.875rem; }
+  a { color: var(--s1); }
+  .botoes { display: flex; gap: 8px; }
+  button.toggle {
+    font: inherit; font-size: 0.875rem; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer;
+  }
+  button.toggle:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+  .kpi { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .kpi .valor { font-size: 1.6rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .kpi .rotulo { color: var(--text-2); font-size: 0.85rem; }
+  section { margin-top: 44px; }
+  .pergunta { color: var(--text-3); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .cartao { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .grade-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  /* Sem min-width: 0, uma tabela larga estica a coluna da grade e a página vaza no celular. */
+  .grade-2 > * { min-width: 0; }
+  @media (max-width: 760px) { .grade-2 { grid-template-columns: 1fr; } }
+  .grafico { position: relative; height: 320px; }
+  .grafico.alto { height: 420px; }
+  .rolagem { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-2); font-weight: 600; }
+  td.acao { text-align: left; white-space: normal; color: var(--text-2); min-width: 220px; }
+  table.calor td { border: 2px solid var(--surface); text-align: center; min-width: 46px; }
+  table.calor td.rot { text-align: left; color: var(--text-2); }
+  .destaque { border-left: 3px solid var(--s2); padding: 8px 12px; background: var(--surface-2); border-radius: 0 8px 8px 0; color: var(--text-2); }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; color: var(--text-2); font-size: 0.875rem; }
+  footer { margin-top: 56px; color: var(--text-3); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 16px; }
+  .pipeline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.85rem; }
+  .pipeline span.etapa { border: 1px solid var(--border); background: var(--surface-2); border-radius: 6px; padding: 4px 8px; }
+  .pipeline span.seta { color: var(--text-3); }
+</style>
+</head>
+<body>
+<main>
+  <header class="topo">
+    <div>
+      <div class="pergunta" data-i18n="kicker">Customer analytics · real data</div>
+      <h1 data-i18n="titulo">Who are the best customers, who is leaving, and what are they worth?</h1>
+      <p class="sub" data-i18n="intro">A London online retailer of gifts and homewares (UCI Online Retail II, Dec 2009 to Dec 2011, 1.07 million invoice lines). Every number below comes from SQL that is versioned, tested and validated against what actually happened next.</p>
+    </div>
+    <div class="botoes">
+      <button class="toggle" id="idioma" type="button" aria-label="Mudar para português">PT</button>
+      <button class="toggle" id="tema" type="button" aria-label="Toggle dark mode">◐</button>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis" aria-live="polite"></div>
+  <p class="muted" data-i18n="kpi_nota">Product revenue net of cancellations, excluding postage, fees and discounts. Customers = people with at least one purchase.</p>
+
+  <section id="visao">
+    <div class="pergunta" data-i18n="q0">Overview</div>
+    <h2 data-i18n="h_receita">Revenue peaks every September to November</h2>
+    <p class="sub" data-i18n="p_receita">Product sales by month. About 13% comes from invoices without a customer ID: real revenue, but it cannot be attributed to anyone, so it stays out of the customer analyses.</p>
+    <div class="cartao"><div class="grafico"><canvas id="g_receita" role="img" aria-label="Monthly product sales, with and without customer ID"></canvas></div></div>
+  </section>
+
+  <section id="rfm">
+    <div class="pergunta" data-i18n="q1">Question 1 · RFM segmentation</div>
+    <h2 data-i18n="h_rfm">A quarter of the customers bring 69% of the revenue</h2>
+    <p class="sub" data-i18n="p_rfm">Recency, frequency and monetary scores from 1 to 5 (ties always get the same score), mapped to ten segments on the R × F grid. Each segment comes with an action for the CRM team.</p>
+    <div class="cartao"><div class="grafico alto"><canvas id="g_rfm" role="img" aria-label="Share of customers and of revenue by RFM segment"></canvas></div></div>
+    <details><summary data-i18n="ver_tabela">Show the table</summary><div class="rolagem"><table id="t_rfm"></table></div></details>
+  </section>
+
+  <section id="churn">
+    <div class="pergunta" data-i18n="q2">Question 2 · Churn</div>
+    <h2 data-i18n="h_churn">A simple rule, validated back in time</h2>
+    <p class="sub" data-i18n="p_churn">A customer has churned after more than X days without buying. To choose X honestly, the rule was applied at a past cut-off using only data available then, and compared with who actually came back in the next six months.</p>
+    <div class="grade-2">
+      <div class="cartao"><h3 data-i18n="h_corte1">Cut-off 10 Jun 2011</h3><div class="grafico"><canvas id="g_churn1" role="img" aria-label="Precision and recall by X, June 2011 cut-off"></canvas></div></div>
+      <div class="cartao"><h3 data-i18n="h_corte2">Cut-off 10 Dec 2010 (right after the peak)</h3><div class="grafico"><canvas id="g_churn2" role="img" aria-label="Precision and recall by X, December 2010 cut-off"></canvas></div></div>
+    </div>
+    <p class="destaque" style="margin-top:16px" id="churn_texto"></p>
+  </section>
+
+  <section id="coortes">
+    <div class="pergunta" data-i18n="q3">Question 3 · Retention cohorts</div>
+    <h2 data-i18n="h_coortes">Retention is stable; new-customer acquisition is what fell</h2>
+    <p class="sub" data-i18n="p_coortes">Share of each cohort (month of first purchase) that bought again N months later. The first month of the data (Dec 2009) is left out: those customers are not new, just the first record we have.</p>
+    <div class="cartao rolagem"><table class="calor" id="t_coortes" aria-label="Retention heatmap"></table></div>
+  </section>
+
+  <section id="clv">
+    <div class="pergunta" data-i18n="q4">Question 4 · Customer lifetime value</div>
+    <h2 data-i18n="h_clv">The forecast gets the total right where the naive one misses the peak</h2>
+    <p class="sub" data-i18n="p_clv">Predicted 6-month value = probability of staying active (by segment, same season one year earlier) × average order value × purchases per month (Gamma-Poisson smoothed). Made on 10 Jun 2011 and checked against the real revenue to 10 Dec 2011.</p>
+    <div class="grade-2">
+      <div class="cartao"><div class="grafico"><canvas id="g_clv" role="img" aria-label="Predicted, naive and actual 6-month revenue by segment"></canvas></div></div>
+      <div class="cartao"><div class="rolagem"><table id="t_clv"></table></div><p class="muted" style="margin-top:12px" data-i18n="clv_nota">Top-20% capture: revenue captured by the 20% of customers with the highest prediction, relative to a perfect top 20%.</p></div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="pergunta" data-i18n="q5">How it was built</div>
+    <div class="pipeline" aria-label="Pipeline">
+      <span class="etapa">UCI · SHA-256</span><span class="seta">→</span>
+      <span class="etapa">PostgreSQL bruto</span><span class="seta">→</span>
+      <span class="etapa">limpo (CHECKs)</span><span class="seta">→</span>
+      <span class="etapa">analise (SQL)</span><span class="seta">→</span>
+      <span class="etapa">dq (16 checks)</span><span class="seta">→</span>
+      <span class="etapa">Power BI · notebook · this page</span>
+    </div>
+    <p class="sub" style="margin-top:12px" data-i18n="p_como">Cleaning, RFM, churn, cohorts and CLV are SQL migrations (Alembic) tested with pytest, including hostile cases. A data-quality schema checks that totals reconcile across layers before any number is published.</p>
+  </section>
+
+  <footer>
+    <p><a href="https://github.com/DiegoSantiago1/customer-analytics-online-retail" data-i18n="link_codigo">Code, decisions and tests on GitHub</a> · <span data-i18n="autor">Diego Freitas Santiago</span></p>
+    <p data-i18n="fonte">Data: Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository, CC BY 4.0.</p>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js" integrity="sha512-WoViKhKD4qI2WruSZqv9+kvM4WfFhUMQCLN4QlDTt5aU56fLQy2gYoxWIqlEnXqJy/+Ac5q/hk1oWfqnMDhwMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+"use strict";
+const TEXTOS = {
+  pt: {
+    kicker: "Customer analytics · dados reais",
+    titulo: "Quem são os melhores clientes, quem está indo embora e quanto eles valem?",
+    intro: "Uma varejista online de Londres de presentes e utilidades (UCI Online Retail II, dez/2009 a dez/2011, 1,07 milhão de linhas de fatura). Cada número abaixo vem de SQL versionado, testado e validado contra o que de fato aconteceu depois.",
+    kpi_nota: "Receita de produto líquida de cancelamentos, sem frete, taxas e descontos. Clientes = quem fez ao menos uma compra.",
+    q0: "Visão geral", h_receita: "A receita tem pico todo ano de setembro a novembro",
+    p_receita: "Venda de produto por mês. Cerca de 13% vem de faturas sem identificação do cliente: receita real, mas que não dá para atribuir a ninguém, por isso fica fora das análises de cliente.",
+    q1: "Pergunta 1 · Segmentação RFM", h_rfm: "Um quarto dos clientes traz 69% da receita",
+    p_rfm: "Notas de 1 a 5 em recência, frequência e valor (empates sempre com a mesma nota), mapeadas em dez segmentos pela grade R × F. Cada segmento tem uma ação para o time de CRM.",
+    ver_tabela: "Ver a tabela",
+    q2: "Pergunta 2 · Churn", h_churn: "Uma regra simples, validada no passado",
+    p_churn: "O cliente está em churn depois de mais de X dias sem comprar. Para escolher o X com honestidade, a regra foi aplicada numa data de corte passada, só com o que se sabia naquele dia, e comparada com quem de fato voltou nos seis meses seguintes.",
+    h_corte1: "Corte em 10/06/2011", h_corte2: "Corte em 10/12/2010 (logo depois do pico)",
+    q3: "Pergunta 3 · Coortes de retenção", h_coortes: "A retenção é estável; o que caiu foi a entrada de clientes novos",
+    p_coortes: "Parte de cada coorte (mês da primeira compra) que comprou de novo N meses depois. O primeiro mês da base (dez/2009) fica de fora: aqueles clientes não são novos, são só o primeiro registro que temos.",
+    q4: "Pergunta 4 · Valor do cliente (CLV)", h_clv: "A previsão acerta o total, que o modelo ingênuo erra por não ver o pico",
+    p_clv: "Valor previsto para 6 meses = probabilidade de continuar ativo (por segmento, na mesma época do ano anterior) × ticket médio × compras por mês (suavização Gamma-Poisson). Feita em 10/06/2011 e conferida contra a receita real até 10/12/2011.",
+    clv_nota: "Captura do top 20%: receita capturada pelos 20% de clientes com maior previsão, em relação a um top 20% perfeito.",
+    q5: "Como foi feito",
+    p_como: "Limpeza, RFM, churn, coortes e CLV são migrations SQL (Alembic) testadas com pytest, inclusive com casos hostis. Um schema de qualidade de dados confere se os totais batem entre as camadas antes de qualquer número ser publicado.",
+    link_codigo: "Código, decisões e testes no GitHub", autor: "Diego Freitas Santiago",
+    fonte: "Dados: Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository, CC BY 4.0."
+  }
+};
+const ROTULOS = {
+  en: {
+    receita: "Product revenue", clientes: "Customers", recompra: "Bought 2+ times", top10: "Revenue from top 10%",
+    risco: "12-month revenue at risk (churned)", clv: "Predicted value, next 6 months", dq: "Data-quality checks passed",
+    com: "With customer ID", sem: "Without customer ID", pct_cli: "% of customers", pct_rec: "% of revenue",
+    precisao: "Precision", recall: "Recall", xdias: "X (days without buying)",
+    previsto: "Predicted (model)", ingenuo: "Naive (repeat last 6 months)", real: "Actual",
+    seg: "Segment", n: "Customers", receita_liq: "Net revenue", rec_media: "Avg recency (days)",
+    churn_col: "Churned", clv6: "Predicted 6m", acao: "Suggested action", coorte: "Cohort", meses: "Months since first purchase",
+    modelo: "Model", erro_total: "Error on total", erro_medio: "Mean abs. error", captura: "Top-20% capture",
+    mod_previsto: "Forecast", mod_ingenuo: "Naive", parcial: "(to 9 Dec)",
+    churn_texto: (j, d) => `At the June cut-off, X = 90 days had the best F1 among 90, 120 and 180: ${pc(j.precisao)} of flagged customers really did not come back, and the rule caught ${pc(j.recall)} of those who left. Right after the Sep–Nov peak (December cut-off) the same rule catches only ${pc(d.recall)}: many customers only return at the next peak. The end-of-data flag (also in December) is therefore conservative.`
+  },
+  pt: {
+    receita: "Receita de produto", clientes: "Clientes", recompra: "Compraram 2+ vezes", top10: "Receita dos 10% maiores",
+    risco: "Receita de 12 meses em risco (churn)", clv: "Valor previsto, próximos 6 meses", dq: "Checagens de qualidade aprovadas",
+    com: "Com cliente identificado", sem: "Sem cliente", pct_cli: "% dos clientes", pct_rec: "% da receita",
+    precisao: "Precisão", recall: "Recall", xdias: "X (dias sem comprar)",
+    previsto: "Previsto (modelo)", ingenuo: "Ingênuo (repete 6 meses)", real: "Real",
+    seg: "Segmento", n: "Clientes", receita_liq: "Receita líquida", rec_media: "Recência média (dias)",
+    churn_col: "Em churn", clv6: "Previsto 6m", acao: "Ação sugerida", coorte: "Coorte", meses: "Meses desde a 1ª compra",
+    modelo: "Modelo", erro_total: "Erro no total", erro_medio: "Erro médio absoluto", captura: "Captura do top 20%",
+    mod_previsto: "Previsão", mod_ingenuo: "Ingênuo", parcial: "(até dia 9)",
+    churn_texto: (j, d) => `No corte de junho, X = 90 dias teve o melhor F1 entre 90, 120 e 180: ${pc(j.precisao)} dos marcados de fato não voltaram, e a regra pegou ${pc(j.recall)} de quem foi embora. Logo depois do pico de set a nov (corte de dezembro), a mesma regra pega só ${pc(d.recall)}: muitos clientes só voltam no pico seguinte. A marcação do fim da base (também em dezembro) é, portanto, conservadora.`
+  }
+};
+const SEGMENTOS_EN = {
+  "Campeões": "Champions", "Leais": "Loyal", "Potenciais leais": "Potential loyalists", "Novos": "New",
+  "Promissores": "Promising", "Precisam de atenção": "Need attention", "Não pode perder": "Can't lose",
+  "Em risco": "At risk", "Hibernando": "Hibernating", "Perdidos": "Lost"
+};
+const ACOES_EN = {
+  "Campeões": "Reward; ask for referrals; early access to launches.",
+  "Leais": "Loyalty programme; offer higher-value items.",
+  "Potenciais leais": "Encourage the next purchase; suggest new categories.",
+  "Novos": "Welcome and a quick second purchase.",
+  "Promissores": "Remind them of the shop; light offer.",
+  "Precisam de atenção": "Time-limited offer; re-engage before they cool off.",
+  "Não pode perder": "Personal contact: good customers who stopped long ago.",
+  "Em risco": "Personalised win-back campaign.",
+  "Hibernando": "Low-cost win-back campaign.",
+  "Perdidos": "Do not invest; mass communication only."
+};
+const MESES = {
+  en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+  pt: ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]
+};
+
+let idioma = "en";
+let dados = null;
+const graficos = [];
+const textoOriginal = {};
+document.querySelectorAll("[data-i18n]").forEach(el => { textoOriginal[el.dataset.i18n] = el.textContent; });
+
+function pc(v, casas = 0) { return (v * 100).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB", { minimumFractionDigits: casas, maximumFractionDigits: casas }) + "%"; }
+function num(v) { return Math.round(v).toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB"); }
+function libras(v) {
+  const loc = idioma === "pt" ? "pt-BR" : "en-GB";
+  if (Math.abs(v) >= 1e6) return "£" + (v / 1e6).toLocaleString(loc, { maximumFractionDigits: 2 }) + (idioma === "pt" ? " mi" : "m");
+  if (Math.abs(v) >= 1e3) return "£" + Math.round(v / 1e3).toLocaleString(loc) + (idioma === "pt" ? " mil" : "k");
+  return "£" + Math.round(v).toLocaleString(loc);
+}
+function mes(iso) { const [a, m] = iso.split("-"); return MESES[idioma][+m - 1] + "/" + a.slice(2); }
+function seg(nome) { return idioma === "pt" ? nome : (SEGMENTOS_EN[nome] || nome); }
+function cor(nome) { return getComputedStyle(document.documentElement).getPropertyValue(nome).trim(); }
+function R() { return ROTULOS[idioma]; }
+
+function textos() {
+  document.documentElement.lang = idioma === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.dataset.i18n;
+    el.textContent = idioma === "pt" && TEXTOS.pt[k] ? TEXTOS.pt[k] : textoOriginal[k];
+  });
+  const b = document.getElementById("idioma");
+  b.textContent = idioma === "pt" ? "EN" : "PT";
+  b.setAttribute("aria-label", idioma === "pt" ? "Switch to English" : "Mudar para português");
+}
+
+function kpis() {
+  const r = dados.resumo;
+  const itens = [
+    [libras(r.receita_produto), R().receita], [num(r.clientes), R().clientes],
+    [pc(r.pct_recompra), R().recompra], [pc(r.pct_receita_top10), R().top10],
+    [libras(r.receita_em_risco), R().risco], [libras(r.clv_6m), R().clv],
+    [`${r.dq_ok}/${r.dq_total}`, R().dq]
+  ];
+  document.getElementById("kpis").innerHTML = itens.map(([v, t]) =>
+    `<div class="kpi"><div class="valor">${v}</div><div class="rotulo">${t}</div></div>`).join("");
+}
+
+function baseOpcoes(extra = {}) {
+  const texto2 = cor("--text-2"), grade = cor("--border");
+  return Object.assign({
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: { position: "top", align: "start", labels: { color: texto2, boxWidth: 12, boxHeight: 12, useBorderRadius: true, borderRadius: 2 } },
+      tooltip: { backgroundColor: cor("--surface-2"), titleColor: cor("--text"), bodyColor: texto2, borderColor: grade, borderWidth: 1, padding: 10 }
+    },
+    scales: {
+      x: { ticks: { color: texto2 }, grid: { display: false }, border: { color: grade } },
+      y: { ticks: { color: texto2 }, grid: { color: grade }, border: { display: false } }
+    }
+  }, extra);
+}
+
+function desenhar() {
+  graficos.forEach(g => g.destroy());
+  graficos.length = 0;
+  kpis();
+
+  // Receita mensal (empilhada)
+  const rm = dados.receita_mes;
+  const op1 = baseOpcoes();
+  op1.scales.x.stacked = true; op1.scales.y.stacked = true;
+  op1.scales.y.ticks.callback = v => libras(v);
+  op1.plugins.tooltip.callbacks = { label: c => `${c.dataset.label}: ${libras(c.parsed.y)}` };
+  graficos.push(new Chart(document.getElementById("g_receita"), {
+    type: "bar",
+    data: {
+      labels: rm.map(m => mes(m.mes) + (m.mes_parcial ? " " + R().parcial : "")),
+      datasets: [
+        { label: R().com, data: rm.map(m => m.venda_produto_com_cliente), backgroundColor: cor("--s1"), borderRadius: 3, borderSkipped: "bottom" },
+        { label: R().sem, data: rm.map(m => m.venda_produto_sem_cliente), backgroundColor: cor("--s2"), borderRadius: 3, borderSkipped: "bottom", borderColor: cor("--surface"), borderWidth: { top: 0, bottom: 2, left: 0, right: 0 } }
+      ]
+    },
+    options: op1
+  }));
+
+  // RFM
+  const sg = dados.segmentos;
+  const op2 = baseOpcoes({ indexAxis: "y" });
+  op2.scales.x.ticks.callback = v => pc(v);
+  op2.scales.x.grid = { color: cor("--border") };
+  op2.scales.y.grid = { display: false };
+  op2.plugins.tooltip.callbacks = { label: c => `${c.dataset.label}: ${pc(c.parsed.x, 1)}` };
+  graficos.push(new Chart(document.getElementById("g_rfm"), {
+    type: "bar",
+    data: {
+      labels: sg.map(s => seg(s.segmento)),
+      datasets: [
+        { label: R().pct_cli, data: sg.map(s => s.pct_clientes), backgroundColor: cor("--s1"), borderRadius: 3, barPercentage: 0.9, categoryPercentage: 0.75 },
+        { label: R().pct_rec, data: sg.map(s => s.pct_receita), backgroundColor: cor("--s2"), borderRadius: 3, barPercentage: 0.9, categoryPercentage: 0.75 }
+      ]
+    },
+    options: op2
+  }));
+  document.getElementById("t_rfm").innerHTML =
+    `<thead><tr><th>${R().seg}</th><th>${R().n}</th><th>${R().pct_cli}</th><th>${R().receita_liq}</th><th>${R().pct_rec}</th><th>${R().rec_media}</th><th>${R().churn_col}</th><th>${R().clv6}</th><th>${R().acao}</th></tr></thead><tbody>` +
+    sg.map(s => `<tr><td>${seg(s.segmento)}</td><td>${num(s.clientes)}</td><td>${pc(s.pct_clientes, 1)}</td><td>${libras(s.receita_liquida)}</td><td>${pc(s.pct_receita, 1)}</td><td>${num(s.recencia_media)}</td><td>${num(s.em_churn)}</td><td>${libras(s.clv_previsto_6m)}</td><td class="acao">${idioma === "pt" ? s.acao : ACOES_EN[s.segmento]}</td></tr>`).join("") + "</tbody>";
+
+  // Churn: um gráfico por corte
+  const cortes = [["2011-06-10", "g_churn1"], ["2010-12-10", "g_churn2"]];
+  const escolhido = {};
+  cortes.forEach(([corte, id]) => {
+    const linhas = dados.churn.filter(c => c.corte === corte);
+    escolhido[corte] = linhas.find(c => c.escolhido);
+    const op = baseOpcoes();
+    op.scales.y.min = 0; op.scales.y.max = 1; op.scales.y.ticks.callback = v => pc(v);
+    op.scales.x.title = { display: true, text: R().xdias, color: cor("--text-2") };
+    op.plugins.tooltip.callbacks = { title: i => `X = ${i[0].label}`, label: c => `${c.dataset.label}: ${pc(c.parsed.y, 1)}` };
+    graficos.push(new Chart(document.getElementById(id), {
+      type: "line",
+      data: {
+        labels: linhas.map(c => c.dias),
+        datasets: [
+          { label: R().precisao, data: linhas.map(c => c.precisao), borderColor: cor("--s1"), backgroundColor: cor("--s1"), borderWidth: 2, pointRadius: linhas.map(c => c.escolhido ? 6 : 4), pointBorderColor: cor("--surface"), pointBorderWidth: 2 },
+          { label: R().recall, data: linhas.map(c => c.recall), borderColor: cor("--s2"), backgroundColor: cor("--s2"), borderWidth: 2, pointRadius: linhas.map(c => c.escolhido ? 6 : 4), pointBorderColor: cor("--surface"), pointBorderWidth: 2 }
+        ]
+      },
+      options: op
+    }));
+  });
+  document.getElementById("churn_texto").textContent = R().churn_texto(escolhido["2011-06-10"], escolhido["2010-12-10"]);
+
+  // Coortes: heatmap em tabela
+  const porCoorte = {};
+  dados.coortes.forEach(c => { (porCoorte[c.coorte] ||= { tamanho: c.tamanho, m: {} }).m[c.meses_desde] = c.retencao; });
+  const escala = ["--seq-0","--seq-1","--seq-2","--seq-3","--seq-4","--seq-5","--seq-6"].map(cor);
+  const fundo = v => escala[Math.min(6, Math.floor(v / 0.4 * 6.999))];
+  const claro = v => v >= 0.24;
+  const meses = [...Array(12).keys()].map(i => i + 1);
+  document.getElementById("t_coortes").innerHTML =
+    `<thead><tr><th>${R().coorte}</th>${meses.map(m => `<th>${m}</th>`).join("")}</tr></thead><tbody>` +
+    Object.entries(porCoorte).map(([c, v]) => `<tr><td class="rot">${mes(c)} (${num(v.tamanho)})</td>` +
+      meses.map(m => m in v.m
+        ? `<td style="background:${fundo(v.m[m])};color:${claro(v.m[m]) ? "#ffffff" : cor("--text")}" title="${mes(c)} · ${R().meses}: ${m} · ${pc(v.m[m], 1)}">${pc(v.m[m])}</td>`
+        : "<td></td>").join("") + "</tr>").join("") + "</tbody>";
+
+  // CLV
+  const cs = dados.clv_segmento;
+  const op3 = baseOpcoes();
+  // O ingênuo tem negativos minúsculos (cancelamentos); sem isto o eixo descia a -£500k.
+  const minimo = Math.min(0, ...cs.flatMap(s => [s.previsto, s.ingenuo, s.real]));
+  op3.scales.y.min = minimo;
+  op3.scales.y.ticks.callback = v => (v === minimo && v !== 0 ? "" : libras(v));
+  op3.plugins.tooltip.callbacks = { label: c => `${c.dataset.label}: ${libras(c.parsed.y)}` };
+  graficos.push(new Chart(document.getElementById("g_clv"), {
+    type: "bar",
+    data: {
+      labels: cs.map(s => seg(s.segmento)),
+      datasets: [
+        { label: R().previsto, data: cs.map(s => s.previsto), backgroundColor: cor("--s1"), borderRadius: 3 },
+        { label: R().ingenuo, data: cs.map(s => s.ingenuo), backgroundColor: cor("--s2"), borderRadius: 3 },
+        { label: R().real, data: cs.map(s => s.real), backgroundColor: cor("--s3"), borderRadius: 3 }
+      ]
+    },
+    options: op3
+  }));
+  const nomeModelo = m => m === "previsto" ? R().mod_previsto : R().mod_ingenuo;
+  document.getElementById("t_clv").innerHTML =
+    `<thead><tr><th>${R().modelo}</th><th>${R().erro_total}</th><th>${R().erro_medio}</th><th>${R().captura}</th></tr></thead><tbody>` +
+    dados.clv_validacao.map(v => `<tr><td>${nomeModelo(v.modelo)}</td><td>${v.erro_total_pct > 0 ? "+" : ""}${v.erro_total_pct.toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB")}%</td><td>£${num(v.erro_medio_abs)}</td><td>${v.captura_top20.toLocaleString(idioma === "pt" ? "pt-BR" : "en-GB", { minimumFractionDigits: 3 })}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>${R().real}</td><td colspan="3">${libras(dados.clv_validacao[0].total_real)}</td></tr></tfoot>`;
+}
+
+document.getElementById("idioma").addEventListener("click", () => {
+  idioma = idioma === "en" ? "pt" : "en";
+  try { localStorage.setItem("idioma", idioma); } catch (e) { /* sem armazenamento: segue sem lembrar */ }
+  textos(); if (dados) desenhar();
+});
+document.getElementById("tema").addEventListener("click", () => {
+  const raiz = document.documentElement;
+  const escuroAgora = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = escuroAgora ? "light" : "dark";
+  if (dados) desenhar();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (dados) desenhar(); });
+
+try { const salvo = localStorage.getItem("idioma"); if (salvo === "pt" || salvo === "en") idioma = salvo; } catch (e) { /* idem */ }
+textos();
+fetch("dados.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => { dados = d; desenhar(); })
+  .catch(() => { document.getElementById("kpis").innerHTML = '<p class="muted">Could not load dados.json.</p>'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,1870 @@
+{
+ "resumo": {
+  "receita_produto": 18981261.517,
+  "pct_sem_cliente": 0.1308,
+  "clientes": 5852,
+  "receita_liquida": 16413300.877,
+  "pct_recompra": 0.7235,
+  "em_churn": 2967,
+  "receita_em_risco": 835120.931,
+  "clv_6m": 3809239.74,
+  "dq_ok": 16,
+  "dq_total": 16,
+  "pct_receita_top10": 0.6315
+ },
+ "receita_mes": [
+  {
+   "mes": "2009-12-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 681066.22,
+   "venda_produto_sem_cliente": 120036.75,
+   "cancelamento_produto": -19561.28,
+   "clientes_ativos": 951,
+   "clientes_novos": 951
+  },
+  {
+   "mes": "2010-01-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 535229.372,
+   "venda_produto_sem_cliente": 78621.44,
+   "cancelamento_produto": -7465.63,
+   "clientes_ativos": 701,
+   "clientes_novos": 368
+  },
+  {
+   "mes": "2010-02-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 499749.686,
+   "venda_produto_sem_cliente": 39995.0,
+   "cancelamento_produto": -12584.39,
+   "clientes_ativos": 771,
+   "clientes_novos": 375
+  },
+  {
+   "mes": "2010-03-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 668577.191,
+   "venda_produto_sem_cliente": 95756.66,
+   "cancelamento_produto": -9657.2,
+   "clientes_ativos": 1051,
+   "clientes_novos": 441
+  },
+  {
+   "mes": "2010-04-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 587753.772,
+   "venda_produto_sem_cliente": 61240.05,
+   "cancelamento_produto": -10025.26,
+   "clientes_ativos": 939,
+   "clientes_novos": 294
+  },
+  {
+   "mes": "2010-05-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 594886.54,
+   "venda_produto_sem_cliente": 50758.85,
+   "cancelamento_produto": -37294.14,
+   "clientes_ativos": 965,
+   "clientes_novos": 255
+  },
+  {
+   "mes": "2010-06-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 631504.85,
+   "venda_produto_sem_cliente": 67811.17,
+   "cancelamento_produto": -26380.61,
+   "clientes_ativos": 1034,
+   "clientes_novos": 267
+  },
+  {
+   "mes": "2010-07-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 583388.53,
+   "venda_produto_sem_cliente": 51508.46,
+   "cancelamento_produto": -17132.73,
+   "clientes_ativos": 924,
+   "clientes_novos": 185
+  },
+  {
+   "mes": "2010-08-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 596579.22,
+   "venda_produto_sem_cliente": 79481.5,
+   "cancelamento_produto": -12418.65,
+   "clientes_ativos": 910,
+   "clientes_novos": 163
+  },
+  {
+   "mes": "2010-09-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 808145.061,
+   "venda_produto_sem_cliente": 63733.28,
+   "cancelamento_produto": -27777.97,
+   "clientes_ativos": 1136,
+   "clientes_novos": 239
+  },
+  {
+   "mes": "2010-10-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 1015139.49,
+   "venda_produto_sem_cliente": 82878.18,
+   "cancelamento_produto": -25550.02,
+   "clientes_ativos": 1492,
+   "clientes_novos": 375
+  },
+  {
+   "mes": "2010-11-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 1161854.412,
+   "venda_produto_sem_cliente": 273825.71,
+   "cancelamento_produto": -35120.88,
+   "clientes_ativos": 1606,
+   "clientes_novos": 326
+  },
+  {
+   "mes": "2010-12-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 567490.72,
+   "venda_produto_sem_cliente": 210441.05,
+   "cancelamento_produto": -17607.86,
+   "clientes_ativos": 884,
+   "clientes_novos": 76
+  },
+  {
+   "mes": "2011-01-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 564026.64,
+   "venda_produto_sem_cliente": 107906.55,
+   "cancelamento_produto": -91526.3,
+   "clientes_ativos": 739,
+   "clientes_novos": 72
+  },
+  {
+   "mes": "2011-02-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 443346.02,
+   "venda_produto_sem_cliente": 65540.18,
+   "cancelamento_produto": -8375.87,
+   "clientes_ativos": 757,
+   "clientes_novos": 125
+  },
+  {
+   "mes": "2011-03-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 584562.85,
+   "venda_produto_sem_cliente": 106694.76,
+   "cancelamento_produto": -10675.3,
+   "clientes_ativos": 973,
+   "clientes_novos": 179
+  },
+  {
+   "mes": "2011-04-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 455266.911,
+   "venda_produto_sem_cliente": 60951.21,
+   "cancelamento_produto": -33316.91,
+   "clientes_ativos": 853,
+   "clientes_novos": 106
+  },
+  {
+   "mes": "2011-05-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 660481.9,
+   "venda_produto_sem_cliente": 80710.51,
+   "cancelamento_produto": -8948.23,
+   "clientes_ativos": 1054,
+   "clientes_novos": 111
+  },
+  {
+   "mes": "2011-06-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 654432.56,
+   "venda_produto_sem_cliente": 84319.31,
+   "cancelamento_produto": -13760.84,
+   "clientes_ativos": 990,
+   "clientes_novos": 108
+  },
+  {
+   "mes": "2011-07-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 592731.901,
+   "venda_produto_sem_cliente": 96632.51,
+   "cancelamento_produto": -11409.21,
+   "clientes_ativos": 946,
+   "clientes_novos": 101
+  },
+  {
+   "mes": "2011-08-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 636807.24,
+   "venda_produto_sem_cliente": 88706.26,
+   "cancelamento_produto": -22929.52,
+   "clientes_ativos": 933,
+   "clientes_novos": 107
+  },
+  {
+   "mes": "2011-09-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 940900.811,
+   "venda_produto_sem_cliente": 89574.55,
+   "cancelamento_produto": -17044.68,
+   "clientes_ativos": 1259,
+   "clientes_novos": 188
+  },
+  {
+   "mes": "2011-10-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 1005642.9,
+   "venda_produto_sem_cliente": 101026.92,
+   "cancelamento_produto": -43992.16,
+   "clientes_ativos": 1361,
+   "clientes_novos": 221
+  },
+  {
+   "mes": "2011-11-01",
+   "mes_parcial": false,
+   "venda_produto_com_cliente": 1142145.77,
+   "venda_produto_sem_cliente": 315599.76,
+   "cancelamento_produto": -25010.54,
+   "clientes_ativos": 1660,
+   "clientes_novos": 191
+  },
+  {
+   "mes": "2011-12-01",
+   "mes_parcial": true,
+   "venda_produto_com_cliente": 513230.43,
+   "venda_produto_sem_cliente": 102262.84,
+   "cancelamento_produto": -174126.76,
+   "clientes_ativos": 614,
+   "clientes_novos": 28
+  }
+ ],
+ "segmentos": [
+  {
+   "ordem": 1,
+   "segmento": "Campeões",
+   "acao": "Recompensar; pedir indicação; lançamentos em primeira mão.",
+   "clientes": 1380,
+   "pct_clientes": 0.2358,
+   "receita_liquida": 11372063.925,
+   "pct_receita": 0.6929,
+   "recencia_media": 20.0,
+   "frequencia_media": 16.2,
+   "em_churn": 0,
+   "receita_12m_em_risco": 0.0,
+   "clv_previsto_6m": 2611037.8,
+   "atacado": 165
+  },
+  {
+   "ordem": 2,
+   "segmento": "Leais",
+   "acao": "Programa de fidelidade; oferecer itens de maior valor.",
+   "clientes": 1025,
+   "pct_clientes": 0.1752,
+   "receita_liquida": 2286176.535,
+   "pct_receita": 0.1393,
+   "recencia_media": 87.0,
+   "frequencia_media": 6.0,
+   "em_churn": 402,
+   "receita_12m_em_risco": 401070.25,
+   "clv_previsto_6m": 532761.02,
+   "atacado": 108
+  },
+  {
+   "ordem": 3,
+   "segmento": "Potenciais leais",
+   "acao": "Incentivar a próxima compra; sugerir categorias novas.",
+   "clientes": 442,
+   "pct_clientes": 0.0755,
+   "receita_liquida": 394421.61,
+   "pct_receita": 0.024,
+   "recencia_media": 19.0,
+   "frequencia_media": 2.6,
+   "em_churn": 0,
+   "receita_12m_em_risco": 0.0,
+   "clv_previsto_6m": 197680.5,
+   "atacado": 45
+  },
+  {
+   "ordem": 4,
+   "segmento": "Novos",
+   "acao": "Boas-vindas e segunda compra rápida.",
+   "clientes": 72,
+   "pct_clientes": 0.0123,
+   "receita_liquida": 24414.85,
+   "pct_receita": 0.0015,
+   "recencia_media": 11.0,
+   "frequencia_media": 1.0,
+   "em_churn": 0,
+   "receita_12m_em_risco": 0.0,
+   "clv_previsto_6m": 20176.45,
+   "atacado": 14
+  },
+  {
+   "ordem": 5,
+   "segmento": "Promissores",
+   "acao": "Lembrar da loja; oferta leve.",
+   "clientes": 163,
+   "pct_clientes": 0.0279,
+   "receita_liquida": 53846.89,
+   "pct_receita": 0.0033,
+   "recencia_media": 38.0,
+   "frequencia_media": 1.0,
+   "em_churn": 0,
+   "receita_12m_em_risco": 0.0,
+   "clv_previsto_6m": 44514.97,
+   "atacado": 16
+  },
+  {
+   "ordem": 6,
+   "segmento": "Precisam de atenção",
+   "acao": "Oferta por tempo limitado; reativar antes de esfriar.",
+   "clientes": 425,
+   "pct_clientes": 0.0726,
+   "receita_liquida": 225429.413,
+   "pct_receita": 0.0137,
+   "recencia_media": 107.0,
+   "frequencia_media": 1.4,
+   "em_churn": 220,
+   "receita_12m_em_risco": 94254.72,
+   "clv_previsto_6m": 91600.99,
+   "atacado": 66
+  },
+  {
+   "ordem": 7,
+   "segmento": "Não pode perder",
+   "acao": "Contato pessoal: bons clientes parados há muito tempo.",
+   "clientes": 66,
+   "pct_clientes": 0.0113,
+   "receita_liquida": 466374.542,
+   "pct_receita": 0.0284,
+   "recencia_media": 330.0,
+   "frequencia_media": 17.1,
+   "em_churn": 66,
+   "receita_12m_em_risco": 42906.721,
+   "clv_previsto_6m": 62018.17,
+   "atacado": 8
+  },
+  {
+   "ordem": 8,
+   "segmento": "Em risco",
+   "acao": "Campanha de reativação personalizada.",
+   "clientes": 647,
+   "pct_clientes": 0.1106,
+   "receita_liquida": 912146.02,
+   "pct_receita": 0.0556,
+   "recencia_media": 362.0,
+   "frequencia_media": 4.3,
+   "em_churn": 647,
+   "receita_12m_em_risco": 152012.94,
+   "clv_previsto_6m": 149167.12,
+   "atacado": 49
+  },
+  {
+   "ordem": 9,
+   "segmento": "Hibernando",
+   "acao": "Campanha barata de reativação.",
+   "clientes": 673,
+   "pct_clientes": 0.115,
+   "receita_liquida": 287434.6,
+   "pct_receita": 0.0175,
+   "recencia_media": 314.0,
+   "frequencia_media": 1.4,
+   "em_churn": 673,
+   "receita_12m_em_risco": 145823.86,
+   "clv_previsto_6m": 57514.12,
+   "atacado": 50
+  },
+  {
+   "ordem": 10,
+   "segmento": "Perdidos",
+   "acao": "Não investir; só comunicação de massa.",
+   "clientes": 959,
+   "pct_clientes": 0.1639,
+   "receita_liquida": 390992.492,
+   "pct_receita": 0.0238,
+   "recencia_media": 552.0,
+   "frequencia_media": 1.3,
+   "em_churn": 959,
+   "receita_12m_em_risco": -947.56,
+   "clv_previsto_6m": 42768.6,
+   "atacado": 86
+  }
+ ],
+ "churn": [
+  {
+   "corte": "2011-06-10",
+   "dias": 30,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 3907,
+   "precisao": 0.5636,
+   "recall": 0.9283,
+   "f1": 0.7014,
+   "acuracia": 0.6208,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 60,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 3375,
+   "precisao": 0.6086,
+   "recall": 0.8659,
+   "f1": 0.7148,
+   "acuracia": 0.6685,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 90,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 2971,
+   "precisao": 0.6409,
+   "recall": 0.8027,
+   "f1": 0.7127,
+   "acuracia": 0.6895,
+   "escolhido": true
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 120,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 2666,
+   "precisao": 0.6665,
+   "recall": 0.7492,
+   "f1": 0.7054,
+   "acuracia": 0.6998,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 150,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 2441,
+   "precisao": 0.6788,
+   "recall": 0.6986,
+   "f1": 0.6886,
+   "acuracia": 0.6968,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 180,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 2306,
+   "precisao": 0.6925,
+   "recall": 0.6733,
+   "f1": 0.6828,
+   "acuracia": 0.6998,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 240,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 1350,
+   "precisao": 0.7756,
+   "recall": 0.4414,
+   "f1": 0.5626,
+   "acuracia": 0.6707,
+   "escolhido": false
+  },
+  {
+   "corte": "2011-06-10",
+   "dias": 365,
+   "clientes": 4944,
+   "nao_voltaram": 2372,
+   "marcados": 621,
+   "precisao": 0.8535,
+   "recall": 0.2234,
+   "f1": 0.3542,
+   "acuracia": 0.609,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 30,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 2718,
+   "precisao": 0.6424,
+   "recall": 0.7601,
+   "f1": 0.6963,
+   "acuracia": 0.6446,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 60,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 1912,
+   "precisao": 0.6883,
+   "recall": 0.5729,
+   "f1": 0.6253,
+   "acuracia": 0.632,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 90,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 1418,
+   "precisao": 0.7341,
+   "recall": 0.4532,
+   "f1": 0.5604,
+   "acuracia": 0.6189,
+   "escolhido": true
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 120,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 1157,
+   "precisao": 0.7606,
+   "recall": 0.3831,
+   "f1": 0.5096,
+   "acuracia": 0.6047,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 150,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 979,
+   "precisao": 0.7712,
+   "recall": 0.3287,
+   "f1": 0.4609,
+   "acuracia": 0.5879,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 180,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 811,
+   "precisao": 0.7805,
+   "recall": 0.2756,
+   "f1": 0.4073,
+   "acuracia": 0.5701,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 240,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 478,
+   "precisao": 0.8096,
+   "recall": 0.1685,
+   "f1": 0.2789,
+   "acuracia": 0.533,
+   "escolhido": false
+  },
+  {
+   "corte": "2010-12-10",
+   "dias": 365,
+   "clientes": 4285,
+   "nao_voltaram": 2297,
+   "marcados": 62,
+   "precisao": 0.8871,
+   "recall": 0.0239,
+   "f1": 0.0466,
+   "acuracia": 0.4751,
+   "escolhido": false
+  }
+ ],
+ "coortes": [
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 1,
+   "retencao": 0.2147
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 2,
+   "retencao": 0.3207
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 3,
+   "retencao": 0.3152
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 4,
+   "retencao": 0.2717
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 5,
+   "retencao": 0.3098
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 6,
+   "retencao": 0.269
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 7,
+   "retencao": 0.2337
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 8,
+   "retencao": 0.2853
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 9,
+   "retencao": 0.3261
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 10,
+   "retencao": 0.3098
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 11,
+   "retencao": 0.1793
+  },
+  {
+   "coorte": "2010-01-01",
+   "tamanho": 368,
+   "meses_desde": 12,
+   "retencao": 0.2283
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 1,
+   "retencao": 0.2347
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 2,
+   "retencao": 0.2267
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 3,
+   "retencao": 0.2933
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 4,
+   "retencao": 0.2453
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 5,
+   "retencao": 0.1973
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 6,
+   "retencao": 0.192
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 7,
+   "retencao": 0.288
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 8,
+   "retencao": 0.256
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 9,
+   "retencao": 0.2773
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 10,
+   "retencao": 0.1147
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 11,
+   "retencao": 0.1253
+  },
+  {
+   "coorte": "2010-02-01",
+   "tamanho": 375,
+   "meses_desde": 12,
+   "retencao": 0.152
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 1,
+   "retencao": 0.1905
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 2,
+   "retencao": 0.2313
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 3,
+   "retencao": 0.2426
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 4,
+   "retencao": 0.2313
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 5,
+   "retencao": 0.2041
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 6,
+   "retencao": 0.2472
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 7,
+   "retencao": 0.3061
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 8,
+   "retencao": 0.2766
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 9,
+   "retencao": 0.1088
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 10,
+   "retencao": 0.1156
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 11,
+   "retencao": 0.1451
+  },
+  {
+   "coorte": "2010-03-01",
+   "tamanho": 441,
+   "meses_desde": 12,
+   "retencao": 0.1995
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 1,
+   "retencao": 0.1905
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 2,
+   "retencao": 0.1905
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 3,
+   "retencao": 0.1599
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 4,
+   "retencao": 0.1837
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 5,
+   "retencao": 0.2211
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 6,
+   "retencao": 0.2755
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 7,
+   "retencao": 0.2653
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 8,
+   "retencao": 0.1054
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 9,
+   "retencao": 0.1088
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 10,
+   "retencao": 0.0748
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 11,
+   "retencao": 0.1395
+  },
+  {
+   "coorte": "2010-04-01",
+   "tamanho": 294,
+   "meses_desde": 12,
+   "retencao": 0.1429
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 1,
+   "retencao": 0.1569
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 2,
+   "retencao": 0.1686
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 3,
+   "retencao": 0.1765
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 4,
+   "retencao": 0.1765
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 5,
+   "retencao": 0.2549
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 6,
+   "retencao": 0.2118
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 7,
+   "retencao": 0.1255
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 8,
+   "retencao": 0.0588
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 9,
+   "retencao": 0.0824
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 10,
+   "retencao": 0.1137
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 11,
+   "retencao": 0.1333
+  },
+  {
+   "coorte": "2010-05-01",
+   "tamanho": 255,
+   "meses_desde": 12,
+   "retencao": 0.1529
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 1,
+   "retencao": 0.176
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 2,
+   "retencao": 0.1873
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 3,
+   "retencao": 0.206
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 4,
+   "retencao": 0.2322
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 5,
+   "retencao": 0.2846
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 6,
+   "retencao": 0.1273
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 7,
+   "retencao": 0.0899
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 8,
+   "retencao": 0.0824
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 9,
+   "retencao": 0.1124
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 10,
+   "retencao": 0.1049
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 11,
+   "retencao": 0.1386
+  },
+  {
+   "coorte": "2010-06-01",
+   "tamanho": 267,
+   "meses_desde": 12,
+   "retencao": 0.1498
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 1,
+   "retencao": 0.1568
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 2,
+   "retencao": 0.1838
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 3,
+   "retencao": 0.2973
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 4,
+   "retencao": 0.2919
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 5,
+   "retencao": 0.1405
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 6,
+   "retencao": 0.1135
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 7,
+   "retencao": 0.1459
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 8,
+   "retencao": 0.1459
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 9,
+   "retencao": 0.1135
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 10,
+   "retencao": 0.1351
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 11,
+   "retencao": 0.1459
+  },
+  {
+   "coorte": "2010-07-01",
+   "tamanho": 185,
+   "meses_desde": 12,
+   "retencao": 0.1297
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 1,
+   "retencao": 0.1963
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 2,
+   "retencao": 0.2883
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 3,
+   "retencao": 0.3252
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 4,
+   "retencao": 0.1656
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 5,
+   "retencao": 0.1166
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 6,
+   "retencao": 0.0982
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 7,
+   "retencao": 0.1288
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 8,
+   "retencao": 0.135
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 9,
+   "retencao": 0.1288
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 10,
+   "retencao": 0.1288
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 11,
+   "retencao": 0.1166
+  },
+  {
+   "coorte": "2010-08-01",
+   "tamanho": 163,
+   "meses_desde": 12,
+   "retencao": 0.1472
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 1,
+   "retencao": 0.2301
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 2,
+   "retencao": 0.2343
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 3,
+   "retencao": 0.1297
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 4,
+   "retencao": 0.0879
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 5,
+   "retencao": 0.1046
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 6,
+   "retencao": 0.1381
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 7,
+   "retencao": 0.0962
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 8,
+   "retencao": 0.1297
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 9,
+   "retencao": 0.1297
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 10,
+   "retencao": 0.1213
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 11,
+   "retencao": 0.1004
+  },
+  {
+   "coorte": "2010-09-01",
+   "tamanho": 239,
+   "meses_desde": 12,
+   "retencao": 0.2259
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 1,
+   "retencao": 0.2587
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 2,
+   "retencao": 0.1467
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 3,
+   "retencao": 0.1253
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 4,
+   "retencao": 0.088
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 5,
+   "retencao": 0.0827
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 6,
+   "retencao": 0.1307
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 7,
+   "retencao": 0.1387
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 8,
+   "retencao": 0.1067
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 9,
+   "retencao": 0.0933
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 10,
+   "retencao": 0.1067
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 11,
+   "retencao": 0.128
+  },
+  {
+   "coorte": "2010-10-01",
+   "tamanho": 375,
+   "meses_desde": 12,
+   "retencao": 0.192
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 1,
+   "retencao": 0.1748
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 2,
+   "retencao": 0.0951
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 3,
+   "retencao": 0.0951
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 4,
+   "retencao": 0.0767
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 5,
+   "retencao": 0.089
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 6,
+   "retencao": 0.1288
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 7,
+   "retencao": 0.1012
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 8,
+   "retencao": 0.0859
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 9,
+   "retencao": 0.092
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 10,
+   "retencao": 0.1104
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 11,
+   "retencao": 0.1472
+  },
+  {
+   "coorte": "2010-11-01",
+   "tamanho": 326,
+   "meses_desde": 12,
+   "retencao": 0.2515
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 1,
+   "retencao": 0.0921
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 2,
+   "retencao": 0.0526
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 3,
+   "retencao": 0.0921
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 4,
+   "retencao": 0.1184
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 5,
+   "retencao": 0.0658
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 6,
+   "retencao": 0.0526
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 7,
+   "retencao": 0.0921
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 8,
+   "retencao": 0.0526
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 9,
+   "retencao": 0.0263
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 10,
+   "retencao": 0.0921
+  },
+  {
+   "coorte": "2010-12-01",
+   "tamanho": 76,
+   "meses_desde": 11,
+   "retencao": 0.1974
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 1,
+   "retencao": 0.1667
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 2,
+   "retencao": 0.2222
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 3,
+   "retencao": 0.1944
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 4,
+   "retencao": 0.2222
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 5,
+   "retencao": 0.1528
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 6,
+   "retencao": 0.1528
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 7,
+   "retencao": 0.125
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 8,
+   "retencao": 0.1111
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 9,
+   "retencao": 0.2083
+  },
+  {
+   "coorte": "2011-01-01",
+   "tamanho": 72,
+   "meses_desde": 10,
+   "retencao": 0.25
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 1,
+   "retencao": 0.16
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 2,
+   "retencao": 0.16
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 3,
+   "retencao": 0.184
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 4,
+   "retencao": 0.216
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 5,
+   "retencao": 0.16
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 6,
+   "retencao": 0.16
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 7,
+   "retencao": 0.152
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 8,
+   "retencao": 0.152
+  },
+  {
+   "coorte": "2011-02-01",
+   "tamanho": 125,
+   "meses_desde": 9,
+   "retencao": 0.184
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 1,
+   "retencao": 0.1788
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 2,
+   "retencao": 0.2179
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 3,
+   "retencao": 0.2011
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 4,
+   "retencao": 0.2235
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 5,
+   "retencao": 0.1508
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 6,
+   "retencao": 0.2067
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 7,
+   "retencao": 0.2011
+  },
+  {
+   "coorte": "2011-03-01",
+   "tamanho": 179,
+   "meses_desde": 8,
+   "retencao": 0.2402
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 1,
+   "retencao": 0.2453
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 2,
+   "retencao": 0.1981
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 3,
+   "retencao": 0.1981
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 4,
+   "retencao": 0.1792
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 5,
+   "retencao": 0.2358
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 6,
+   "retencao": 0.1792
+  },
+  {
+   "coorte": "2011-04-01",
+   "tamanho": 106,
+   "meses_desde": 7,
+   "retencao": 0.2547
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 1,
+   "retencao": 0.2342
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 2,
+   "retencao": 0.2432
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 3,
+   "retencao": 0.1622
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 4,
+   "retencao": 0.2162
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 5,
+   "retencao": 0.2072
+  },
+  {
+   "coorte": "2011-05-01",
+   "tamanho": 111,
+   "meses_desde": 6,
+   "retencao": 0.2613
+  },
+  {
+   "coorte": "2011-06-01",
+   "tamanho": 108,
+   "meses_desde": 1,
+   "retencao": 0.2315
+  },
+  {
+   "coorte": "2011-06-01",
+   "tamanho": 108,
+   "meses_desde": 2,
+   "retencao": 0.213
+  },
+  {
+   "coorte": "2011-06-01",
+   "tamanho": 108,
+   "meses_desde": 3,
+   "retencao": 0.2685
+  },
+  {
+   "coorte": "2011-06-01",
+   "tamanho": 108,
+   "meses_desde": 4,
+   "retencao": 0.2037
+  },
+  {
+   "coorte": "2011-06-01",
+   "tamanho": 108,
+   "meses_desde": 5,
+   "retencao": 0.2778
+  },
+  {
+   "coorte": "2011-07-01",
+   "tamanho": 101,
+   "meses_desde": 1,
+   "retencao": 0.2079
+  },
+  {
+   "coorte": "2011-07-01",
+   "tamanho": 101,
+   "meses_desde": 2,
+   "retencao": 0.297
+  },
+  {
+   "coorte": "2011-07-01",
+   "tamanho": 101,
+   "meses_desde": 3,
+   "retencao": 0.2772
+  },
+  {
+   "coorte": "2011-07-01",
+   "tamanho": 101,
+   "meses_desde": 4,
+   "retencao": 0.3465
+  },
+  {
+   "coorte": "2011-08-01",
+   "tamanho": 107,
+   "meses_desde": 1,
+   "retencao": 0.2617
+  },
+  {
+   "coorte": "2011-08-01",
+   "tamanho": 107,
+   "meses_desde": 2,
+   "retencao": 0.2991
+  },
+  {
+   "coorte": "2011-08-01",
+   "tamanho": 107,
+   "meses_desde": 3,
+   "retencao": 0.2617
+  },
+  {
+   "coorte": "2011-09-01",
+   "tamanho": 188,
+   "meses_desde": 1,
+   "retencao": 0.2713
+  },
+  {
+   "coorte": "2011-09-01",
+   "tamanho": 188,
+   "meses_desde": 2,
+   "retencao": 0.3777
+  },
+  {
+   "coorte": "2011-10-01",
+   "tamanho": 221,
+   "meses_desde": 1,
+   "retencao": 0.3167
+  }
+ ],
+ "clv_validacao": [
+  {
+   "modelo": "previsto",
+   "clientes": 4944,
+   "total_previsto": 4263961.12,
+   "total_real": 4243517.7,
+   "erro_total_pct": 0.48,
+   "erro_medio_abs": 604.36,
+   "captura_top20": 0.883
+  },
+  {
+   "modelo": "ingenuo",
+   "clientes": 4944,
+   "total_previsto": 3005615.24,
+   "total_real": 4243517.7,
+   "erro_total_pct": -29.17,
+   "erro_medio_abs": 547.34,
+   "captura_top20": 0.8686
+  }
+ ],
+ "clv_segmento": [
+  {
+   "ordem": 1,
+   "segmento": "Campeões",
+   "previsto": 2582372.83,
+   "ingenuo": 2293333.02,
+   "real": 3117946.63
+  },
+  {
+   "ordem": 2,
+   "segmento": "Leais",
+   "previsto": 570310.42,
+   "ingenuo": 324395.37,
+   "real": 428285.55
+  },
+  {
+   "ordem": 3,
+   "segmento": "Potenciais leais",
+   "previsto": 247920.23,
+   "ingenuo": 208322.74,
+   "real": 187207.08
+  },
+  {
+   "ordem": 4,
+   "segmento": "Novos",
+   "previsto": 57119.96,
+   "ingenuo": 26838.0,
+   "real": 34976.24
+  },
+  {
+   "ordem": 5,
+   "segmento": "Promissores",
+   "previsto": 124907.37,
+   "ingenuo": 72712.92,
+   "real": 62488.43
+  },
+  {
+   "ordem": 6,
+   "segmento": "Precisam de atenção",
+   "previsto": 124847.03,
+   "ingenuo": 81395.14,
+   "real": 60247.93
+  },
+  {
+   "ordem": 7,
+   "segmento": "Não pode perder",
+   "previsto": 37926.88,
+   "ingenuo": 0.0,
+   "real": 12704.36
+  },
+  {
+   "ordem": 8,
+   "segmento": "Em risco",
+   "previsto": 211513.67,
+   "ingenuo": -102.75,
+   "real": 136733.17
+  },
+  {
+   "ordem": 9,
+   "segmento": "Hibernando",
+   "previsto": 187951.7,
+   "ingenuo": -463.59,
+   "real": 140322.45
+  },
+  {
+   "ordem": 10,
+   "segmento": "Perdidos",
+   "previsto": 119091.03,
+   "ingenuo": -815.61,
+   "real": 62605.86
+  }
+ ]
+}
