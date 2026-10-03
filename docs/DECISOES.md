@@ -19,11 +19,12 @@ A planilha (45 MB) não vai para o git. `python -m varejo.baixar_dados` baixa o 
 A aba "Year 2009-2010" vai até 09/12/2010 e a "Year 2010-2011" começa em 01/12/2010. Medido: **as 22.523 linhas desse período são idênticas nas duas abas**, inclusive na contagem de repetições (`EXCEPT ALL` vazio nos dois sentidos). A regra é ficar só com a aba nova: a antiga sai inteira a partir do primeiro dia da nova. O `dq` confere essa igualdade a cada carga. Sem isso, dezembro de 2010 contaria em dobro.
 
 ### D5. Repetições dentro de uma aba são mantidas (não são duplicatas)
-A planilha tem 12.133 linhas idênticas a outra linha da mesma aba. A reação comum é um `drop_duplicates()`. **Medido antes de decidir:**
-- 86% dessas repetições (10.430 de 12.133) estão em linhas **não vizinhas** da mesma fatura;
-- na aba 2010-2011, o mesmo produto aparece mais de uma vez na mesma fatura em 9.694 pares fatura+produto, e em 5.084 deles **com quantidades diferentes**. Na fatura 536412, por exemplo, o produto 21448 aparece com quantidade 1 duas vezes e com quantidade 2 três vezes.
+A planilha tem **34.335 linhas idênticas a outra linha**. A reação comum seria um `drop_duplicates()`. **Medido antes de decidir:**
+- **22.523** são a sobreposição das abas (D4), que é artefato da exportação e foi removida;
+- as **11.812** restantes são repetições dentro da mesma aba, e **85,7%** delas (10.127) estão em linhas **não vizinhas** da mesma fatura;
+- no `limpo`, 21.234 pares fatura+produto aparecem mais de uma vez, e **10.967 deles com quantidades diferentes**. Na fatura 536412, por exemplo, o produto 21448 aparece com quantidade 1 duas vezes e com quantidade 2 três vezes.
 
-Esse é o jeito do sistema de registrar o mesmo item adicionado mais de uma vez no pedido, e não erro de exportação. Apagar as repetições removeria vendas reais. O único artefato comprovado é a sobreposição das abas (D4).
+Esse é o jeito do sistema de registrar o mesmo item adicionado mais de uma vez no pedido, e não erro de exportação. As 11.812 linhas mantidas valem £57.481 (0,3% da venda): apagá-las removeria vendas reais. O único artefato comprovado é a sobreposição das abas.
 
 ### D6. Tipo de cada linha
 Toda linha recebe um tipo, e os `CHECK`s da tabela garantem que o tipo nunca contradiz os sinais:

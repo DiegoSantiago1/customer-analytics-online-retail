@@ -1,6 +1,8 @@
 # Plano do projeto — Customer Analytics (Online Retail II)
 
-> Documento da fase de planejamento. Descreve o que **será** construído. Os números citados aqui vêm de uma medição exploratória (03/10/2026, script descartável) e são refeitos na T2 com script versionado antes de qualquer uso no README.
+> Documento da fase de planejamento. Descreve o que **seria** construído. Os números citados aqui vêm de uma medição exploratória (03/10/2026, script descartável) e foram refeitos com script versionado antes de qualquer uso no README.
+>
+> **Estado: implementado (T1 a T13).** Os pontos em que a implementação diferiu do plano, cada um com o motivo medido, estão em [DECISOES.md](DECISOES.md): leitura com calamine em vez de openpyxl (D1); repetições dentro da aba mantidas, porque não são duplicatas (D5); notas RFM por `percent_rank` em vez de `NTILE` (D13); horizonte do CLV de 6 meses em vez de 12 (D25); `dq` feito depois das análises, para cobrir também o schema `analise`.
 
 ## 1. Problema
 

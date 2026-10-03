@@ -126,6 +126,15 @@ def test_pipeline_completo_reproduz_os_numeros_documentados(banco_teste: ConfigB
             "ajuste_divida": 6,
             "anomalia": 1,
         }
+        # D5: repetições dentro da aba mantidas no limpo (a sobreposição saiu).
+        repeticoes = valor(
+            con,
+            "SELECT count(*) - (SELECT count(*) FROM (SELECT DISTINCT b.fatura, "
+            "b.codigo_produto, b.descricao, b.quantidade, b.data_fatura, b.preco_unitario, "
+            "b.cliente_id, b.pais FROM bruto.fatura_linha b JOIN limpo.fatura_linha l "
+            "USING (aba, linha_origem)) d) FROM limpo.fatura_linha",
+        )
+        assert repeticoes == 11_812
         clientes, liquida, atacado, churn = con.execute(
             "SELECT count(*), sum(receita_liquida), count(*) FILTER (WHERE eh_atacado), "
             "count(*) FILTER (WHERE em_churn) FROM analise.cliente"
