@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "varejo"
+version = "0.1.0"
+description = "Customer Analytics: RFM, churn, coortes e CLV com o dataset Online Retail II (UCI)"
+requires-python = ">=3.14"
+# As dependências ficam fixadas em requirements.txt / requirements-dev.txt,
+# para o ambiente ser reproduzível. Este arquivo só torna o pacote instalável
+# (pip install -e .) e concentra a configuração das ferramentas.
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E", "W", # estilo (pycodestyle)
+    "F",      # erros prováveis (pyflakes)
+    "I",      # ordem dos imports
+    "B",      # bugs comuns (bugbear)
+    "UP",     # sintaxe moderna do Python
+    "SIM",    # simplificações
+    "S",      # segurança (bandit)
+    "RUF",    # regras do próprio ruff
+]
+
+[tool.ruff.lint.per-file-ignores]
+# assert é o jeito normal de testar no pytest; senhas de teste são fictícias.
+"tests/**" = ["S101", "S105", "S106"]
+# Migrations: SQL longo dentro de strings.
+"db/migracoes/versions/**" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["varejo"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src", "tests", "db/migracoes"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "integracao: precisa do Docker e do banco retail rodando",
+    "lento: leva mais de 10 s (carga do dataset real); pule com -m 'not lento' no dia a dia",
+]

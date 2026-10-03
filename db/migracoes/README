@@ -1,0 +1,7 @@
+Migrações do banco `retail` (Alembic, SQL escrito à mão, sem autogenerate).
+
+Criar uma migração (número sequencial como id, para o arquivo ficar legível):
+    alembic revision --rev-id 0002 -m "descricao_curta"
+
+Aplicar no banco principal:   alembic upgrade head
+Aplicar no banco de testes:   python -m varejo.migracoes teste

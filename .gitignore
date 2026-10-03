@@ -1,0 +1,24 @@
+# Contexto pessoal e de carreira (não vai para o GitHub)
+CLAUDE.md
+
+# Segredos e ambiente
+.env
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Dados brutos: 45 MB, baixados por `python -m varejo.baixar_dados` (licença CC BY 4.0)
+data/raw/
+
+# Notebooks e ferramentas
+.ipynb_checkpoints/
+.DS_Store
+
+# Power BI: só o formato PBIP (texto) é versionado
+*.pbix
+**/.pbi/cache.abf
+**/.pbi/localSettings.json

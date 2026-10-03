@@ -1,0 +1,9 @@
+# Ferramentas de desenvolvimento: testes, lint/formatação e verificação de tipos.
+-r requirements.txt
+pytest==9.1.1
+ruff==0.16.8
+mypy==2.3.1
+pandas-stubs==3.0.5.260914
+# Notebooks: rodar e reexecutar as análises (jupyter nbconvert --execute).
+ipykernel==7.3.0
+nbconvert==7.17.1
