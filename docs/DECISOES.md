@@ -138,3 +138,44 @@ Logo depois do pico, quase todo mundo comprou há pouco tempo, então a regra ma
 
 ### D22. A retenção melhora ou piora?
 Retenção média ponderada (sem pré-existentes e sem o mês parcial): **21,0% no mês 1, 21,1% no mês 3, 18,4% no mês 6 e 18,4% no mês 12**. Entre os anos, ela fica **estável**: no mês 1, 19,9% para as coortes de 2010 e 23,6% para as de 2011; no mês 6, 18,3% e 19,6%. O que caiu foi a **entrada de clientes novos**: de setembro a novembro foram 940 em 2010 (239 + 375 + 326) e 600 em 2011 (188 + 221 + 191), **36% a menos**. As coortes de 2010 também mostram de novo a sazonalidade da D18: a retenção sobe nos meses de setembro a novembro do ano seguinte.
+
+## CLV
+
+### D23. Fórmula
+- **CLV histórico** = receita líquida acumulada (`analise.cliente.receita_liquida`).
+- **CLV previsto** para os próximos H meses, numa data T:
+  `p_ativo(segmento) × ticket médio líquido × compras por mês × H`
+  - **p_ativo**: fração dos clientes do mesmo segmento RFM que compraram de novo numa janela de H meses na **mesma época do ano anterior** (de T − 12 meses a T − 12 meses + H). A sazonalidade é forte (D18), e calibrar numa janela de outra época distorceria a previsão.
+  - **compras por mês** = `(compras + b × taxa da base) / (meses de vida + b)`, com b = 3 meses: a média de uma Gamma-Poisson. Sem essa suavização, um cliente com uma compra há 10 dias teria "1 compra por mês". Na validação, o CLV previsto dos Novos saiu 2,8 vezes o real e o dos Promissores 2,6 vezes.
+
+Sem biblioteca nova, e cada termo pode ser explicado. BG/NBD e Gamma-Gamma ficam como próximos passos.
+
+### D24. Validação no corte (previsão de 6 meses feita em 10/06/2011)
+A comparação é contra a receita líquida real de 10/06 a 10/12/2011 (£4,24 mi, 4.944 clientes) e contra um modelo **ingênuo**: "os próximos 6 meses repetem os 6 anteriores".
+
+| Modelo | Total previsto | Erro no total | Erro médio por cliente | Captura do top 20% |
+|---|---:|---:|---:|---:|
+| **Previsto** | £4,26 mi | **+0,5%** | £604 | **0,883** |
+| Ingênuo | £3,01 mi | −29,2% | **£547** | 0,869 |
+
+*Captura do top 20%* = quanto da receita real está nos 20% de clientes com maior previsão, dividido pelo que um top 20% perfeito capturaria.
+
+Leitura honesta:
+- O modelo acerta o **total**, e é isso que importa para orçamento. O ingênuo erra em 29% porque não enxerga o pico de fim de ano.
+- Na **ordenação** os dois empatam (0,883 contra 0,869).
+- No **erro por cliente**, o ingênuo é melhor, porque prevê zero para quem parou e muitos de fato não voltam.
+
+Sensibilidade ao b (escolhido na própria validação, então com algum risco de sobreajuste). O resultado muda pouco entre 1 e 6:
+
+| b (meses) | Erro no total | Erro médio | Captura do top 20% |
+|---:|---:|---:|---:|
+| 0 (sem suavização) | +7,9% | £604 | 0,876 |
+| 1 | +4,0% | £595 | 0,883 |
+| **3** | **+0,5%** | £604 | 0,883 |
+| 6 | −2,6% | £627 | 0,882 |
+| 12 | −6,3% | £669 | 0,875 |
+
+### D25. Horizonte final de 6 meses, não 12 (desvio do plano)
+O plano previa um CLV de 12 meses. Com o mesmo método, o CLV de 12 meses no fim daria £9,35 mi, contra £7,98 mi de receita real nos 12 meses anteriores. **Esse horizonte não tem como ser validado com 2 anos de dados**: seriam necessários 12 meses depois de um corte, mais um ano antes dele para calibrar. Por isso o CLV publicado é o de **6 meses**, o mesmo horizonte validado: **£3,81 mi** para os 6 meses seguintes ao fim da base. Na mesma época do ano anterior, a receita real foi £3,01 mi, com uma base de clientes 37% menor. Os 20% de clientes com maior CLV concentram 74% do valor previsto.
+
+Bug achado pelos testes: se ninguém comprar na janela, o total real é zero e o erro percentual não existe. A coluna era `NOT NULL`, o que derrubava a recarga inteira. Agora o valor fica NULL.

@@ -24,6 +24,7 @@ ETAPAS: list[tuple[str, str]] = [
     ("analise: pedidos, métricas e RFM", "SELECT analise.recarregar()"),
     ("analise: validação e marcação de churn", "SELECT analise.recarregar_churn()"),
     ("analise: coortes de retenção", "SELECT analise.recarregar_coortes()"),
+    ("analise: CLV (validação e previsão)", "SELECT analise.recarregar_clv()"),
 ]
 
 
