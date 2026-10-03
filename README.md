@@ -1,6 +1,6 @@
 # Customer Analytics: Online Retail II
 
-**Who are the best customers, who is leaving, and what are they worth?** RFM segmentation, churn validated back in time, retention cohorts and customer lifetime value for a real London online retailer, built with PostgreSQL, SQL, Python and Power BI.
+**Who are the best customers, who is leaving, and what are they worth?** RFM segmentation, churn validated back in time, retention cohorts and customer lifetime value for a real UK-based online retailer, built with PostgreSQL, SQL, Python and Power BI.
 
 [Português](README.pt-BR.md) · **[Interactive page](https://diegosantiago1.github.io/customer-analytics-online-retail/)** · [Decisions and measurements](docs/DECISOES.md) · [Power BI report](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
 

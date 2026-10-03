@@ -1,6 +1,6 @@
 # Customer Analytics: Online Retail II
 
-**Quem são os melhores clientes, quem está indo embora e quanto eles valem?** Segmentação RFM, churn validado no tempo, coortes de retenção e valor do cliente (CLV) para uma varejista online real de Londres, com PostgreSQL, SQL, Python e Power BI.
+**Quem são os melhores clientes, quem está indo embora e quanto eles valem?** Segmentação RFM, churn validado no tempo, coortes de retenção e valor do cliente (CLV) para uma varejista online real do Reino Unido, com PostgreSQL, SQL, Python e Power BI.
 
 [English](README.md) · **[Página interativa](https://diegosantiago1.github.io/customer-analytics-online-retail/)** · [Decisões e medições](docs/DECISOES.md) · [Relatório Power BI](docs/POWERBI.md) · [Notebook](notebooks/customer_analytics.ipynb)
 

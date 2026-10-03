@@ -6,7 +6,7 @@
 
 ## 1. Problema
 
-Uma varejista online de Londres vende presentes e utilidades para clientes finais e para muitos atacadistas (lojas que revendem). Entre dez/2009 e dez/2011 foram cerca de 1 milhão de linhas de fatura.
+Uma varejista online do Reino Unido vende presentes e utilidades para clientes finais e para muitos atacadistas (lojas que revendem). Entre dez/2009 e dez/2011 foram cerca de 1 milhão de linhas de fatura.
 
 A gerência de marketing/CRM quer responder quatro perguntas:
 
