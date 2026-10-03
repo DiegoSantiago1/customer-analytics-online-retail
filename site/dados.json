@@ -14,6 +14,12 @@
   "dq_total": 18,
   "pct_receita_top10": 0.6315
  },
+ "limpeza": {
+  "linhas_bruto": 1067371,
+  "sobreposicao": 22523,
+  "repeticoes_mantidas": 11812,
+  "valor_repeticoes": 57481.47
+ },
  "receita_mes": [
   {
    "mes": "2009-12-01",
@@ -253,6 +259,8 @@
    "recencia_media": 20.0,
    "frequencia_media": 16.2,
    "em_churn": 0,
+   "em_risco": 0,
+   "inativos": 0,
    "receita_12m_em_risco": 0.0,
    "clv_previsto_6m": 2611037.8,
    "atacado": 165
@@ -268,6 +276,8 @@
    "recencia_media": 76.0,
    "frequencia_media": 5.6,
    "em_churn": 402,
+   "em_risco": 402,
+   "inativos": 0,
    "receita_12m_em_risco": 401070.25,
    "clv_previsto_6m": 642375.78,
    "atacado": 124
@@ -283,6 +293,8 @@
    "recencia_media": 25.0,
    "frequencia_media": 2.0,
    "em_churn": 0,
+   "em_risco": 0,
+   "inativos": 0,
    "receita_12m_em_risco": 0.0,
    "clv_previsto_6m": 101797.83,
    "atacado": 29
@@ -298,6 +310,8 @@
    "recencia_media": 11.0,
    "frequencia_media": 1.0,
    "em_churn": 0,
+   "em_risco": 0,
+   "inativos": 0,
    "receita_12m_em_risco": 0.0,
    "clv_previsto_6m": 20176.45,
    "atacado": 14
@@ -313,6 +327,8 @@
    "recencia_media": 38.0,
    "frequencia_media": 1.0,
    "em_churn": 0,
+   "em_risco": 0,
+   "inativos": 0,
    "receita_12m_em_risco": 0.0,
    "clv_previsto_6m": 44514.97,
    "atacado": 16
@@ -328,6 +344,8 @@
    "recencia_media": 107.0,
    "frequencia_media": 1.4,
    "em_churn": 220,
+   "em_risco": 220,
+   "inativos": 0,
    "receita_12m_em_risco": 94254.72,
    "clv_previsto_6m": 91600.99,
    "atacado": 66
@@ -343,6 +361,8 @@
    "recencia_media": 330.0,
    "frequencia_media": 17.1,
    "em_churn": 66,
+   "em_risco": 40,
+   "inativos": 26,
    "receita_12m_em_risco": 42906.721,
    "clv_previsto_6m": 62018.17,
    "atacado": 8
@@ -358,6 +378,8 @@
    "recencia_media": 362.0,
    "frequencia_media": 4.3,
    "em_churn": 647,
+   "em_risco": 311,
+   "inativos": 336,
    "receita_12m_em_risco": 152012.94,
    "clv_previsto_6m": 149167.12,
    "atacado": 49
@@ -373,6 +395,8 @@
    "recencia_media": 314.0,
    "frequencia_media": 1.4,
    "em_churn": 673,
+   "em_risco": 403,
+   "inativos": 270,
    "receita_12m_em_risco": 145823.86,
    "clv_previsto_6m": 57514.12,
    "atacado": 50
@@ -388,6 +412,8 @@
    "recencia_media": 552.0,
    "frequencia_media": 1.3,
    "em_churn": 959,
+   "em_risco": 0,
+   "inativos": 959,
    "receita_12m_em_risco": -947.56,
    "clv_previsto_6m": 42768.6,
    "atacado": 86

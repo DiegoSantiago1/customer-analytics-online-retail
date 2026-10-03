@@ -119,6 +119,7 @@ python -m varejo.baixar_dados           # downloads the xlsx and checks SHA-256
 python -m varejo.carga                  # 1,067,371 lines into bruto (~30 s)
 python -m varejo.processar              # limpo -> analise -> dq (~30 s); rolls back if a check fails
 python -m varejo.exportar_site          # site/dados.json (refuses if dq failed)
+python -m http.server 8000 -d site      # the interactive page at http://127.0.0.1:8000 (arrow keys move chapter by chapter)
 pytest                                  # 280 tests (-m "not lento" skips the 2 on the real file)
 ```
 

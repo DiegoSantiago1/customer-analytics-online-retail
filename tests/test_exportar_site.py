@@ -53,6 +53,7 @@ def test_montar_tem_as_secoes_e_os_numeros_do_banco(bd: Conexao) -> None:
     dados = montar(bd)
     assert set(dados) == {
         "resumo",
+        "limpeza",
         "receita_mes",
         "segmentos",
         "churn",
@@ -94,4 +95,7 @@ def test_json_versionado_bate_com_o_documentado() -> None:
     assert resumo["em_churn"] == 2967
     assert round(resumo["clv_6m"]) == 3_822_972
     assert (resumo["em_risco"], resumo["inativos"]) == (1376, 1591)
+    assert dados["limpeza"]["sobreposicao"] == 22_523
+    assert dados["limpeza"]["repeticoes_mantidas"] == 11_812
+    assert sum(s["em_risco"] for s in dados["segmentos"]) == 1376
     assert resumo["dq_ok"] == resumo["dq_total"] == 18

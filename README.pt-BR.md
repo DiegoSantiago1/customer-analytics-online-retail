@@ -108,6 +108,7 @@ python -m varejo.baixar_dados           # baixa o xlsx e confere o SHA-256
 python -m varejo.carga                  # 1.067.371 linhas no bruto (~30 s)
 python -m varejo.processar              # limpo -> analise -> dq (~30 s); desfaz tudo se uma checagem falhar
 python -m varejo.exportar_site          # site/dados.json (recusa se o dq falhou)
+python -m http.server 8000 -d site      # a página interativa em http://127.0.0.1:8000 (as setas passam de capítulo)
 pytest                                  # 280 testes (-m "not lento" pula os 2 com a planilha real)
 ```
 

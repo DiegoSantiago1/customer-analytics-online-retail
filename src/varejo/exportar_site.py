@@ -92,9 +92,32 @@ def montar(con: Conexao) -> dict[str, Any]:
         """,
     )[0]
     resumo["pct_receita_top10"] = top10["pct"]
+    # D4 e D5: o que a limpeza fez com as linhas repetidas (medido, não digitado).
+    limpeza = _linhas(
+        con,
+        """
+        WITH r AS (
+            SELECT l.valor, l.tipo,
+                   row_number() OVER (
+                       PARTITION BY b.aba, b.fatura, b.codigo_produto, b.descricao,
+                                    b.quantidade, b.data_fatura, b.preco_unitario,
+                                    b.cliente_id, b.pais
+                       ORDER BY b.linha_origem) AS n
+            FROM bruto.fatura_linha b JOIN limpo.fatura_linha l USING (aba, linha_origem)
+        )
+        SELECT (SELECT count(*) FROM bruto.fatura_linha) AS linhas_bruto,
+               (SELECT count(*) FROM bruto.fatura_linha)
+                 - (SELECT count(*) FROM limpo.fatura_linha) AS sobreposicao,
+               count(*) FILTER (WHERE n > 1) AS repeticoes_mantidas,
+               coalesce(sum(valor) FILTER (WHERE n > 1 AND tipo = 'venda'), 0)
+                   AS valor_repeticoes
+        FROM r
+        """,
+    )[0]
     return _limpar(  # type: ignore[return-value]
         {
             "resumo": resumo,
+            "limpeza": limpeza,
             "receita_mes": _linhas(
                 con,
                 "SELECT mes, mes_parcial, venda_produto_com_cliente, venda_produto_sem_cliente, "
@@ -104,7 +127,7 @@ def montar(con: Conexao) -> dict[str, Any]:
             "segmentos": _linhas(
                 con,
                 "SELECT ordem, segmento, acao, clientes, pct_clientes, receita_liquida, "
-                "pct_receita, recencia_media, frequencia_media, em_churn, "
+                "pct_receita, recencia_media, frequencia_media, em_churn, em_risco, inativos, "
                 "receita_12m_em_risco, clv_previsto_6m, atacado "
                 "FROM analise.vw_segmento_resumo ORDER BY ordem",
             ),
