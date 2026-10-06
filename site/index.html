@@ -387,7 +387,7 @@
   <!-- 10 · fim -->
   <section class="cap hero" id="fim" data-titulo="Next">
     <div class="miolo rodape">
-      <h2 class="rev" style="color:var(--hero-ink);font-size:clamp(2.4rem,6vw,4.6rem);margin-bottom:36px" data-i18n="h_fim">Thank you. Questions?</h2>
+      <h2 class="rev" style="color:var(--hero-ink);font-size:clamp(2.4rem,6vw,4.6rem);margin-bottom:36px" data-i18n="h_fim">Thanks for reading.</h2>
       <div class="olho rev" data-i18n="o_fim">What I would do next</div>
       <div class="grade g3 rev d1" style="margin:10px 0 24px">
         <div><h3 style="color:var(--hero-ink)" data-i18n="p1t">Churn per customer</h3><p data-i18n="p1">A threshold from each customer's own buying rhythm, or a model that sees the season.</p></div>
@@ -448,7 +448,7 @@ const PT = {
   r1: "Somar seis meses a um timestamp dependia do fuso da sessão. Corrigido dentro de cada função e testado em quatro fusos.",
   r2t: "Metodologia de dados", r2: 'Uma queda falsa de aquisição, um título de churn misturando “em risco” com “já foi” e um adversário fraco. Tudo reescrito.',
   r3t: "Engenharia", r3: "Checagens reprovadas ainda podiam ser gravadas e exportadas. Agora tudo é desfeito e a exportação se recusa.",
-  h_fim: "Obrigado. Perguntas?", o_fim: "O que eu faria a seguir", p1t: "Churn por cliente", p1: "Um limite a partir do ritmo de compra de cada cliente, ou um modelo que enxergue a época do ano.",
+  h_fim: "Obrigado pela leitura.", o_fim: "O que eu faria a seguir", p1t: "Churn por cliente", p1: "Um limite a partir do ritmo de compra de cada cliente, ou um modelo que enxergue a época do ano.",
   p2t: "CLV probabilístico", p2: "BG/NBD e Gamma-Gamma, comparados com este modelo e com o ingênuo sazonal.",
   p3t: "Análise de cesta", p3: "Quais produtos vendem juntos, para alimentar a ação de cada segmento.",
   link_codigo: "Código, decisões e testes no GitHub", link_decisoes: "Log de decisões", cargo: "Analista de Dados",
@@ -760,6 +760,8 @@ document.getElementById("tema").addEventListener("click", () => {
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (dados) seguro(desenhar); });
 
+// Sem escolha salva, segue o idioma do navegador (como a página do pipeline de Londres).
+if ((navigator.language || "").toLowerCase().startsWith("pt")) idioma = "pt";
 try { const s = localStorage.getItem("idioma"); if (s === "pt" || s === "en") idioma = s; } catch (e) { /* idem */ }
 textos(); atualizar();
 fetch("dados.json")
