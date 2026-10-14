@@ -91,7 +91,7 @@ O modelo ganha do ingênuo sazonal nas três medidas. O +0,2% no total não deve
 **5. Todo número é reproduzível e testado.**
 - A planilha é baixada e conferida por SHA-256.
 - Cada regra é uma migration SQL versionada.
-- **280 testes automatizados** cobrem as regras, entre eles casos hostis e 4 fusos de sessão. Um teste ponta a ponta roda o pipeline inteiro sobre a planilha real e confere os números publicados.
+- **280 testes automatizados** cobrem as regras, entre eles casos hostis e 4 fusos de sessão. Um teste ponta a ponta roda o pipeline inteiro sobre a planilha real e confere os números publicados. O CI roda formatação, lint, tipos e os 278 testes de banco a cada push, contra um PostgreSQL 16 de verdade (os 2 testes com a planilha real rodam localmente).
 - Um schema de qualidade de dados roda **18 checagens**. Se alguma falhar, o pipeline inteiro é desfeito e a exportação do site se recusa a rodar.
 - Cada número do Power BI foi conferido contra o SQL ([tabela](docs/POWERBI.md#conferência-contra-o-sql)).
 

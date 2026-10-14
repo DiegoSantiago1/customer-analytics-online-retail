@@ -91,7 +91,7 @@ The model beats the seasonal naive forecast on all three measures. The +0.2% on 
 **5. Every number is reproducible and tested.**
 - The raw file is downloaded and verified by SHA-256.
 - Every rule is a versioned SQL migration.
-- **280 automated tests** cover the rules, including hostile inputs and 4 session time zones. One end-to-end test reruns the whole pipeline on the real file and checks the published numbers.
+- **280 automated tests** cover the rules, including hostile inputs and 4 session time zones. One end-to-end test reruns the whole pipeline on the real file and checks the published numbers. CI runs formatting, lint, types and the 278 database tests on every push against a real PostgreSQL 16 (the 2 tests on the real file run locally).
 - A data-quality schema runs **18 checks**. If any fails, the whole pipeline is rolled back and the site export refuses to run.
 - Every number in the Power BI report was checked against SQL ([table](docs/POWERBI.md#conferência-contra-o-sql)).
 
