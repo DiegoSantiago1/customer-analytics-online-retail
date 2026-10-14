@@ -1,5 +1,7 @@
 # Customer Analytics: Online Retail II
 
+[![ci](https://github.com/DiegoSantiago1/customer-analytics-online-retail/actions/workflows/ci.yml/badge.svg)](https://github.com/DiegoSantiago1/customer-analytics-online-retail/actions/workflows/ci.yml)
+
 **Who are the best customers, who is leaving, and what are they worth?** RFM segmentation, churn validated back in time, retention cohorts and customer lifetime value for a real UK-based online retailer, built with PostgreSQL, SQL, Python and Power BI.
 
 ## 🔗 Access the project
